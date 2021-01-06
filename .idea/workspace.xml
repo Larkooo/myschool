@@ -14,8 +14,9 @@
       <change beforePath="$PROJECT_DIR$/android/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/android/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/android/myschool_android.iml" beforeDir="false" afterPath="$PROJECT_DIR$/android/myschool_android.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ios/Runner.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Runner.xcodeproj/project.pbxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/components/login.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/components/login.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/services/authentication.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/services/firebase.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/services/firebase.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

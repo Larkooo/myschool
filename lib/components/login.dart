@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:myschool/services/firebase.dart';
 import 'package:password_validator/password_validator.dart';
 
 import '../main.dart';
@@ -76,9 +77,15 @@ class Login extends StatelessWidget {
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15), color: Colors.blue),
               child: MaterialButton(
-                onPressed: () => {
-                  if (_formKey.currentState.validate())
-                    {Navigator.of(context).pop()}
+                onPressed: () async {
+                  if (_formKey.currentState.validate()) {
+                    bool isSignIn = await signIn(
+                        _emailController.text, _passwordController.text);
+                    if (isSignIn) {
+                      Scaffold.of(context)
+                          .showSnackBar(SnackBar(content: Text("Connecté")));
+                    }
+                  }
                 },
                 child: Text(
                   "Se connecter",
