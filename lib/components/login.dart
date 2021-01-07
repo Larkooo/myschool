@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:myschool/components/register.dart';
 import 'package:myschool/services/firebase.dart';
 import 'package:password_validator/password_validator.dart';
 
@@ -17,7 +18,9 @@ class Login extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
+    return Scaffold(
+        body: Center(
+            child: Form(
       key: _formKey,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -79,11 +82,22 @@ class Login extends StatelessWidget {
               child: MaterialButton(
                 onPressed: () async {
                   if (_formKey.currentState.validate()) {
-                    bool isSignIn = await signIn(
+                    AuthCodes loginStatus = await signIn(
                         _emailController.text, _passwordController.text);
-                    if (isSignIn) {
+                    if (loginStatus == AuthCodes.ok) {
                       Scaffold.of(context)
                           .showSnackBar(SnackBar(content: Text("Connecté")));
+                    } else if (loginStatus == AuthCodes.notFound) {
+                      Scaffold.of(context).showSnackBar(
+                          SnackBar(content: Text("Compte non existant")));
+                    } else if (loginStatus == AuthCodes.badPassword) {
+                      Scaffold.of(context).showSnackBar(
+                        SnackBar(content: Text("Mot de passe invalide")),
+                      );
+                    } else {
+                      Scaffold.of(context).showSnackBar(
+                        SnackBar(content: Text("error")),
+                      );
                     }
                   }
                 },
@@ -93,7 +107,8 @@ class Login extends StatelessWidget {
                 ),
               )),
           TextButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => Register())),
               style: ButtonStyle(
                 overlayColor: MaterialStateColor.resolveWith(
                     (states) => Colors.transparent),
@@ -104,6 +119,6 @@ class Login extends StatelessWidget {
                       fontSize: 13))),
         ],
       ),
-    );
+    )));
   }
 }
