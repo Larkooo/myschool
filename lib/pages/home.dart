@@ -13,7 +13,12 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Text(FirebaseAuth.instance.currentUser.email),
+        child: FlatButton(
+          child: Text("sign out"),
+          onPressed: () {
+            FirebaseAuth.instance.signOut();
+          },
+        ),
       ),
     );
   }

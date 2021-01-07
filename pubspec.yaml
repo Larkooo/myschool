@@ -28,7 +28,9 @@ dependencies:
   cloud_firestore: "^0.14.4"
   email_validator:
   password_validator:
-  alert: ^1.0.1
+  provider:
+  alert:
+  
 
 
   # The following adds the Cupertino Icons font to your application.
