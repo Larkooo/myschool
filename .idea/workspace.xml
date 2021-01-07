@@ -4,6 +4,7 @@
     <list default="true" id="66c39eb0-e573-4035-92d2-4b58dc8e9b52" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.flutter-plugins-dependencies" beforeDir="false" afterPath="$PROJECT_DIR$/.flutter-plugins-dependencies" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/components/login.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/components/login.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/components/register.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/components/register.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/services/firebase.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/services/firebase.dart" afterDir="false" />

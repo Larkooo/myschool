@@ -23,11 +23,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  firebase_auth: 
-  firebase_core:
-  cloud_firestore:
+  firebase_core: "^0.5.3"
+  firebase_auth: "^0.18.4+1"
+  cloud_firestore: "^0.14.4"
   email_validator:
   password_validator:
+  alert: ^1.0.1
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -35,11 +36,17 @@ dependencies:
   cupertino_icons: ^1.0.0
 
 dev_dependencies:
+  flutter_launcher_icons: 
   flutter_test:
     sdk: flutter
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon.png"
 
 # The following section is specific to Flutter.
 flutter:

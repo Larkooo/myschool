@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:myschool/components/login.dart';
+import 'package:myschool/pages/home.dart';
 import 'package:myschool/services/firebase.dart';
 import 'package:password_validator/password_validator.dart';
 
 import '../main.dart';
+import 'alert.dart';
 
 class Register extends StatelessWidget {
   Register({
@@ -21,9 +23,8 @@ class Register extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Center(
-            child: Form(
+    return Material(
+        child: Form(
       key: _formKey,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -125,7 +126,7 @@ class Register extends StatelessWidget {
                   }
                   return null;
                 },
-                obscureText: true,
+                obscureText: false,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Code d\'école',
@@ -149,15 +150,18 @@ class Register extends StatelessWidget {
                         _passwordController.text,
                         _codeController.text);
                     if (registerStatus == AuthCodes.ok) {
-                      Scaffold.of(context)
-                          .showSnackBar(SnackBar(content: Text("Compte crée")));
+                      Alert(message: "Compte crée").show();
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => Home()));
                     } else if (registerStatus == AuthCodes.emailAlreadyUsed) {
-                      Scaffold.of(context).showSnackBar(SnackBar(
-                          content: Text(
-                              "Un compte avec cette adresse email existe déjà")));
+                      Alert(
+                              message:
+                                  "Un compte avec cette adresse email existe déjà")
+                          .show();
+                    } else if (registerStatus == AuthCodes.codeNotFound) {
+                      Alert(message: "Code inexistant").show();
                     } else {
-                      Scaffold.of(context)
-                          .showSnackBar(SnackBar(content: Text("error")));
+                      Alert(message: "Erreur").show();
                     }
                   }
                 },
@@ -179,6 +183,6 @@ class Register extends StatelessWidget {
                       fontSize: 13))),
         ],
       ),
-    )));
+    ));
   }
 }

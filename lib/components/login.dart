@@ -1,8 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:myschool/components/register.dart';
+import 'package:myschool/pages/home.dart';
 import 'package:myschool/services/firebase.dart';
 import 'package:password_validator/password_validator.dart';
+import 'alert.dart';
 
 import '../main.dart';
 
@@ -18,9 +21,8 @@ class Login extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Center(
-            child: Form(
+    return Material(
+        child: Form(
       key: _formKey,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -85,19 +87,16 @@ class Login extends StatelessWidget {
                     AuthCodes loginStatus = await signIn(
                         _emailController.text, _passwordController.text);
                     if (loginStatus == AuthCodes.ok) {
-                      Scaffold.of(context)
-                          .showSnackBar(SnackBar(content: Text("Connecté")));
-                    } else if (loginStatus == AuthCodes.notFound) {
-                      Scaffold.of(context).showSnackBar(
-                          SnackBar(content: Text("Compte non existant")));
+                      Alert(message: "Connecté").show();
+                      print(FirebaseAuth.instance.currentUser.email);
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => Home()));
+                    } else if (loginStatus == AuthCodes.accountNotFound) {
+                      Alert(message: "Compte non existant").show();
                     } else if (loginStatus == AuthCodes.badPassword) {
-                      Scaffold.of(context).showSnackBar(
-                        SnackBar(content: Text("Mot de passe invalide")),
-                      );
+                      Alert(message: "Mot de passe invalide").show();
                     } else {
-                      Scaffold.of(context).showSnackBar(
-                        SnackBar(content: Text("error")),
-                      );
+                      Alert(message: "Erreur").show();
                     }
                   }
                 },
@@ -119,6 +118,6 @@ class Login extends StatelessWidget {
                       fontSize: 13))),
         ],
       ),
-    )));
+    ));
   }
 }
