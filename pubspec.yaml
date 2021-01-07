@@ -29,7 +29,9 @@ dependencies:
   email_validator:
   password_validator:
   provider:
+  slide_popup_dialog:
   alert:
+  rounded_loading_button: 
   
 
 

@@ -20,25 +20,41 @@ class FirebaseAuthService {
   static final CollectionReference codes =
       FirebaseFirestore.instance.collection('codes');
 
+  static Future<UserData> userToUserData(User user,
+      [Map<String, dynamic> data]) async {
+    if (data.isEmpty) {
+      codes.doc(user.uid).get().then((doc) async {
+        if (!doc.exists) {
+          return null;
+        }
+        Map<String, dynamic> data = doc.data();
+        return UserData(
+            uid: user.uid,
+            firstName: data['firstName'],
+            lastName: data['lastName'],
+            school: School(uid: doc.get('school')['id']),
+            createdAt: data['createdAt']);
+      });
+    } else {
+      return UserData(
+          uid: user.uid,
+          firstName: data['firstName'],
+          lastName: data['lastName'],
+          school: School(uid: data['id']),
+          createdAt: data['createdAt']);
+    }
+  }
+
   static Stream<User> get user {
     return _auth.authStateChanges();
   }
 
-  static Future<AuthCodes> signIn(String email, String password) async {
+  static Future<dynamic> signIn(String email, String password) async {
     try {
       UserCredential result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
-      //users.doc(result.user.uid).get().then((doc) {
-      //  Map<String, dynamic> data = doc.data();
-      //  UserData(
-      //      uid: result.user.uid,
-      //      firstName: data['firstName'],
-      //      lastName: data['lastName'],
-      //      school: School(uid: data['school']),
-      //      createdAt: data['createdAt']);
-      //});
 
-      return AuthCodes.ok;
+      return result.user;
     } on FirebaseAuthException catch (e) {
       if (e.code == "wrong-password") {
         return AuthCodes.badPassword;
@@ -53,7 +69,7 @@ class FirebaseAuthService {
     }
   }
 
-  static Future<AuthCodes> register(String firstName, String lastName,
+  static Future<dynamic> register(String firstName, String lastName,
       String email, String password, String code) async {
     try {
       codes.doc(code).get().then((doc) async {
@@ -71,14 +87,15 @@ class FirebaseAuthService {
           "usedCode": code,
           "createdAt": DateTime.now()
         });
-        //UserData(
+        return result.user;
+        //return UserData(
         //    uid: result.user.uid,
         //    firstName: firstName,
         //    lastName: lastName,
-        //    school: School(uid: data['school']),
+        //    school: School(uid: doc.get("school")['id']),
         //    createdAt: DateTime.now());
       });
-      return AuthCodes.ok;
+      //return AuthCodes.ok;
     } on FirebaseAuthException catch (e) {
       if (e.code == "email-already-in-use") {
         return AuthCodes.emailAlreadyUsed;

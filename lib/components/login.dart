@@ -2,10 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:myschool/components/register.dart';
-import 'package:myschool/pages/home.dart';
 import 'package:myschool/services/firebase.dart';
+import 'package:myschool/shared/constants.dart';
 import 'package:password_validator/password_validator.dart';
-import 'alert.dart';
+import 'package:alert/alert.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 import '../main.dart';
 
@@ -16,6 +17,9 @@ class Login extends StatelessWidget {
 
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+
+  final RoundedLoadingButtonController _btnController =
+      new RoundedLoadingButtonController();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -81,36 +85,57 @@ class Login extends StatelessWidget {
                   SizedBox(
                     height: 10,
                   ),
-                  Container(
-                      width: MediaQuery.of(context).size.width / 2.2,
-                      height: 50,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          color: Colors.blue),
-                      child: MaterialButton(
-                        onPressed: () async {
-                          if (_formKey.currentState.validate()) {
-                            AuthCodes loginStatus =
-                                await FirebaseAuthService.signIn(
-                                    _emailController.text,
-                                    _passwordController.text);
-                            if (loginStatus == AuthCodes.ok) {
-                              Alert(message: "Connecté").show();
-                            } else if (loginStatus ==
-                                AuthCodes.accountNotFound) {
-                              Alert(message: "Compte non existant").show();
-                            } else if (loginStatus == AuthCodes.badPassword) {
-                              Alert(message: "Mot de passe invalide").show();
-                            } else {
-                              Alert(message: "Erreur").show();
-                            }
-                          }
-                        },
-                        child: Text(
-                          "Se connecter",
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      )),
+                  mainBlueLoadingBtn(
+                      context, _btnController, Text("Se connecter"), () async {
+                    if (_formKey.currentState.validate()) {
+                      _btnController.start();
+                      dynamic loginStatus = await FirebaseAuthService.signIn(
+                          _emailController.text, _passwordController.text);
+                      if (loginStatus is User) {
+                        Alert(message: "Connecté").show();
+                        _btnController.success();
+                      } else if (loginStatus == AuthCodes.accountNotFound) {
+                        Alert(message: "Compte non existant").show();
+                        _btnController.stop();
+                      } else if (loginStatus == AuthCodes.badPassword) {
+                        Alert(message: "Mot de passe invalide").show();
+                        _btnController.stop();
+                      } else {
+                        Alert(message: "Erreur").show();
+                        _btnController.stop();
+                      }
+                    }
+                  }),
+                  //Container(
+                  //    width: MediaQuery.of(context).size.width / 2.2,
+                  //    height: 50,
+                  //    decoration: mainBlueBtnDec,
+                  //    child: MaterialButton(
+                  //      shape: RoundedRectangleBorder(
+                  //          borderRadius: BorderRadius.circular(15)),
+                  //      onPressed: () async {
+                  //        if (_formKey.currentState.validate()) {
+                  //          dynamic loginStatus =
+                  //              await FirebaseAuthService.signIn(
+                  //                  _emailController.text,
+                  //                  _passwordController.text);
+                  //          if (loginStatus is User) {
+                  //            Alert(message: "Connecté").show();
+                  //          } else if (loginStatus ==
+                  //              AuthCodes.accountNotFound) {
+                  //            Alert(message: "Compte non existant").show();
+                  //          } else if (loginStatus == AuthCodes.badPassword) {
+                  //            Alert(message: "Mot de passe invalide").show();
+                  //          } else {
+                  //            Alert(message: "Erreur").show();
+                  //          }
+                  //        }
+                  //      },
+                  //      child: Text(
+                  //        "Se connecter",
+                  //        style: TextStyle(color: Colors.white),
+                  //      ),
+                  //    )),
                   TextButton(
                       onPressed: () => Navigator.push(context,
                           MaterialPageRoute(builder: (context) => Register())),

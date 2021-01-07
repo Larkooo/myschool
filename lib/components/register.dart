@@ -1,12 +1,16 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:myschool/components/login.dart';
 import 'package:myschool/pages/home.dart';
 import 'package:myschool/services/firebase.dart';
+import 'package:myschool/shared/constants.dart';
 import 'package:password_validator/password_validator.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
+import 'package:slide_popup_dialog/slide_popup_dialog.dart';
 
 import '../main.dart';
-import 'alert.dart';
+import 'package:alert/alert.dart';
 
 class Register extends StatelessWidget {
   Register({
@@ -18,6 +22,9 @@ class Register extends StatelessWidget {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _codeController = TextEditingController();
+
+  final RoundedLoadingButtonController _btnController =
+      new RoundedLoadingButtonController();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -144,50 +151,57 @@ class Register extends StatelessWidget {
                   SizedBox(
                     height: 10,
                   ),
-                  Container(
-                      width: MediaQuery.of(context).size.width / 2.2,
-                      height: 50,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          color: Colors.blue),
-                      child: MaterialButton(
-                        onPressed: () async {
-                          if (_formKey.currentState.validate()) {
-                            AuthCodes registerStatus =
-                                await FirebaseAuthService.register(
-                                    _firstNameController.text,
-                                    _lastNameController.text,
-                                    _emailController.text,
-                                    _passwordController.text,
-                                    _codeController.text);
-                            if (registerStatus == AuthCodes.ok) {
-                              Alert(message: "Compte crée").show();
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Home()));
-                            } else if (registerStatus ==
-                                AuthCodes.emailAlreadyUsed) {
-                              Alert(
-                                      message:
-                                          "Un compte avec cette adresse email existe déjà")
-                                  .show();
-                            } else if (registerStatus ==
-                                AuthCodes.codeNotFound) {
-                              Alert(message: "Code inexistant").show();
-                            } else {
-                              Alert(message: "Erreur").show();
-                            }
-                          }
-                        },
-                        child: Text(
-                          "Créer un compte",
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      )),
+                  mainBlueLoadingBtn(
+                      context, _btnController, Text("Créer un compte"),
+                      () async {
+                    if (_formKey.currentState.validate()) {
+                      _btnController.start();
+                      dynamic registerStatus =
+                          await FirebaseAuthService.register(
+                              _firstNameController.text,
+                              _lastNameController.text,
+                              _emailController.text,
+                              _passwordController.text,
+                              _codeController.text);
+                      if (registerStatus is User) {
+                        Alert(message: "Compte crée").show();
+                        _btnController.success();
+                        showSlideDialog(
+                            context: context,
+                            child: Column(
+                              children: <Widget>[
+                                Image.asset(
+                                  "assets/logo.png",
+                                  width: 80,
+                                  height: 80,
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text(
+                                  "Bienvenue ${_firstNameController.text} sur MonÉcole !",
+                                  style: TextStyle(fontSize: 15),
+                                )
+                              ],
+                            ));
+                        Navigator.pop(context);
+                      } else if (registerStatus == AuthCodes.emailAlreadyUsed) {
+                        Alert(
+                                message:
+                                    "Un compte avec cette adresse email existe déjà")
+                            .show();
+                        _btnController.stop();
+                      } else if (registerStatus == AuthCodes.codeNotFound) {
+                        Alert(message: "Code inexistant").show();
+                        _btnController.stop();
+                      } else {
+                        Alert(message: "Erreur").show();
+                        _btnController.stop();
+                      }
+                    }
+                  }),
                   TextButton(
-                      onPressed: () => Navigator.pop(context,
-                          MaterialPageRoute(builder: (context) => Login())),
+                      onPressed: () => Navigator.pop(context),
                       style: ButtonStyle(
                         overlayColor: MaterialStateColor.resolveWith(
                             (states) => Colors.transparent),

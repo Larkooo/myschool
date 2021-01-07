@@ -1,5 +1,7 @@
+import 'package:alert/alert.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:slide_popup_dialog/slide_popup_dialog.dart';
 
 class Home extends StatefulWidget {
   Home({Key key}) : super(key: key);
@@ -10,6 +12,14 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    print("mdr");
+    //showSlideDialog(context: context, child: Text("Testing welcome message"));
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
@@ -17,6 +27,7 @@ class _HomeState extends State<Home> {
           child: Text("sign out"),
           onPressed: () {
             FirebaseAuth.instance.signOut();
+            Alert(message: "Déconnecté").show();
           },
         ),
       ),
