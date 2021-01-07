@@ -32,7 +32,7 @@ dependencies:
   slide_popup_dialog:
   alert:
   rounded_loading_button: 
-  
+  flutter_native_splash: ^0.2.0
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -89,3 +89,10 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+#SPLASH SCREEN
+
+flutter_native_splash:
+  image: assets/logo_hires.png
+  color: "#262626"
+  android_disable_fullscreen: true
