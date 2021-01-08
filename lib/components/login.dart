@@ -109,7 +109,7 @@ class _LoginState extends State<Login> {
                     if (_formKey.currentState.validate()) {
                       _btnController.start();
                       dynamic loginStatus = await FirebaseAuthService.signIn(
-                          _emailController.text, _emailController.text);
+                          _emailController.text, _passwordController.text);
                       if (loginStatus is User) {
                         Alert(message: "Connecté").show();
                         _btnController.success();

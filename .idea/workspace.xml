@@ -1,19 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="66c39eb0-e573-4035-92d2-4b58dc8e9b52" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.flutter-plugins-dependencies" beforeDir="false" afterPath="$PROJECT_DIR$/.flutter-plugins-dependencies" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/components/login.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/components/login.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/components/register.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/components/register.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/pages/home.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/home.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/pages/welcome.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/welcome.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/services/firebase.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/services/firebase.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
-    </list>
+    <list default="true" id="66c39eb0-e573-4035-92d2-4b58dc8e9b52" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -54,13 +42,13 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state x="113" y="449" width="1200" height="849" key="com.android.tools.idea.avdmanager.AvdListDialog" timestamp="1610036251451">
+    <state x="113" y="449" width="1200" height="849" key="com.android.tools.idea.avdmanager.AvdListDialog" timestamp="1610145920322">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state x="113" y="449" width="1200" height="849" key="com.android.tools.idea.avdmanager.AvdListDialog/0.0.1920.1050@0.0.1920.1050" timestamp="1610036251451" />
-    <state x="1313" y="698" key="com.intellij.ide.util.TipDialog" timestamp="1610036241737">
+    <state x="113" y="449" width="1200" height="849" key="com.android.tools.idea.avdmanager.AvdListDialog/0.0.1920.1050@0.0.1920.1050" timestamp="1610145920322" />
+    <state x="1313" y="698" key="com.intellij.ide.util.TipDialog" timestamp="1610145907208">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state x="1313" y="698" key="com.intellij.ide.util.TipDialog/0.0.1920.1050@0.0.1920.1050" timestamp="1610036241737" />
+    <state x="1313" y="698" key="com.intellij.ide.util.TipDialog/0.0.1920.1050@0.0.1920.1050" timestamp="1610145907208" />
   </component>
 </project>

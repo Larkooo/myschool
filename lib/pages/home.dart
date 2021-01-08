@@ -30,6 +30,13 @@ class _HomeState extends State<Home> {
           },
         ),
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Accueil"),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Annonces"),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Calendrier")
+        ],
+      ),
     );
   }
 }
