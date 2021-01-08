@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:myschool/components/register.dart';
+import 'package:myschool/components/resetPassword.dart';
+import 'package:myschool/components/resetPasswordWrapper.dart';
 import 'package:myschool/services/firebase.dart';
 import 'package:myschool/shared/constants.dart';
 import 'package:password_validator/password_validator.dart';
@@ -11,10 +13,6 @@ import 'package:rounded_loading_button/rounded_loading_button.dart';
 import '../main.dart';
 
 class Login extends StatelessWidget {
-  Login({
-    Key key,
-  }) : super(key: key);
-
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
 
@@ -136,17 +134,43 @@ class Login extends StatelessWidget {
                   //        style: TextStyle(color: Colors.white),
                   //      ),
                   //    )),
-                  TextButton(
-                      onPressed: () => Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => Register())),
-                      style: ButtonStyle(
-                        overlayColor: MaterialStateColor.resolveWith(
-                            (states) => Colors.transparent),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      TextButton(
+                          onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Register())),
+                          style: ButtonStyle(
+                            overlayColor: MaterialStateColor.resolveWith(
+                                (states) => Colors.transparent),
+                          ),
+                          child: Text("Créer un compte",
+                              style: TextStyle(
+                                  color:
+                                      isDark ? Colors.blue[200] : Colors.black,
+                                  fontSize: 13))),
+                      SizedBox(
+                        width: 5,
                       ),
-                      child: Text("Créer un compte",
-                          style: TextStyle(
-                              color: isDark ? Colors.blue[200] : Colors.black,
-                              fontSize: 13))),
+                      TextButton(
+                          onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      ResetPasswordComponent())),
+                          style: ButtonStyle(
+                            overlayColor: MaterialStateColor.resolveWith(
+                                (states) => Colors.transparent),
+                          ),
+                          child: Text("Mot de passe oublié ?",
+                              style: TextStyle(
+                                  color:
+                                      isDark ? Colors.blue[200] : Colors.black,
+                                  fontSize: 13)))
+                    ],
+                  )
                 ],
               ),
             ))));

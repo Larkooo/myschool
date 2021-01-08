@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:myschool/components/login.dart';
+import 'package:myschool/models/user.dart';
 import 'package:myschool/pages/home.dart';
 import 'package:myschool/services/firebase.dart';
 import 'package:myschool/shared/constants.dart';
@@ -13,10 +14,6 @@ import '../main.dart';
 import 'package:alert/alert.dart';
 
 class Register extends StatelessWidget {
-  Register({
-    Key key,
-  }) : super(key: key);
-
   TextEditingController _firstNameController = TextEditingController();
   TextEditingController _lastNameController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
@@ -163,27 +160,28 @@ class Register extends StatelessWidget {
                               _emailController.text,
                               _passwordController.text,
                               _codeController.text);
-                      if (registerStatus is User) {
+                      print(registerStatus);
+                      if (registerStatus is UserData) {
                         Alert(message: "Compte crée").show();
                         _btnController.success();
-                        showSlideDialog(
-                            context: context,
-                            child: Column(
-                              children: <Widget>[
-                                Image.asset(
-                                  "assets/logo.png",
-                                  width: 80,
-                                  height: 80,
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Text(
-                                  "Bienvenue ${_firstNameController.text} sur MonÉcole !",
-                                  style: TextStyle(fontSize: 15),
-                                )
-                              ],
-                            ));
+                        //showSlideDialog(
+                        //    context: context,
+                        //    child: Column(
+                        //      children: <Widget>[
+                        //        Image.asset(
+                        //          "assets/logo.png",
+                        //          width: 80,
+                        //          height: 80,
+                        //        ),
+                        //        SizedBox(
+                        //          height: 10,
+                        //        ),
+                        //        Text(
+                        //          "Bienvenue ${_firstNameController.text} sur MonÉcole !",
+                        //          style: TextStyle(fontSize: 15),
+                        //        )
+                        //      ],
+                        //    ));
                         Navigator.pop(context);
                       } else if (registerStatus == AuthCodes.emailAlreadyUsed) {
                         Alert(

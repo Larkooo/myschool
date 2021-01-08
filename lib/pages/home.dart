@@ -15,7 +15,6 @@ class _HomeState extends State<Home> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    print("mdr");
     //showSlideDialog(context: context, child: Text("Testing welcome message"));
   }
 

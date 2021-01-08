@@ -4,9 +4,15 @@ class UserData {
   final String uid;
   final String firstName;
   final String lastName;
+  final String usedCode;
   final School school;
   final DateTime createdAt;
 
   UserData(
-      {this.firstName, this.lastName, this.uid, this.school, this.createdAt});
+      {this.uid,
+      this.firstName,
+      this.lastName,
+      this.usedCode,
+      this.school,
+      this.createdAt});
 }

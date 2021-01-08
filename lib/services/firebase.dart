@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:myschool/models/school.dart';
+import 'package:myschool/services/database.dart';
 import '../models/user.dart';
 
 enum AuthCodes {
@@ -9,7 +10,10 @@ enum AuthCodes {
   badPassword,
   error,
   emailAlreadyUsed,
-  codeNotFound
+  codeNotFound,
+  passwordResetCodeExpired,
+  passwordResetCodeInvalid,
+  accountDisabled
 }
 
 class FirebaseAuthService {
@@ -72,34 +76,30 @@ class FirebaseAuthService {
   static Future<dynamic> register(String firstName, String lastName,
       String email, String password, String code) async {
     try {
-      codes.doc(code).get().then((doc) async {
-        if (!doc.exists) {
-          return AuthCodes.codeNotFound;
-        }
-        Map<String, dynamic> data = doc.data();
-        UserCredential result = await _auth.createUserWithEmailAndPassword(
-            email: email, password: password);
-        codes.doc(code).update({"usedTimes": FieldValue.increment(1)});
-        users.doc(result.user.uid).set({
-          "firstName": firstName,
-          "lastName": lastName,
-          "school": data['school'],
-          "usedCode": code,
-          "createdAt": DateTime.now()
-        });
-        return result.user;
-        //return UserData(
-        //    uid: result.user.uid,
-        //    firstName: firstName,
-        //    lastName: lastName,
-        //    school: School(uid: doc.get("school")['id']),
-        //    createdAt: DateTime.now());
-      });
-      //return AuthCodes.ok;
+      dynamic returnData;
+      DocumentSnapshot codeSnapshot = await codes.doc(code).get();
+
+      if (!codeSnapshot.exists) {
+        return AuthCodes.codeNotFound;
+      }
+      Map<String, dynamic> codeData = codeSnapshot.data();
+      UserCredential result = await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
+      await DatabaseService(uid: code).incrementCodeUsage();
+      await DatabaseService(uid: result.user.uid).updateUserData(
+          firstName, lastName, codeData['school'], code, DateTime.now());
+      return UserData(
+          uid: result.user.uid,
+          firstName: firstName,
+          lastName: lastName,
+          school: School(uid: (codeData['school'] as DocumentReference).id),
+          usedCode: code,
+          createdAt: DateTime.now());
     } on FirebaseAuthException catch (e) {
       if (e.code == "email-already-in-use") {
         return AuthCodes.emailAlreadyUsed;
       } else {
+        print(e);
         return AuthCodes.error;
       }
     } catch (e) {
@@ -113,6 +113,35 @@ class FirebaseAuthService {
       await _auth.signOut();
     } catch (e) {
       print(e);
+    }
+  }
+
+  static Future<bool> resetPassword(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  static Future<AuthCodes> checkResetPasswordCode(
+      String code, String newPassword) async {
+    try {
+      await _auth.confirmPasswordReset(code: code, newPassword: newPassword);
+      return AuthCodes.ok;
+    } on FirebaseAuthException catch (e) {
+      if (e.code == "expired-action-code") {
+        return AuthCodes.passwordResetCodeExpired;
+      } else if (e.code == "invalid-action-code") {
+        return AuthCodes.passwordResetCodeInvalid;
+      } else if (e.code == "user-disabled") {
+        return AuthCodes.accountDisabled;
+      } else if (e.code == "user-not-found") {
+        return AuthCodes.accountNotFound;
+      } else {
+        return AuthCodes.error;
+      }
     }
   }
 }
