@@ -43,20 +43,11 @@ class _LoginState extends State<Login> {
 
   int secretCount = 0;
 
-  void checkResizing() {
-    if (!resizeToAvoidBottom) {
-      setState(() {
-        resizeToAvoidBottom = true;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         resizeToAvoidBottomInset: resizeToAvoidBottom,
         body: Form(
-            onChanged: () => checkResizing(),
             key: _passwordFormKey,
             child: Center(
                 child: SingleChildScrollView(
@@ -81,7 +72,6 @@ class _LoginState extends State<Login> {
                   Container(
                       width: MediaQuery.of(context).size.width / 1.3,
                       child: TextFormField(
-                        onTap: () => checkResizing(),
                         controller: _resetPasswordEmailController,
                         validator: (value) {
                           if (value.isEmpty)
@@ -104,7 +94,6 @@ class _LoginState extends State<Login> {
                   Container(
                       width: MediaQuery.of(context).size.width / 1.3,
                       child: TextFormField(
-                        onTap: () => checkResizing(),
                         controller: _passwordController,
                         validator: (value) {
                           if (value.isEmpty)
@@ -174,9 +163,6 @@ class _LoginState extends State<Login> {
                             showSlideDialog(
                                 context: context,
                                 child: ResetPasswordComponent());
-                            setState(() {
-                              resizeToAvoidBottom = false;
-                            });
                           },
                           style: ButtonStyle(
                             overlayColor: MaterialStateColor.resolveWith(
