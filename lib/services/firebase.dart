@@ -76,7 +76,6 @@ class FirebaseAuthService {
   static Future<dynamic> register(String firstName, String lastName,
       String email, String password, String code) async {
     try {
-      dynamic returnData;
       DocumentSnapshot codeSnapshot = await codes.doc(code).get();
 
       if (!codeSnapshot.exists) {

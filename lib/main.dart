@@ -5,7 +5,6 @@ import 'package:myschool/pages/welcome.dart';
 import 'package:myschool/services/firebase.dart';
 //import 'components/login.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
