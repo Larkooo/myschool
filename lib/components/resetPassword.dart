@@ -29,7 +29,7 @@ class _ResetPasswordComponentState extends State<ResetPasswordComponent> {
             children: <Widget>[
               SizedBox(height: 35),
               Text(
-                'Vous avez oublier votre mot de passe ?',
+                'Vous avez oublié votre mot de passe ?',
                 style: TextStyle(fontSize: 20),
               ),
               SizedBox(height: 35),

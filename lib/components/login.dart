@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
-import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:myschool/components/register.dart';
 import 'package:myschool/components/resetPassword.dart';
 import 'package:myschool/services/firebase.dart';
@@ -42,19 +41,14 @@ class _LoginState extends State<Login> {
 
   bool resizeToAvoidBottom = true;
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    KeyboardVisibilityNotification().addNewListener(
-      onChange: (bool visible) {
-        if (visible && !resizeToAvoidBottom) {
-          setState(() {
-            resizeToAvoidBottom = true;
-          });
-        }
-      },
-    );
+  int secretCount = 0;
+
+  void checkResizing() {
+    if (!resizeToAvoidBottom) {
+      setState(() {
+        resizeToAvoidBottom = true;
+      });
+    }
   }
 
   @override
@@ -62,20 +56,32 @@ class _LoginState extends State<Login> {
     return Scaffold(
         resizeToAvoidBottomInset: resizeToAvoidBottom,
         body: Form(
+            onChanged: () => checkResizing(),
             key: _passwordFormKey,
             child: Center(
                 child: SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset(
-                    "assets/logo.png",
-                    width: 100,
-                    height: 100,
+                  GestureDetector(
+                    onTap: () {
+                      secretCount++;
+                      if (secretCount > 6) {
+                        Alert(message: "Fait avec amour par Nasr AA. Djeghmoum")
+                            .show();
+                        secretCount = 0;
+                      }
+                    },
+                    child: Image.asset(
+                      "assets/logo.png",
+                      width: 100,
+                      height: 100,
+                    ),
                   ),
                   Container(
                       width: MediaQuery.of(context).size.width / 1.3,
                       child: TextFormField(
+                        onTap: () => checkResizing(),
                         controller: _resetPasswordEmailController,
                         validator: (value) {
                           if (value.isEmpty)
@@ -98,6 +104,7 @@ class _LoginState extends State<Login> {
                   Container(
                       width: MediaQuery.of(context).size.width / 1.3,
                       child: TextFormField(
+                        onTap: () => checkResizing(),
                         controller: _passwordController,
                         validator: (value) {
                           if (value.isEmpty)
