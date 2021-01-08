@@ -25,18 +25,30 @@ class _LoginState extends State<Login> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
 
+  TextEditingController _resetPasswordEmailController = TextEditingController();
+
+  final RoundedLoadingButtonController _resetPasswordBtnController =
+      new RoundedLoadingButtonController();
+
+  final _passwordFormKey = GlobalKey<FormState>();
+
+  String confirmMessage = "";
+
   final RoundedLoadingButtonController _btnController =
       new RoundedLoadingButtonController();
 
   final _formKey = GlobalKey<FormState>();
+
+  bool resizeToAvoidBottom = true;
 
   int secretCount = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: resizeToAvoidBottom,
         body: Form(
-            key: _formKey,
+            key: _passwordFormKey,
             child: Center(
                 child: SingleChildScrollView(
               child: Column(
@@ -60,7 +72,7 @@ class _LoginState extends State<Login> {
                   Container(
                       width: MediaQuery.of(context).size.width / 1.3,
                       child: TextFormField(
-                        controller: _emailController,
+                        controller: _resetPasswordEmailController,
                         validator: (value) {
                           if (value.isEmpty)
                             return 'Ce champs est obligatoire.';
@@ -104,24 +116,25 @@ class _LoginState extends State<Login> {
                   SizedBox(
                     height: 10,
                   ),
-                  mainBlueLoadingBtn(
-                      context, _btnController, Text("Se connecter"), () async {
+                  mainBlueLoadingBtn(context, _resetPasswordBtnController,
+                      Text("Se connecter"), () async {
                     if (_formKey.currentState.validate()) {
-                      _btnController.start();
+                      _resetPasswordBtnController.start();
                       dynamic loginStatus = await FirebaseAuthService.signIn(
-                          _emailController.text, _emailController.text);
+                          _resetPasswordEmailController.text,
+                          _passwordController.text);
                       if (loginStatus is User) {
                         Alert(message: "Connecté").show();
-                        _btnController.success();
+                        _resetPasswordBtnController.success();
                       } else if (loginStatus == AuthCodes.accountNotFound) {
                         Alert(message: "Compte non existant").show();
-                        _btnController.stop();
+                        _resetPasswordBtnController.stop();
                       } else if (loginStatus == AuthCodes.badPassword) {
                         Alert(message: "Mot de passe invalide").show();
-                        _btnController.stop();
+                        _resetPasswordBtnController.stop();
                       } else {
                         Alert(message: "Erreur").show();
-                        _btnController.stop();
+                        _resetPasswordBtnController.stop();
                       }
                     }
                   }),
