@@ -1,31 +1,68 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:myschool/components/register.dart';
 import 'package:myschool/components/resetPassword.dart';
-import 'package:myschool/components/resetPasswordWrapper.dart';
 import 'package:myschool/services/firebase.dart';
 import 'package:myschool/shared/constants.dart';
 import 'package:password_validator/password_validator.dart';
 import 'package:alert/alert.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+import 'package:slide_popup_dialog/slide_popup_dialog.dart';
 
 import '../main.dart';
 
-class Login extends StatelessWidget {
+class Login extends StatefulWidget {
+  final Stream<int> stream;
+
+  Login({this.stream});
+
+  @override
+  _LoginState createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+
+  TextEditingController _resetPasswordEmailController = TextEditingController();
+
+  final RoundedLoadingButtonController _resetPasswordBtnController =
+      new RoundedLoadingButtonController();
+
+  final _passwordFormKey = GlobalKey<FormState>();
+
+  String confirmMessage = "";
 
   final RoundedLoadingButtonController _btnController =
       new RoundedLoadingButtonController();
 
   final _formKey = GlobalKey<FormState>();
 
+  bool resizeToAvoidBottom = true;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    KeyboardVisibilityNotification().addNewListener(
+      onChange: (bool visible) {
+        if (visible && !resizeToAvoidBottom) {
+          setState(() {
+            resizeToAvoidBottom = true;
+          });
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: resizeToAvoidBottom,
         body: Form(
-            key: _formKey,
+            key: _passwordFormKey,
             child: Center(
                 child: SingleChildScrollView(
               child: Column(
@@ -39,7 +76,7 @@ class Login extends StatelessWidget {
                   Container(
                       width: MediaQuery.of(context).size.width / 1.3,
                       child: TextFormField(
-                        controller: _emailController,
+                        controller: _resetPasswordEmailController,
                         validator: (value) {
                           if (value.isEmpty)
                             return 'Ce champs est obligatoire.';
@@ -83,57 +120,28 @@ class Login extends StatelessWidget {
                   SizedBox(
                     height: 10,
                   ),
-                  mainBlueLoadingBtn(
-                      context, _btnController, Text("Se connecter"), () async {
+                  mainBlueLoadingBtn(context, _resetPasswordBtnController,
+                      Text("Se connecter"), () async {
                     if (_formKey.currentState.validate()) {
-                      _btnController.start();
+                      _resetPasswordBtnController.start();
                       dynamic loginStatus = await FirebaseAuthService.signIn(
-                          _emailController.text, _passwordController.text);
+                          _resetPasswordEmailController.text,
+                          _passwordController.text);
                       if (loginStatus is User) {
                         Alert(message: "Connecté").show();
-                        _btnController.success();
+                        _resetPasswordBtnController.success();
                       } else if (loginStatus == AuthCodes.accountNotFound) {
                         Alert(message: "Compte non existant").show();
-                        _btnController.stop();
+                        _resetPasswordBtnController.stop();
                       } else if (loginStatus == AuthCodes.badPassword) {
                         Alert(message: "Mot de passe invalide").show();
-                        _btnController.stop();
+                        _resetPasswordBtnController.stop();
                       } else {
                         Alert(message: "Erreur").show();
-                        _btnController.stop();
+                        _resetPasswordBtnController.stop();
                       }
                     }
                   }),
-                  //Container(
-                  //    width: MediaQuery.of(context).size.width / 2.2,
-                  //    height: 50,
-                  //    decoration: mainBlueBtnDec,
-                  //    child: MaterialButton(
-                  //      shape: RoundedRectangleBorder(
-                  //          borderRadius: BorderRadius.circular(15)),
-                  //      onPressed: () async {
-                  //        if (_formKey.currentState.validate()) {
-                  //          dynamic loginStatus =
-                  //              await FirebaseAuthService.signIn(
-                  //                  _emailController.text,
-                  //                  _passwordController.text);
-                  //          if (loginStatus is User) {
-                  //            Alert(message: "Connecté").show();
-                  //          } else if (loginStatus ==
-                  //              AuthCodes.accountNotFound) {
-                  //            Alert(message: "Compte non existant").show();
-                  //          } else if (loginStatus == AuthCodes.badPassword) {
-                  //            Alert(message: "Mot de passe invalide").show();
-                  //          } else {
-                  //            Alert(message: "Erreur").show();
-                  //          }
-                  //        }
-                  //      },
-                  //      child: Text(
-                  //        "Se connecter",
-                  //        style: TextStyle(color: Colors.white),
-                  //      ),
-                  //    )),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -155,11 +163,14 @@ class Login extends StatelessWidget {
                         width: 5,
                       ),
                       TextButton(
-                          onPressed: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      ResetPasswordComponent())),
+                          onPressed: () {
+                            showSlideDialog(
+                                context: context,
+                                child: ResetPasswordComponent());
+                            setState(() {
+                              resizeToAvoidBottom = false;
+                            });
+                          },
                           style: ButtonStyle(
                             overlayColor: MaterialStateColor.resolveWith(
                                 (states) => Colors.transparent),

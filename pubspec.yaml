@@ -33,6 +33,7 @@ dependencies:
   alert:
   rounded_loading_button: 
   flutter_native_splash: ^0.2.0
+  keyboard_visibility:
 
 
   # The following adds the Cupertino Icons font to your application.

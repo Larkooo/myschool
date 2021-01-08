@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:myschool/models/Code.dart';
 import 'package:myschool/models/school.dart';
 import 'package:myschool/models/user.dart';
 
@@ -40,6 +41,21 @@ class DatabaseService {
         createdAt: data['createdAt']);
   }
 
+  School _schoolFromSnapshot(DocumentSnapshot snapshot) {
+    Map<String, dynamic> data = snapshot.data();
+    return School(uid: uid, name: data['name']);
+  }
+
+  Code _codeFromSnapshot(DocumentSnapshot snapshot) {
+    Map<String, dynamic> data = snapshot.data();
+    return Code(
+        uid: data['uid'],
+        school: School(uid: (data['school'] as DocumentReference).id),
+        type: data['type'],
+        usedTimes: data['usedTimes'],
+        createdAt: data['createdAt']);
+  }
+
   // Users stream
   Stream<QuerySnapshot> get users {
     return usersCollection.snapshots();
@@ -61,12 +77,12 @@ class DatabaseService {
   }
 
   // Code doc stream
-  Stream<DocumentSnapshot> get code {
-    return codesCollection.doc(uid).snapshots();
+  Stream<Code> get code {
+    return codesCollection.doc(uid).snapshots().map(_codeFromSnapshot);
   }
 
   // School doc stream
-  Stream<DocumentSnapshot> get school {
-    return schoolsCollection.doc(uid).snapshots();
+  Stream<School> get school {
+    return schoolsCollection.doc(uid).snapshots().map(_schoolFromSnapshot);
   }
 }

@@ -1,5 +1,5 @@
 class School {
   final String uid;
-  //final String name;
-  School({this.uid});
+  final String name;
+  School({this.uid, this.name});
 }
