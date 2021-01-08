@@ -58,7 +58,7 @@ class _LoginState extends State<Login> {
                     onTap: () {
                       secretCount++;
                       if (secretCount > 6) {
-                        Alert(message: "Fait avec amour par Nasr AA. Djeghmoum")
+                        Alert(message: "Fait avec meow par Nasr AA. Djeghmoum")
                             .show();
                         secretCount = 0;
                       }
