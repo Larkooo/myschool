@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:myschool/components/login.dart';
 import 'package:myschool/models/user.dart';
-import 'package:myschool/pages/home.dart';
+import 'package:myschool/pages/homeSkeleton.dart';
 import 'package:myschool/services/firebase.dart';
 import 'package:myschool/shared/constants.dart';
 import 'package:password_validator/password_validator.dart';

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:myschool/models/Code.dart';
+import 'package:myschool/models/announcement.dart';
 import 'package:myschool/models/school.dart';
 import 'package:myschool/models/user.dart';
 
@@ -43,7 +44,18 @@ class DatabaseService {
 
   School _schoolFromSnapshot(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data();
-    return School(uid: uid, name: data['name']);
+    return School(
+        uid: uid,
+        name: data['name'],
+        annoucements: (data['announcements'] as Map).map((id, announcement) =>
+            MapEntry(
+                id,
+                Announcement(
+                    uid: id,
+                    title: announcement['title'],
+                    description: announcement['description'],
+                    createdAt: announcement['createdAt'],
+                    author: announcement['author']))));
   }
 
   Code _codeFromSnapshot(DocumentSnapshot snapshot) {

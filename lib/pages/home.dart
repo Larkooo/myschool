@@ -1,10 +1,10 @@
-import 'package:alert/alert.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:slide_popup_dialog/slide_popup_dialog.dart';
+import 'package:myschool/models/user.dart';
 
 class Home extends StatefulWidget {
-  Home({Key key}) : super(key: key);
+  final UserData user;
+  Home({this.user});
 
   @override
   _HomeState createState() => _HomeState();
@@ -12,31 +12,14 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    //showSlideDialog(context: context, child: Text("Testing welcome message"));
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: FlatButton(
-          child: Text("sign out"),
-          onPressed: () {
-            FirebaseAuth.instance.signOut();
-            Alert(message: "Déconnecté").show();
-          },
-        ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Accueil"),
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Annonces"),
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Calendrier")
-        ],
-      ),
-    );
+    return Center(
+        child: Column(
+      children: <Widget>[
+        Container(
+          child: Text("Accueil"),
+        )
+      ],
+    ));
   }
 }

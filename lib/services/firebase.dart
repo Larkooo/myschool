@@ -24,29 +24,19 @@ class FirebaseAuthService {
   static final CollectionReference codes =
       FirebaseFirestore.instance.collection('codes');
 
-  static Future<UserData> userToUserData(User user,
-      [Map<String, dynamic> data]) async {
-    if (data.isEmpty) {
-      codes.doc(user.uid).get().then((doc) async {
-        if (!doc.exists) {
-          return null;
-        }
-        Map<String, dynamic> data = doc.data();
-        return UserData(
-            uid: user.uid,
-            firstName: data['firstName'],
-            lastName: data['lastName'],
-            school: School(uid: doc.get('school')['id']),
-            createdAt: data['createdAt']);
-      });
-    } else {
+  static Future<UserData> userToUserData(User user) async {
+    codes.doc(user.uid).get().then((doc) async {
+      if (!doc.exists) {
+        return null;
+      }
+      Map<String, dynamic> data = doc.data();
       return UserData(
           uid: user.uid,
           firstName: data['firstName'],
           lastName: data['lastName'],
-          school: School(uid: data['id']),
+          school: School(uid: doc.get('school')['id']),
           createdAt: data['createdAt']);
-    }
+    });
   }
 
   static Stream<User> get user {
