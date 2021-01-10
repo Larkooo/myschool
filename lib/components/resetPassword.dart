@@ -54,8 +54,7 @@ class _ResetPasswordComponentState extends State<ResetPasswordComponent> {
               SizedBox(
                 height: 35,
               ),
-              mainBlueLoadingBtn(context, _btnController, Text("Envoyer"),
-                  () async {
+              mainBlueLoadingBtn(context, _btnController, "Envoyer", () async {
                 if (formKey.currentState.validate()) {
                   _btnController.start();
                   bool emailSent = await FirebaseAuthService.resetPassword(

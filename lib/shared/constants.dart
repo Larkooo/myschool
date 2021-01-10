@@ -5,10 +5,20 @@ import 'package:rounded_loading_button/rounded_loading_button.dart';
 final BoxDecoration mainBlueBtnDec =
     BoxDecoration(borderRadius: BorderRadius.circular(15), color: Colors.blue);
 
+TextButton textButton(BuildContext context, String text, Function onPressed) {
+  return TextButton(
+      onPressed: onPressed,
+      style: ButtonStyle(
+          overlayColor:
+              MaterialStateColor.resolveWith((states) => Colors.transparent)),
+      child:
+          Text(text, style: TextStyle(color: Colors.blue[400], fontSize: 13)));
+}
+
 RoundedLoadingButton mainBlueLoadingBtn(
     BuildContext context,
     RoundedLoadingButtonController controller,
-    Widget child,
+    String text,
     Function onPressed) {
   return RoundedLoadingButton(
       width: MediaQuery.of(context).size.width / 2.2,
@@ -16,6 +26,9 @@ RoundedLoadingButton mainBlueLoadingBtn(
       animateOnTap: false,
       controller: controller,
       borderRadius: 15,
-      child: child,
+      child: Text(
+        text,
+        style: TextStyle(color: Colors.white),
+      ),
       onPressed: onPressed);
 }

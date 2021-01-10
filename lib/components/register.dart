@@ -148,8 +148,7 @@ class Register extends StatelessWidget {
                   SizedBox(
                     height: 10,
                   ),
-                  mainBlueLoadingBtn(
-                      context, _btnController, Text("Créer un compte"),
+                  mainBlueLoadingBtn(context, _btnController, "Créer un compte",
                       () async {
                     if (_formKey.currentState.validate()) {
                       _btnController.start();
@@ -198,16 +197,8 @@ class Register extends StatelessWidget {
                       }
                     }
                   }),
-                  TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      style: ButtonStyle(
-                        overlayColor: MaterialStateColor.resolveWith(
-                            (states) => Colors.transparent),
-                      ),
-                      child: Text("Se connecter",
-                          style: TextStyle(
-                              color: isDark ? Colors.blue[200] : Colors.black,
-                              fontSize: 13))),
+                  textButton(
+                      context, "Se connecter", () => Navigator.pop(context))
                 ],
               ),
             ))));

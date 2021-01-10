@@ -103,8 +103,8 @@ class _LoginState extends State<Login> {
                   SizedBox(
                     height: 10,
                   ),
-                  mainBlueLoadingBtn(
-                      context, _btnController, Text("Se connecter"), () async {
+                  mainBlueLoadingBtn(context, _btnController, "Se connecter",
+                      () async {
                     if (_formKey.currentState.validate()) {
                       _btnController.start();
                       dynamic loginStatus = await FirebaseAuthService.signIn(
@@ -127,38 +127,20 @@ class _LoginState extends State<Login> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      TextButton(
-                          onPressed: () => Navigator.push(
+                      textButton(
+                          context,
+                          "Créer un compte",
+                          () => Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => Register())),
-                          style: ButtonStyle(
-                            overlayColor: MaterialStateColor.resolveWith(
-                                (states) => Colors.transparent),
-                          ),
-                          child: Text("Créer un compte",
-                              style: TextStyle(
-                                  color:
-                                      isDark ? Colors.blue[200] : Colors.black,
-                                  fontSize: 13))),
+                                  builder: (context) => Register()))),
                       SizedBox(
                         width: 5,
                       ),
-                      TextButton(
-                          onPressed: () {
-                            showSlideDialog(
-                                context: context,
-                                child: ResetPasswordComponent());
-                          },
-                          style: ButtonStyle(
-                            overlayColor: MaterialStateColor.resolveWith(
-                                (states) => Colors.transparent),
-                          ),
-                          child: Text("Mot de passe oublié ?",
-                              style: TextStyle(
-                                  color:
-                                      isDark ? Colors.blue[200] : Colors.black,
-                                  fontSize: 13)))
+                      textButton(context, "Mot de passe oublié ? ", () {
+                        showSlideDialog(
+                            context: context, child: ResetPasswordComponent());
+                      })
                     ],
                   )
                 ],

@@ -84,7 +84,7 @@ class _ResetPasswordNextComponentState
                   SizedBox(
                     height: 10,
                   ),
-                  mainBlueLoadingBtn(context, _btnController, Text("Envoyer"),
+                  mainBlueLoadingBtn(context, _btnController, "Envoyer",
                       () async {
                     if (_formKey.currentState.validate()) {
                       _btnController.start();
