@@ -24,8 +24,8 @@ class FirebaseAuthService {
   static final CollectionReference codes =
       FirebaseFirestore.instance.collection('codes');
 
-  static Future<UserData> userToUserData(User user) async {
-    codes.doc(user.uid).get().then((doc) async {
+  static Future<UserData> userToUserData(User user) {
+    users.doc(user.uid).get().then((doc) {
       if (!doc.exists) {
         return null;
       }

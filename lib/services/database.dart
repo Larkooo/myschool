@@ -39,11 +39,12 @@ class DatabaseService {
         lastName: data['lastName'],
         usedCode: data['usedCode'],
         school: School(uid: data['school'].id),
-        createdAt: data['createdAt']);
+        createdAt: (data['createdAt'] as Timestamp).toDate());
   }
 
   School _schoolFromSnapshot(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data();
+    print(snapshot.reference.collection('announcements').id);
     return School(
         uid: uid,
         name: data['name'],
@@ -54,7 +55,8 @@ class DatabaseService {
                     uid: id,
                     title: announcement['title'],
                     description: announcement['description'],
-                    createdAt: announcement['createdAt'],
+                    createdAt:
+                        (announcement['createdAt'] as Timestamp).toDate(),
                     author: announcement['author']))));
   }
 

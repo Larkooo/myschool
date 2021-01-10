@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:myschool/components/login.dart';
+import 'package:myschool/models/user.dart';
 import 'package:myschool/pages/homeSkeleton.dart';
+import 'package:myschool/services/firebase.dart';
 import 'package:provider/provider.dart';
 
 class Welcome extends StatelessWidget {
