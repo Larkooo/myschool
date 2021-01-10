@@ -38,7 +38,6 @@ class _LoginState extends State<Login> {
         body: Form(
             key: _formKey,
             child: Center(
-                child: SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -164,6 +163,6 @@ class _LoginState extends State<Login> {
                   )
                 ],
               ),
-            ))));
+            )));
   }
 }
