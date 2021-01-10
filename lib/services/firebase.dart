@@ -43,6 +43,17 @@ class FirebaseAuthService {
     return _auth.authStateChanges();
   }
 
+  static bool deleteUser(User user) {
+    try {
+      user.delete();
+      users.doc(user.uid).delete();
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
   static Future<dynamic> signIn(String email, String password) async {
     try {
       UserCredential result = await _auth.signInWithEmailAndPassword(

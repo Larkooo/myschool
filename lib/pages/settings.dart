@@ -4,6 +4,7 @@ import 'package:myschool/components/resetPassword.dart';
 import 'package:myschool/models/school.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/services/database.dart';
+import 'package:myschool/services/firebase.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:provider/provider.dart';
 import 'package:slide_popup_dialog/slide_popup_dialog.dart';
@@ -91,7 +92,61 @@ class _SettingsState extends State<Settings> {
                               ],
                             );
                           }
-                        }))
+                        })),
+                CustomSection(
+                    child: SizedBox(
+                  height: 10,
+                )),
+                SettingsSection(
+                  title: "Compte",
+                  tiles: [
+                    SettingsTile(
+                      leading: Icon(Icons.close),
+                      title: "Supprimer votre compte",
+                      subtitle: "Cette action est irréversible!",
+                      onPressed: (context) {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                content: Text(
+                                    "Voulez vous vraiment supprimer votre compte?"),
+                                actions: [
+                                  FlatButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: Text("Non")),
+                                  FlatButton(
+                                      onPressed: () {
+                                        bool deleted =
+                                            FirebaseAuthService.deleteUser(
+                                                user);
+                                        Navigator.pop(context);
+                                        if (!deleted) {
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return AlertDialog(
+                                                  content: Text(
+                                                      "Cette action est sensible et requiert que vous vous ré-authentifier, Déconnectez et reconnectez vous pour procéder."),
+                                                  actions: [
+                                                    FlatButton(
+                                                        onPressed: () =>
+                                                            Navigator.pop(
+                                                                context),
+                                                        child: Text("Ok"))
+                                                  ],
+                                                );
+                                              });
+                                        }
+                                      },
+                                      child: Text("Oui")),
+                                ],
+                              );
+                            });
+                      },
+                    )
+                  ],
+                )
               ],
             );
           } else {
