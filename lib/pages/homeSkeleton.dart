@@ -1,3 +1,4 @@
+import 'package:alert/alert.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:myschool/models/user.dart';
@@ -37,6 +38,36 @@ class _HomeState extends State<HomeSkeleton> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(),
+      drawer: Drawer(
+        child: ListView(
+          children: <Widget>[
+            DrawerHeader(
+              child: Text(
+                'Bonjour, meow.',
+                style: TextStyle(
+                  fontSize: 20.0,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: Text('Parametres'),
+              trailing: Icon(Icons.settings),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Text('Deconnexion'),
+              trailing: Icon(Icons.settings),
+              onTap: () {
+                FirebaseAuth.instance.signOut();
+                Alert(message: "Déconnecté").show();
+              },
+            ),
+          ],
+        ),
+      ),
       body: _widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
