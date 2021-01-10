@@ -29,7 +29,7 @@ class _ResetPasswordComponentState extends State<ResetPasswordComponent> {
             children: <Widget>[
               SizedBox(height: 35),
               Text(
-                'Vous avez oublié votre mot de passe ?',
+                'Vous avez oublié votre mot de passe?',
                 style: TextStyle(fontSize: 20),
               ),
               SizedBox(height: 35),
@@ -48,7 +48,7 @@ class _ResetPasswordComponentState extends State<ResetPasswordComponent> {
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'Courriel',
-                      hintText: "example@domain.com",
+                      hintText: "exemple@domain.com",
                     ),
                   )),
               SizedBox(
@@ -63,12 +63,12 @@ class _ResetPasswordComponentState extends State<ResetPasswordComponent> {
                     _btnController.success();
                     setState(() {
                       confirmMessage =
-                          "Un courriel pour réinitialiser votre mot de passe vous a été envoyé";
+                          "Un courriel pour réinitialiser votre mot de passe vous a été envoyé.";
                     });
                     //widget.toggleView();
                   } else {
                     _btnController.stop();
-                    Alert(message: "Une erreur est survenue").show();
+                    Alert(message: "Une erreur est survenue!").show();
                   }
                 }
               }),

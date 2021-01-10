@@ -41,7 +41,9 @@ class _SettingsState extends State<Settings> {
   Widget build(BuildContext context) {
     final user = context.watch<User>();
     return Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(
+          title: Text("Paramètres"),
+        ),
         body: StreamBuilder(
             stream: DatabaseService(uid: user.uid).user,
             builder: (context, snapshot) {
@@ -131,7 +133,7 @@ class _SettingsState extends State<Settings> {
                                             title: Text(
                                                 "Taille de l'image trop grosse"),
                                             content: Text(
-                                                "Votre image doit faire maximum 2 mégabytes"),
+                                                "Votre image doit faire maximum 2 MO"),
                                             actions: [
                                               FlatButton(
                                                   onPressed: () =>
@@ -187,7 +189,7 @@ class _SettingsState extends State<Settings> {
                       title: "Compte",
                       tiles: [
                         SettingsTile(
-                          leading: Icon(Icons.close),
+                          leading: Icon(Icons.delete_forever),
                           title: "Supprimer votre compte",
                           subtitle: "Cette action est irréversible!",
                           onPressed: (context) {
