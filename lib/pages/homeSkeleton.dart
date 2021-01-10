@@ -40,6 +40,9 @@ class _HomeState extends State<HomeSkeleton> {
     });
   }
 
+  bool drawerStartedExpansion = false;
+  bool drawerExpanded = false;
+
   @override
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User>();
@@ -53,16 +56,52 @@ class _HomeState extends State<HomeSkeleton> {
               drawer: Drawer(
                 child: ListView(
                   children: <Widget>[
-                    DrawerHeader(
-                      child: Text(
-                        'Bonjour, ${userData.firstName}',
-                        style: TextStyle(
-                          fontSize: 20.0,
-                        ),
-                      ),
-                    ),
+                    AnimatedContainer(
+                        duration: const Duration(milliseconds: 120),
+                        onEnd: () {
+                          setState(() {
+                            drawerExpanded = !drawerExpanded;
+                          });
+                        },
+                        height: drawerStartedExpansion ? 120 : 65,
+                        child: Material(
+                            child: InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    drawerStartedExpansion =
+                                        !drawerStartedExpansion;
+                                  });
+                                },
+                                child: DrawerHeader(
+                                    child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            'Bonjour, ${userData.firstName}',
+                                            style: TextStyle(
+                                              fontSize: 20.0,
+                                            ),
+                                          ),
+                                          Icon(drawerStartedExpansion
+                                              ? Icons.arrow_drop_up
+                                              : Icons.arrow_drop_down)
+                                        ],
+                                      ),
+                                      //if (drawerExpanded)
+                                      //  SizedBox(
+                                      //    height: 10,
+                                      //  ),
+                                      if (drawerExpanded) Text("meow"),
+                                    ]))))),
                     ListTile(
-                      leading: Text('Parametres'),
+                      leading: Text('Paramètres'),
                       trailing: Icon(Icons.settings),
                       onTap: () {
                         Navigator.pop(context);
@@ -73,7 +112,7 @@ class _HomeState extends State<HomeSkeleton> {
                       },
                     ),
                     ListTile(
-                      leading: Text('Deconnexion'),
+                      leading: Text('Déconnexion'),
                       trailing: Icon(Icons.logout),
                       onTap: () {
                         FirebaseAuth.instance.signOut();
