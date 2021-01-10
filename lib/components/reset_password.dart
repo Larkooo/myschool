@@ -1,7 +1,7 @@
 import 'package:alert/alert.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:myschool/services/firebase.dart';
+import 'package:myschool/services/firebase_auth_service.dart';
 import 'package:myschool/shared/constants.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 

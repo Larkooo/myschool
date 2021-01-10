@@ -26,15 +26,18 @@ dependencies:
   firebase_core: "^0.5.3"
   firebase_auth: "^0.18.4+1"
   cloud_firestore: "^0.14.4"
+  firebase_storage: "^5.2.0"
   email_validator:
   password_validator:
   provider:
   slide_popup_dialog:
   alert:
   rounded_loading_button: 
-  flutter_native_splash: ^0.2.0
+  flutter_native_splash: 
   settings_ui:
-  date_format:
+  intl:
+  image_picker:
+  image_crop_new:
 
 
   # The following adds the Cupertino Icons font to your application.

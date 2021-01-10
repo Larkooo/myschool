@@ -1,9 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:date_format/date_format.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:myschool/models/announcement.dart';
-import 'package:myschool/models/school.dart';
+import 'package:intl/intl.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/services/database.dart';
 import 'package:provider/provider.dart';
@@ -57,10 +55,11 @@ class _AnnouncementsState extends State<Announcements> {
                                   SizedBox(
                                     width: 5,
                                   ),
-                                  Text(formatDate(
-                                      (announcement['createdAt'] as Timestamp)
-                                          .toDate(),
-                                      ["Posté le ", dd, " ", MM, " ", yyyy])),
+                                  Text("Posté le " +
+                                      DateFormat.yMMMMEEEEd().format(
+                                          (announcement['createdAt']
+                                                  as Timestamp)
+                                              .toDate())),
                                 ],
                               ),
                               SizedBox(

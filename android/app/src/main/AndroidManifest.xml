@@ -8,7 +8,12 @@
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:label="MySchool"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:requestLegacyExternalStorage="true">
+        <!--<activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>-->
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
