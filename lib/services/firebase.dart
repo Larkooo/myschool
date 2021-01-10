@@ -43,12 +43,12 @@ class FirebaseAuthService {
     return _auth.authStateChanges();
   }
 
-  static bool deleteUser(User user) {
+  static Future<bool> deleteUser(User user) async {
     try {
-      user.delete();
-      users.doc(user.uid).delete();
+      await user.delete();
+      await users.doc(user.uid).delete();
       return true;
-    } catch (e) {
+    } on FirebaseAuthException catch (e) {
       print(e);
       return false;
     }
