@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:myschool/models/user.dart';
 
 class Calendar extends StatefulWidget {
-  final UserData user;
-  Calendar({this.user});
+  //final UserData user;
+  //Calendar({this.user});
 
   @override
   _CalendarState createState() => _CalendarState();

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:myschool/models/user.dart';
 
 class Home extends StatefulWidget {
-  final UserData user;
-  Home({this.user});
+  //final UserData user;
+  //Home({this.user});
 
   @override
   _HomeState createState() => _HomeState();

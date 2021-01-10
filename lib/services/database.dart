@@ -44,20 +44,21 @@ class DatabaseService {
 
   School _schoolFromSnapshot(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data();
-    print(snapshot.reference.collection('announcements').id);
+    //print(snapshot.reference.collection('announcements').id);
     return School(
-        uid: uid,
-        name: data['name'],
-        annoucements: (data['announcements'] as Map).map((id, announcement) =>
-            MapEntry(
-                id,
-                Announcement(
-                    uid: id,
-                    title: announcement['title'],
-                    description: announcement['description'],
-                    createdAt:
-                        (announcement['createdAt'] as Timestamp).toDate(),
-                    author: announcement['author']))));
+      uid: uid,
+      name: data['name'],
+      //annoucements: (data['announcements'] as Map).map((id, announcement) =>
+      //    MapEntry(
+      //        id,
+      //        Announcement(
+      //            uid: id,
+      //            title: announcement['title'],
+      //            description: announcement['description'],
+      //            createdAt:
+      //                (announcement['createdAt'] as Timestamp).toDate(),
+      //            author: announcement['author'])))
+    );
   }
 
   Code _codeFromSnapshot(DocumentSnapshot snapshot) {
@@ -83,6 +84,11 @@ class DatabaseService {
   // Schools stream
   Stream<QuerySnapshot> get schools {
     return schoolsCollection.snapshots();
+  }
+
+  // School announcements
+  Stream<QuerySnapshot> get announcements {
+    return schoolsCollection.doc(uid).collection('announcements').snapshots();
   }
 
   // User doc stream

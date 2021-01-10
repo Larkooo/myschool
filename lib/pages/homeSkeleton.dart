@@ -2,6 +2,7 @@ import 'package:alert/alert.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:myschool/models/user.dart';
+import 'package:myschool/pages/settings.dart';
 import 'package:myschool/services/database.dart';
 import 'home.dart';
 import 'calendar.dart';
@@ -28,9 +29,9 @@ class _HomeState extends State<HomeSkeleton> {
 
   int _selectedIndex = 0;
   static List<Widget> _widgetOptions = <Widget>[
-    Home(user: userData),
-    Announcements(user: userData),
-    Calendar(user: userData)
+    Home(),
+    Announcements(),
+    Calendar()
   ];
 
   void _onItemTapped(int index) {
@@ -65,6 +66,10 @@ class _HomeState extends State<HomeSkeleton> {
                       trailing: Icon(Icons.settings),
                       onTap: () {
                         Navigator.pop(context);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Settings()));
                       },
                     ),
                     ListTile(
