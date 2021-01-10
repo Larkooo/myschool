@@ -40,7 +40,7 @@ class _HomeState extends State<HomeSkeleton> {
     });
   }
 
-  bool drawerStartedExpansion = false;
+  bool drawerStartedAnimation = false;
   bool drawerExpanded = false;
 
   @override
@@ -63,13 +63,13 @@ class _HomeState extends State<HomeSkeleton> {
                             drawerExpanded = !drawerExpanded;
                           });
                         },
-                        height: drawerStartedExpansion ? 120 : 65,
+                        height: drawerStartedAnimation ? 120 : 65,
                         child: Material(
                             child: InkWell(
                                 onTap: () {
                                   setState(() {
-                                    drawerStartedExpansion =
-                                        !drawerStartedExpansion;
+                                    drawerStartedAnimation =
+                                        !drawerStartedAnimation;
                                   });
                                 },
                                 child: DrawerHeader(
@@ -89,16 +89,16 @@ class _HomeState extends State<HomeSkeleton> {
                                               fontSize: 20.0,
                                             ),
                                           ),
-                                          Icon(drawerStartedExpansion
+                                          Icon(drawerStartedAnimation
                                               ? Icons.arrow_drop_up
                                               : Icons.arrow_drop_down)
                                         ],
                                       ),
-                                      //if (drawerExpanded)
-                                      //  SizedBox(
-                                      //    height: 10,
-                                      //  ),
-                                      if (drawerExpanded) Text("meow"),
+                                      // Basically making sure the text is "removed" before the drawer is closed
+                                      if (drawerExpanded &&
+                                          (drawerExpanded &&
+                                              drawerStartedAnimation))
+                                        Text("meow"),
                                     ]))))),
                     ListTile(
                       leading: Text('Paramètres'),

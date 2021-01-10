@@ -34,8 +34,9 @@ class _AnnouncementsState extends State<Announcements> {
                       itemCount: announcements.docs.length,
                       itemBuilder: (context, index) {
                         var announcement =
-                            announcements.docs.toList()[index].data();
-                        //print(announcement);
+                            // Reversing it to get the latest added document
+                            List.from(announcements.docs.reversed)[index]
+                                .data();
                         return Card(
                             child: Column(
                                 mainAxisSize: MainAxisSize.min,
