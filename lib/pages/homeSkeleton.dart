@@ -59,7 +59,7 @@ class _HomeState extends State<HomeSkeleton> {
             ),
             ListTile(
               leading: Text('Deconnexion'),
-              trailing: Icon(Icons.settings),
+              trailing: Icon(Icons.logout),
               onTap: () {
                 FirebaseAuth.instance.signOut();
                 Alert(message: "Déconnecté").show();
