@@ -41,7 +41,9 @@ class _SettingsState extends State<Settings> {
   Widget build(BuildContext context) {
     final user = context.watch<User>();
     return Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(
+          title: Text("Paramètres"),
+        ),
         body: StreamBuilder(
             stream: DatabaseService(uid: user.uid).user,
             builder: (context, snapshot) {
