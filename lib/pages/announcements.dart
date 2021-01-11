@@ -31,10 +31,13 @@ class _AnnouncementsState extends State<Announcements> {
                   return ListView.builder(
                       itemCount: announcements.docs.length,
                       itemBuilder: (context, index) {
-                        var announcement =
+                        var announcementsData =
                             // Reversing it to get the latest added document
-                            List.from(announcements.docs.reversed)[index]
-                                .data();
+                            announcements.docs.toList();
+                        announcementsData.sort((a, b) => b
+                            .data()['createdAt']
+                            .compareTo(a.data()['createdAt']));
+                        var announcement = announcementsData[index];
                         return Card(
                             child: Column(
                                 mainAxisSize: MainAxisSize.min,
