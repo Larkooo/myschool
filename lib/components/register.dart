@@ -134,7 +134,7 @@ class Register extends StatelessWidget {
                         validator: (value) {
                           if (value.isEmpty)
                             return 'Ce champs est obligatoire.';
-                          if (value.length < 6) {
+                          if (value.length < 5) {
                             return "Code invalide.";
                           }
                           return null;
