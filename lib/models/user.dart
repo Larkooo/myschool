@@ -4,6 +4,7 @@ class UserData {
   final String uid;
   final String firstName;
   final String lastName;
+  final String avatarUrl;
   final String usedCode;
   final School school;
   final DateTime createdAt;
@@ -12,6 +13,7 @@ class UserData {
       {this.uid,
       this.firstName,
       this.lastName,
+      this.avatarUrl,
       this.usedCode,
       this.school,
       this.createdAt});

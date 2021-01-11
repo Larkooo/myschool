@@ -14,15 +14,21 @@ class DatabaseService {
   final CollectionReference codesCollection = _database.collection('codes');
   final CollectionReference schoolsCollection = _database.collection('schools');
 
-  Future updateUserData(String firstName, String lastName,
-      DocumentReference schoolReference, String usedCode, DateTime createdAt) {
-    return usersCollection.doc(uid).set({
-      "firstName": firstName,
-      "lastName": lastName,
-      "school": schoolReference,
-      "usedCode": usedCode,
-      "createdAt": DateTime.now()
-    });
+  Future updateUserData(
+      {String firstName,
+      String lastName,
+      DocumentReference schoolReference,
+      String avatarUrl,
+      String usedCode,
+      DateTime createdAt}) {
+    Map<String, dynamic> data = {};
+    if (firstName != null) data['firstName'] = firstName;
+    if (lastName != null) data['lastName'] = lastName;
+    if (schoolReference != null) data['schoolReference'] = schoolReference;
+    if (avatarUrl != null) data['avatarUrl'] = avatarUrl;
+    if (usedCode != null) data['usedCode'] = usedCode;
+    if (createdAt != null) data['createdAt'] = createdAt;
+    return usersCollection.doc(uid).update(data);
   }
 
   Future incrementCodeUsage() {
@@ -37,6 +43,7 @@ class DatabaseService {
         uid: uid,
         firstName: data['firstName'],
         lastName: data['lastName'],
+        avatarUrl: data['avatarUrl'],
         usedCode: data['usedCode'],
         school: School(uid: data['school'].id),
         createdAt: (data['createdAt'] as Timestamp).toDate());

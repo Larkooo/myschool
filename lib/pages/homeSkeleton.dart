@@ -1,4 +1,5 @@
 import 'package:alert/alert.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:myschool/models/user.dart';
@@ -40,6 +41,9 @@ class _HomeState extends State<HomeSkeleton> {
     });
   }
 
+  double drawerExpandedHeight = 120;
+  double drawerClosedHeight = 85;
+
   bool drawerStartedAnimation = false;
   bool drawerExpanded = false;
 
@@ -63,7 +67,9 @@ class _HomeState extends State<HomeSkeleton> {
                             drawerExpanded = !drawerExpanded;
                           });
                         },
-                        height: drawerStartedAnimation ? 120 : 65,
+                        height: drawerStartedAnimation
+                            ? drawerExpandedHeight
+                            : drawerClosedHeight,
                         child: Material(
                             child: InkWell(
                                 onTap: () {
@@ -74,21 +80,59 @@ class _HomeState extends State<HomeSkeleton> {
                                 },
                                 child: DrawerHeader(
                                     child: Column(
+                                        //mainAxisAlignment:
+                                        //    MainAxisAlignment.center,
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
                                       Row(
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                            CrossAxisAlignment.center,
                                         mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                                            MainAxisAlignment.start,
                                         children: [
+                                          ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(30),
+                                              child: Container(
+                                                  width: 50,
+                                                  height: 50,
+                                                  color: Colors.grey[800],
+                                                  child: userData.avatarUrl !=
+                                                          null
+                                                      // Caching the image so we dont have to request it everytime the app is reloaded
+                                                      ? CachedNetworkImage(
+                                                          imageUrl: userData
+                                                              .avatarUrl,
+                                                          progressIndicatorBuilder: (context,
+                                                                  url,
+                                                                  downloadProgress) =>
+                                                              CircularProgressIndicator(
+                                                                  value: downloadProgress
+                                                                      .progress),
+                                                          errorWidget: (context,
+                                                                  url, error) =>
+                                                              Icon(Icons.error),
+                                                          height: 50,
+                                                          width: 50,
+                                                        )
+                                                      : Icon(
+                                                          Icons.person,
+                                                          size: 30,
+                                                        ))),
+                                          SizedBox(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width /
+                                                35,
+                                          ),
                                           Text(
                                             'Bonjour, ${userData.firstName}',
                                             style: TextStyle(
                                               fontSize: 20.0,
                                             ),
                                           ),
+                                          Spacer(),
                                           Icon(drawerStartedAnimation
                                               ? Icons.arrow_drop_up
                                               : Icons.arrow_drop_down)

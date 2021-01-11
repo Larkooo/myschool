@@ -89,56 +89,96 @@ class _SettingsState extends State<Settings> {
                             File image = await getImage();
                             if (image != null) {
                               const twoMb = 2 * (1e+6);
-                              await image.length() < twoMb
-                                  ? showDialog(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                            title: Text(
-                                                "Êtes vous sur de vouloir choisir cette photo de profil ?"),
-                                            content: Crop(
-                                                aspectRatio: 1 / 1,
-                                                key: imgCropKey,
-                                                image: FileImage(image)),
-                                            actions: [
-                                              FlatButton(
+                              if (await image.length() > twoMb) {
+                                return showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                          title: Text(
+                                              "Taille de l'image trop grosse"),
+                                          content: Text(
+                                              "La taille de votre image doit faire au maximum 2 mégabytes"),
+                                          actions: [
+                                            FlatButton(
                                                 onPressed: () =>
                                                     Navigator.pop(context),
-                                                child: Text("Non"),
-                                              ),
-                                              FlatButton(
-                                                  onPressed: () async {
-                                                    final crop =
-                                                        imgCropKey.currentState;
-                                                    final croppedImage =
-                                                        await ImageCrop
-                                                            .cropImage(
-                                                                file: image,
-                                                                area:
-                                                                    crop.area);
+                                                child: Text("Ok"))
+                                          ],
+                                        ));
+                              }
+                              showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                        title: Text(
+                                            "Êtes vous sur de vouloir choisir cette photo de profil ?"),
+                                        content: Container(
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height /
+                                                2.4,
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width /
+                                                1.5,
+                                            child: Crop(
+                                                aspectRatio: 1 / 1,
+                                                key: imgCropKey,
+                                                image: FileImage(image))),
+                                        actions: [
+                                          FlatButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: Text("Non"),
+                                          ),
+                                          FlatButton(
+                                              onPressed: () async {
+                                                final crop =
+                                                    imgCropKey.currentState;
+                                                final croppedImage =
+                                                    await ImageCrop.cropImage(
+                                                        file: image,
+                                                        area: crop.area);
+                                                // Decoding image to get its dimensions
+                                                final decodedImage =
+                                                    await decodeImageFromList(
+                                                        croppedImage
+                                                            .readAsBytesSync());
+                                                // If dimensions below 256/256, cancel everything
+                                                if (decodedImage.width < 256 ||
+                                                    decodedImage.height < 256) {
+                                                  Navigator.pop(context);
+                                                  return showDialog(
+                                                      context: context,
+                                                      builder: (context) =>
+                                                          AlertDialog(
+                                                            title: Text(
+                                                                "Résolution de l'image trop petite"),
+                                                            content: Text(
+                                                                "Votre image doit faire au minimum 256px par 256px"),
+                                                            actions: [
+                                                              FlatButton(
+                                                                  onPressed: () =>
+                                                                      Navigator.pop(
+                                                                          context),
+                                                                  child: Text(
+                                                                      "Ok"))
+                                                            ],
+                                                          ));
+                                                }
+                                                String avatarUrl =
                                                     await StorageService(
                                                             ref:
                                                                 'users/${user.uid}/avatar.png')
                                                         .uploadFile(
                                                             croppedImage);
-                                                    Navigator.pop(context);
-                                                  },
-                                                  child: Text("Oui")),
-                                            ],
-                                          ))
-                                  : showDialog(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                            title: Text(
-                                                "Taille de l'image trop grosse"),
-                                            content: Text(
-                                                "Votre image doit faire maximum 2 mégabytes"),
-                                            actions: [
-                                              FlatButton(
-                                                  onPressed: () =>
-                                                      Navigator.pop(context),
-                                                  child: Text("Ok"))
-                                            ],
-                                          ));
+                                                await DatabaseService(
+                                                        uid: user.uid)
+                                                    .updateUserData(
+                                                        avatarUrl: avatarUrl);
+                                                Navigator.pop(context);
+                                              },
+                                              child: Text("Oui")),
+                                        ],
+                                      ));
                             } else {
                               print('could not get image');
                             }
