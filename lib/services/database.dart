@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:myschool/models/Code.dart';
 import 'package:myschool/models/announcement.dart';
+import 'package:myschool/models/group.dart';
 import 'package:myschool/models/school.dart';
 import 'package:myschool/models/user.dart';
 
@@ -45,7 +46,9 @@ class DatabaseService {
         lastName: data['lastName'],
         avatarUrl: data['avatarUrl'],
         usedCode: data['usedCode'],
-        school: School(uid: data['school'].id),
+        school: School(
+            uid: data['school'].parent.parent.id,
+            group: Group(uid: data['school'].id)),
         createdAt: (data['createdAt'] as Timestamp).toDate());
   }
 

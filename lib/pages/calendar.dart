@@ -21,9 +21,14 @@ class Calendar extends StatefulWidget {
 
 class _CalendarState extends State<Calendar> {
   CalendarController _calendarController;
-  DateTime _selectedDay = DateTime.now();
+  DateTime _selectedDay = DateTime.now().hour > 17
+      ? DateTime.now().setHour(15).addDays(1)
+      : DateTime.now();
   Map<DateTime, String> _events;
   Map<DateTime, String> _dayEvents = Map<DateTime, String>();
+
+  DateTime startDay;
+  DateTime endDay;
 
   @override
   void initState() {
@@ -49,9 +54,13 @@ class _CalendarState extends State<Calendar> {
             UserData userData = snapshot.data;
             return Column(children: [
               TableCalendar(
+                initialSelectedDay: _selectedDay,
+                startDay: startDay,
+                endDay: endDay,
                 onCalendarCreated: (first, last, format) async {
                   final schoolTimetableURL = await StorageService(
-                          ref: "/schools/${userData.school.uid}/timetable.json")
+                          ref:
+                              "/schools/${userData.school.uid}/groups/${userData.school.group.uid}/timetable.json")
                       .getDownloadURL();
                   final schoolTimetableFile = await DefaultCacheManager()
                       .getSingleFile(schoolTimetableURL);
@@ -60,6 +69,10 @@ class _CalendarState extends State<Calendar> {
                       key: (e) => DateTime.parse(
                           e['dateDebut'] + 'T' + e['heureDebut']),
                       value: (e) => e['description']);
+                  setState(() {
+                    startDay = _events.entries.first.key;
+                    endDay = _events.entries.last.key;
+                  });
                   _events.forEach((day, desc) {
                     if (day.isSameDay(_selectedDay)) {
                       setState(() {
@@ -67,7 +80,6 @@ class _CalendarState extends State<Calendar> {
                       });
                     }
                   });
-                  print(_dayEvents);
                 },
                 onDaySelected: (day, events, holidays) {
                   setState(() {
@@ -84,9 +96,9 @@ class _CalendarState extends State<Calendar> {
                 },
                 calendarController: _calendarController,
                 availableCalendarFormats: {
-                  CalendarFormat.month: 'Mois',
-                  CalendarFormat.twoWeeks: '2 semaines',
-                  CalendarFormat.week: 'Semaine'
+                  CalendarFormat.month: 'Semaine',
+                  CalendarFormat.twoWeeks: 'Mois',
+                  CalendarFormat.week: '2 semaines'
                 },
               ),
               Expanded(

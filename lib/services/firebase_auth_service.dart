@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:myschool/models/group.dart';
 import 'package:myschool/models/school.dart';
 import 'package:myschool/services/database.dart';
 import '../models/user.dart';
@@ -34,7 +35,9 @@ class FirebaseAuthService {
           uid: user.uid,
           firstName: data['firstName'],
           lastName: data['lastName'],
-          school: School(uid: doc.get('school')['id']),
+          school: School(
+              uid: doc.get('school').parent.parent.id,
+              group: Group(uid: doc.get('school').id)),
           createdAt: data['createdAt']);
     });
   }

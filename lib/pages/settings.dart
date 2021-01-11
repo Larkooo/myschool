@@ -206,6 +206,10 @@ class _SettingsState extends State<Settings> {
                                       leading: Icon(Icons.school),
                                       title: school.name,
                                     ),
+                                    SettingsTile(
+                                      leading: Icon(Icons.group),
+                                      title: userData.school.group.uid,
+                                    ),
                                   ],
                                 );
                               } else {
