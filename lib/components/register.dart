@@ -45,7 +45,7 @@ class Register extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                          width: MediaQuery.of(context).size.width / 2.65,
+                          width: MediaQuery.of(context).size.width / 2.6,
                           child: TextFormField(
                             controller: _firstNameController,
                             validator: (value) {
@@ -62,7 +62,7 @@ class Register extends StatelessWidget {
                         width: 5,
                       ),
                       Container(
-                          width: MediaQuery.of(context).size.width / 2.65,
+                          width: MediaQuery.of(context).size.width / 2.6,
                           child: TextFormField(
                             controller: _lastNameController,
                             validator: (value) {
