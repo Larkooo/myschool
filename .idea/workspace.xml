@@ -3,10 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="66c39eb0-e573-4035-92d2-4b58dc8e9b52" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.flutter-plugins" beforeDir="false" afterPath="$PROJECT_DIR$/.flutter-plugins" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.flutter-plugins-dependencies" beforeDir="false" afterPath="$PROJECT_DIR$/.flutter-plugins-dependencies" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/pages/announcements.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/announcements.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,13 +44,13 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state x="113" y="449" width="1200" height="849" key="com.android.tools.idea.avdmanager.AvdListDialog" timestamp="1610303238925">
+    <state x="113" y="449" width="1200" height="849" key="com.android.tools.idea.avdmanager.AvdListDialog" timestamp="1610547632810">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state x="113" y="449" width="1200" height="849" key="com.android.tools.idea.avdmanager.AvdListDialog/0.0.1920.1050@0.0.1920.1050" timestamp="1610303238925" />
-    <state x="1313" y="698" key="com.intellij.ide.util.TipDialog" timestamp="1610303228213">
+    <state x="113" y="449" width="1200" height="849" key="com.android.tools.idea.avdmanager.AvdListDialog/0.0.1920.1050@0.0.1920.1050" timestamp="1610547632810" />
+    <state x="1313" y="698" key="com.intellij.ide.util.TipDialog" timestamp="1610547616462">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state x="1313" y="698" key="com.intellij.ide.util.TipDialog/0.0.1920.1050@0.0.1920.1050" timestamp="1610303228213" />
+    <state x="1313" y="698" key="com.intellij.ide.util.TipDialog/0.0.1920.1050@0.0.1920.1050" timestamp="1610547616462" />
   </component>
 </project>
