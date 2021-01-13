@@ -146,7 +146,15 @@ class _AnnouncementsState extends State<Announcements> {
                                                       onTap: () => {},
                                                       child: Center(
                                                           child: Text(
-                                                        "École",
+                                                        announcement
+                                                                    .reference
+                                                                    .parent
+                                                                    .parent
+                                                                    .parent
+                                                                    .id ==
+                                                                "schools"
+                                                            ? "École"
+                                                            : "Foyer",
                                                         style: TextStyle(
                                                             fontSize: 10),
                                                       )))),
@@ -161,11 +169,11 @@ class _AnnouncementsState extends State<Announcements> {
                                         Text((announcement['description']
                                                         as String)
                                                     .length <
-                                                100
+                                                150
                                             ? announcement['description']
                                             : (announcement['description']
                                                         as String)
-                                                    .substring(0, 100) +
+                                                    .substring(0, 150) +
                                                 "..."),
                                       ])),
                               SizedBox(
