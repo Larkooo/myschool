@@ -26,6 +26,8 @@ class _CalendarState extends State<Calendar> {
       : DateTime.now();
   Map<DateTime, String> _events;
   Map<DateTime, String> _dayEvents = Map<DateTime, String>();
+  bool dayIsHome = false;
+  List remoteSchoolDays;
 
   DateTime startDay;
   DateTime endDay;
@@ -62,8 +64,21 @@ class _CalendarState extends State<Calendar> {
                           ref:
                               "/schools/${userData.school.uid}/groups/${userData.school.group.uid}/timetable.json")
                       .getDownloadURL();
+
+                  final remoteSchoolURL = await StorageService(
+                          ref:
+                              "/schools/${userData.school.uid}/remoteschool.json")
+                      .getDownloadURL();
+
                   final schoolTimetableFile = await DefaultCacheManager()
                       .getSingleFile(schoolTimetableURL);
+
+                  final remoteSchoolFile = await DefaultCacheManager()
+                      .getSingleFile(remoteSchoolURL);
+
+                  remoteSchoolDays = List.from(
+                      jsonDecode(await remoteSchoolFile.readAsString()));
+
                   _events = Map.fromIterable(
                       jsonDecode(await schoolTimetableFile.readAsString()),
                       key: (e) => DateTime.parse(
@@ -80,6 +95,23 @@ class _CalendarState extends State<Calendar> {
                       });
                     }
                   });
+                  remoteSchoolDays.forEach((element) {
+                    DateTime remoteDay = DateTime.parse(element['date']);
+                    setState(() {
+                      if (_selectedDay.isSameDay(remoteDay)) {
+                        if (userData.school.group.uid.startsWith("5")) {
+                          dayIsHome = element["5"];
+                        } else if (userData.school.group.uid.startsWith("4")) {
+                          dayIsHome = element["4"];
+                        } else if (userData.school.group.uid == "301" ||
+                            userData.school.group.uid == "302") {
+                          dayIsHome = element["301302"];
+                        } else {
+                          dayIsHome = element["303304"];
+                        }
+                      }
+                    });
+                  });
                 },
                 onDaySelected: (day, events, holidays) {
                   setState(() {
@@ -92,6 +124,23 @@ class _CalendarState extends State<Calendar> {
                         _dayEvents[day] = desc;
                       });
                     }
+                  });
+                  remoteSchoolDays.forEach((element) {
+                    DateTime remoteDay = DateTime.parse(element['date']);
+                    setState(() {
+                      if (day.isSameDay(remoteDay)) {
+                        if (userData.school.group.uid.startsWith("5")) {
+                          dayIsHome = element["5"] == 1 ? true : false;
+                        } else if (userData.school.group.uid.startsWith("4")) {
+                          dayIsHome = element["4"] == 1 ? true : false;
+                        } else if (userData.school.group.uid == "301" ||
+                            userData.school.group.uid == "302") {
+                          dayIsHome = element["301302"] == 1 ? true : false;
+                        } else {
+                          dayIsHome = element["303304"] == 1 ? true : false;
+                        }
+                      }
+                    });
                   });
                 },
                 calendarController: _calendarController,
@@ -107,7 +156,9 @@ class _CalendarState extends State<Calendar> {
                           .map((e) => Card(
                                 child: ListTile(
                                   title: Text(e.value),
-                                  subtitle: Text(DateFormat.Hm().format(e.key)),
+                                  subtitle: Text(DateFormat.Hm().format(e.key) +
+                                      " - " +
+                                      (dayIsHome ? "Maison" : "École")),
                                 ),
                               ))
                           .toList()))
