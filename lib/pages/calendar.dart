@@ -24,7 +24,7 @@ class _CalendarState extends State<Calendar> {
   DateTime _selectedDay = DateTime.now().hour > 17
       ? DateTime.now().setHour(15).addDays(1)
       : DateTime.now();
-  Map<DateTime, String> _events;
+  Map<DateTime, dynamic> _events;
   Map<DateTime, dynamic> _dayEvents = Map<DateTime, dynamic>();
   bool dayIsHome = false;
   List remoteSchoolDays;
@@ -90,7 +90,11 @@ class _CalendarState extends State<Calendar> {
                       jsonDecode(await schoolTimetableFile.readAsString()),
                       key: (e) => DateTime.parse(
                           e['dateDebut'] + 'T' + e['heureDebut']),
-                      value: (e) => e['description']);
+                      value: (e) => {
+                            "description": e['description'],
+                            "locaux": e['locaux'],
+                            "intervenants": e['intervenants']
+                          });
                   setState(() {
                     startDay = _events.entries.first.key;
                     endDay = _events.entries.last.key;
@@ -107,14 +111,14 @@ class _CalendarState extends State<Calendar> {
                     setState(() {
                       if (_selectedDay.isSameDay(remoteDay)) {
                         if (userData.school.group.uid.startsWith("5")) {
-                          dayIsHome = element["5"];
+                          dayIsHome = element["5"] == 1 ? true : false;
                         } else if (userData.school.group.uid.startsWith("4")) {
-                          dayIsHome = element["4"];
+                          dayIsHome = element["4"] == 1 ? true : false;
                         } else if (userData.school.group.uid == "301" ||
                             userData.school.group.uid == "302") {
-                          dayIsHome = element["301302"];
+                          dayIsHome = element["301302"] == 1 ? true : false;
                         } else {
-                          dayIsHome = element["303304"];
+                          dayIsHome = element["303304"] == 1 ? true : false;
                         }
                       }
                     });
@@ -162,8 +166,14 @@ class _CalendarState extends State<Calendar> {
                       children: _dayEvents.entries
                           .map((e) => Card(
                                 child: ListTile(
-                                  title: Text(e.value),
-                                  subtitle: Text(DateFormat.Hm().format(e.key)),
+                                  title: Text(e.value['description'] +
+                                      " (${e.value['locaux'][0]})"),
+                                  subtitle: Text(e.value['intervenants'][0]
+                                          ['nom'] +
+                                      " " +
+                                      e.value['intervenants'][0]['prenom'] +
+                                      " - " +
+                                      DateFormat.Hm().format(e.key)),
                                 ),
                               ))
                           .toList()))
