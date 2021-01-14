@@ -41,6 +41,10 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>MonEcole a besoin d&apos;accéder a votre gallerie de photos afin que vous puissiez mettre une photo de profil.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>MonEcole a besoin d&apos;accéder a l&apos;appareil photo afin que vous puissiez mettre une photo de profil.</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 </dict>
