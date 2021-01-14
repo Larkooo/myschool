@@ -44,13 +44,13 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state x="113" y="449" width="1200" height="849" key="com.android.tools.idea.avdmanager.AvdListDialog" timestamp="1610547632810">
+    <state x="113" y="449" width="1200" height="849" key="com.android.tools.idea.avdmanager.AvdListDialog" timestamp="1610661104599">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state x="113" y="449" width="1200" height="849" key="com.android.tools.idea.avdmanager.AvdListDialog/0.0.1920.1050@0.0.1920.1050" timestamp="1610547632810" />
-    <state x="1313" y="698" key="com.intellij.ide.util.TipDialog" timestamp="1610547616462">
+    <state x="113" y="449" width="1200" height="849" key="com.android.tools.idea.avdmanager.AvdListDialog/0.0.1920.1050@0.0.1920.1050" timestamp="1610661104599" />
+    <state x="1313" y="698" key="com.intellij.ide.util.TipDialog" timestamp="1610661079215">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state x="1313" y="698" key="com.intellij.ide.util.TipDialog/0.0.1920.1050@0.0.1920.1050" timestamp="1610547616462" />
+    <state x="1313" y="698" key="com.intellij.ide.util.TipDialog/0.0.1920.1050@0.0.1920.1050" timestamp="1610661079215" />
   </component>
 </project>
