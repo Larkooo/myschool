@@ -8,6 +8,7 @@ import 'package:myschool/models/user.dart';
 import 'package:myschool/services/database.dart';
 import 'package:myschool/services/firebase_storage.dart';
 import 'package:provider/provider.dart';
+import 'package:slide_popup_dialog/slide_popup_dialog.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:dart_date/dart_date.dart';
 
@@ -37,6 +38,14 @@ class _CalendarState extends State<Calendar> {
     // TODO: implement initState
     super.initState();
     _calendarController = CalendarController();
+  }
+
+  dynamic getNextCourse(DateTime last, String courseId) {
+    for (final element in _events.entries) {
+      if (element.key > last && element.value['codeActivite'] == courseId) {
+        return element;
+      }
+    }
   }
 
   @override
@@ -93,7 +102,9 @@ class _CalendarState extends State<Calendar> {
                       value: (e) => {
                             "description": e['description'],
                             "locaux": e['locaux'],
-                            "intervenants": e['intervenants']
+                            "intervenants": e['intervenants'],
+                            "heureFin": e['heureFin'],
+                            "codeActivite": e['codeActivite']
                           });
                   setState(() {
                     startDay = _events.entries.first.key;
@@ -166,6 +177,134 @@ class _CalendarState extends State<Calendar> {
                       children: _dayEvents.entries
                           .map((e) => Card(
                                 child: ListTile(
+                                  onTap: () => showSlideDialog(
+                                      context: context,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          SizedBox(height: 5),
+                                          Text(
+                                            e.value['description'],
+                                            style: TextStyle(fontSize: 18),
+                                          ),
+                                          Text(
+                                            DateFormat.Hm().format(e.key),
+                                            style: TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.grey[500]),
+                                          ),
+                                          SizedBox(
+                                            height: 25,
+                                          ),
+                                          Text(
+                                            "Groupe",
+                                            style: TextStyle(fontSize: 16),
+                                          ),
+                                          Text(
+                                            userData.school.group.uid,
+                                            style: TextStyle(
+                                                color: Colors.grey[500]),
+                                          ),
+                                          SizedBox(
+                                            height: 20,
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              Column(children: [
+                                                Text(
+                                                  "Heure de début",
+                                                  style:
+                                                      TextStyle(fontSize: 15),
+                                                ),
+                                                Text(
+                                                  DateFormat.Hm().format(e.key),
+                                                  style: TextStyle(
+                                                      fontSize: 13,
+                                                      color: Colors.grey[500]),
+                                                ),
+                                                SizedBox(
+                                                  height: 10,
+                                                ),
+                                                Text(
+                                                  "Intervenant",
+                                                  style:
+                                                      TextStyle(fontSize: 15),
+                                                ),
+                                                Text(
+                                                  e.value['intervenants'][0]
+                                                          ['nom'] +
+                                                      " " +
+                                                      e.value['intervenants'][0]
+                                                          ['prenom'],
+                                                  style: TextStyle(
+                                                      fontSize: 13,
+                                                      color: Colors.grey[500]),
+                                                )
+                                              ]),
+                                              Column(children: [
+                                                Text(
+                                                  "Heure de fin",
+                                                  style:
+                                                      TextStyle(fontSize: 15),
+                                                ),
+                                                Text(
+                                                  e.value['heureFin'],
+                                                  style: TextStyle(
+                                                      fontSize: 13,
+                                                      color: Colors.grey[500]),
+                                                ),
+                                                SizedBox(
+                                                  height: 10,
+                                                ),
+                                                Text(
+                                                  "Local",
+                                                  style:
+                                                      TextStyle(fontSize: 15),
+                                                ),
+                                                Text(
+                                                  e.value['locaux'][0],
+                                                  style: TextStyle(
+                                                      fontSize: 13,
+                                                      color: Colors.grey[500]),
+                                                )
+                                              ]),
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            height: 30,
+                                          ),
+                                          Text(
+                                            "Prochain cours",
+                                            style: TextStyle(fontSize: 18),
+                                          ),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Container(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  1.3,
+                                              child: Card(
+                                                child: ListTile(
+                                                    title: Text(e.value['description'] +
+                                                        " (${e.value['locaux'][0]})"),
+                                                    subtitle: Text(e.value['intervenants']
+                                                            [0]['nom'] +
+                                                        " " +
+                                                        e.value['intervenants']
+                                                            [0]['prenom'] +
+                                                        " - " +
+                                                        DateFormat.MEd().format(
+                                                            getNextCourse(e.key,
+                                                                    e.value['codeActivite'])
+                                                                .key))),
+                                              )),
+                                        ],
+                                      )),
                                   title: Text(e.value['description'] +
                                       " (${e.value['locaux'][0]})"),
                                   subtitle: Text(e.value['intervenants'][0]
