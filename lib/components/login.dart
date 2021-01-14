@@ -11,7 +11,6 @@ import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:slide_popup_dialog/slide_popup_dialog.dart';
 
 import '../main.dart';
-import 'mozaik_login.dart';
 
 class Login extends StatefulWidget {
   final Stream<int> stream;
@@ -125,13 +124,6 @@ class _LoginState extends State<Login> {
                       }
                     }
                   }),
-                  //textButton(
-                  //    context,
-                  //    "Se connecter avec Mozaik",
-                  //    () => Navigator.push(
-                  //        context,
-                  //        MaterialPageRoute(
-                  //            builder: (context) => MozaikLogin()))),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[

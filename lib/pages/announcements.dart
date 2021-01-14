@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/services/database.dart';
 import 'package:provider/provider.dart';
-import '../services/database.dart';
 
 class Announcements extends StatefulWidget {
   //final UserData user;
@@ -56,18 +55,14 @@ class _AnnouncementsState extends State<Announcements> {
                                       children: [
                                         Row(
                                           children: [
-                                            StreamBuilder(
-                                                stream: DatabaseService(
-                                                        uid: announcement[
-                                                                'author']
-                                                            .id)
-                                                    .user,
+                                            FutureBuilder(
+                                                future: (announcement['author']
+                                                        as DocumentReference)
+                                                    .get(),
                                                 builder: (context, snapshot) {
                                                   if (snapshot.hasData) {
-                                                    UserData announceUser =
-                                                        snapshot.data;
-                                                    //Map<String, dynamic> data =
-                                                    //    snapshot.data.data();
+                                                    Map<String, dynamic> data =
+                                                        snapshot.data.data();
                                                     return Row(
                                                       children: [
                                                         ClipRRect(
@@ -75,13 +70,11 @@ class _AnnouncementsState extends State<Announcements> {
                                                                 BorderRadius
                                                                     .circular(
                                                                         30),
-                                                            child: announceUser
-                                                                        .avatarUrl !=
+                                                            child: data['avatarUrl'] !=
                                                                     null
                                                                 ? CachedNetworkImage(
-                                                                    imageUrl:
-                                                                        announceUser
-                                                                            .avatarUrl,
+                                                                    imageUrl: data[
+                                                                        'avatarUrl'],
                                                                     progressIndicatorBuilder: (context,
                                                                             url,
                                                                             downloadProgress) =>
@@ -110,14 +103,11 @@ class _AnnouncementsState extends State<Announcements> {
                                                         SizedBox(
                                                           width: 5,
                                                         ),
-                                                        Text(announceUser
-                                                            .firstName)
+                                                        Text(data['firstName'])
                                                       ],
                                                     );
                                                   } else {
-                                                    return CircularProgressIndicator(
-                                                      strokeWidth: 2,
-                                                    );
+                                                    return CircularProgressIndicator();
                                                   }
                                                 }),
                                             SizedBox(
@@ -156,15 +146,7 @@ class _AnnouncementsState extends State<Announcements> {
                                                       onTap: () => {},
                                                       child: Center(
                                                           child: Text(
-                                                        announcement
-                                                                    .reference
-                                                                    .parent
-                                                                    .parent
-                                                                    .parent
-                                                                    .id ==
-                                                                "schools"
-                                                            ? "École"
-                                                            : "Foyer",
+                                                        "École",
                                                         style: TextStyle(
                                                             fontSize: 10),
                                                       )))),
@@ -179,11 +161,11 @@ class _AnnouncementsState extends State<Announcements> {
                                         Text((announcement['description']
                                                         as String)
                                                     .length <
-                                                150
+                                                100
                                             ? announcement['description']
                                             : (announcement['description']
                                                         as String)
-                                                    .substring(0, 150) +
+                                                    .substring(0, 100) +
                                                 "..."),
                                       ])),
                               SizedBox(
