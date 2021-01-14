@@ -25,7 +25,7 @@ class _CalendarState extends State<Calendar> {
       ? DateTime.now().setHour(15).addDays(1)
       : DateTime.now();
   Map<DateTime, String> _events;
-  Map<DateTime, String> _dayEvents = Map<DateTime, String>();
+  Map<DateTime, dynamic> _dayEvents = Map<DateTime, dynamic>();
   bool dayIsHome = false;
   List remoteSchoolDays;
 
@@ -55,6 +55,13 @@ class _CalendarState extends State<Calendar> {
           if (snapshot.hasData) {
             UserData userData = snapshot.data;
             return Column(children: [
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: 30,
+                color: dayIsHome ? Colors.blue : Colors.green,
+                child: Center(
+                    child: Text(dayIsHome ? "À la maison" : "À l'école")),
+              ),
               TableCalendar(
                 initialSelectedDay: _selectedDay,
                 startDay: startDay,
@@ -156,9 +163,7 @@ class _CalendarState extends State<Calendar> {
                           .map((e) => Card(
                                 child: ListTile(
                                   title: Text(e.value),
-                                  subtitle: Text(DateFormat.Hm().format(e.key) +
-                                      " - " +
-                                      (dayIsHome ? "Maison" : "École")),
+                                  subtitle: Text(DateFormat.Hm().format(e.key)),
                                 ),
                               ))
                           .toList()))
