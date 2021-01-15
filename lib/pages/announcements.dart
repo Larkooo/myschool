@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:myschool/models/announcement.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/services/database.dart';
 import 'package:myschool/shared/constants.dart';
@@ -28,6 +29,9 @@ class _AnnouncementsState extends State<Announcements> {
           if (snapshot.hasData) {
             UserData user = snapshot.data;
             return StreamBuilder(
+              /* 
+                  Using StreamZip to merge 2 streams, the group announcements and school ones
+                  */
               stream: StreamZip([
                 DatabaseService(uid: user.school.uid).announcements,
                 DatabaseService(uid: user.school.uid)
@@ -39,26 +43,32 @@ class _AnnouncementsState extends State<Announcements> {
                       announcementsSnapshot.data[0];
                   QuerySnapshot groupAnnouncements =
                       announcementsSnapshot.data[1];
-                  var announcementsData = schoolAnnouncements.docs.toList();
+                  /* 
+                    Basically transforming the school announcements querysnapshot to a list
+                    and appending to it the group announcements
+                  */
+                  List announcementsData = schoolAnnouncements.docs.toList();
                   announcementsData.addAll(groupAnnouncements.docs);
                   return ListView.builder(
                       itemCount: announcementsData.length,
                       itemBuilder: (context, index) {
+                        /* 
+                          Sorting the announcements by comparing their time of creation 
+                  */
                         announcementsData.sort((a, b) => b
                             .data()['createdAt']
                             .compareTo(a.data()['createdAt']));
-                        var announcement = DatabaseService()
+
+                        /* 
+                          Transforming our data to a an Announcement 
+                        */
+                        Announcement announcement = DatabaseService()
                             .announcementFromSnapshot(announcementsData[index]);
                         return Card(
                             child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                               ListTile(
-                                  //leading: RichText(
-                                  //    text: TextSpan(children: [
-                                  //  WidgetSpan(child: Icon(Icons.person)),
-                                  //  TextSpan(text: announcement['author'])
-                                  //])),
                                   title: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,

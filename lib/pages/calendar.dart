@@ -30,7 +30,6 @@ class _CalendarState extends State<Calendar> {
   Map<DateTime, dynamic> _dayEvents = {};
   bool _dayIsHome = false;
   static List _remoteSchoolDays = [];
-  bool yes = false;
 
   static DateTime _startDay;
   static DateTime _endDay;
@@ -42,6 +41,7 @@ class _CalendarState extends State<Calendar> {
     _calendarController = CalendarController();
   }
 
+  // Get the next apparition of a course
   dynamic getNextCourse(DateTime last, String courseId) {
     for (final element in _events.entries) {
       if (element.key > last && element.value['codeActivite'] == courseId) {
@@ -66,6 +66,9 @@ class _CalendarState extends State<Calendar> {
           if (snapshot.hasData) {
             UserData userData = snapshot.data;
             return Column(children: [
+              /* 
+                  
+                  */
               if (_remoteSchoolDays.isNotEmpty)
                 Container(
                   width: MediaQuery.of(context).size.width,
@@ -79,7 +82,13 @@ class _CalendarState extends State<Calendar> {
                 startDay: _startDay,
                 endDay: _endDay,
                 onCalendarCreated: (first, last, format) async {
-                  yes = true;
+                  /* 
+                    If _events has a length of 0 => get the download URL of our timetable
+                    download it,
+                    cache it,
+                    and decode it as JSON to assign it to our static variable
+
+                  */
                   if (_events.isEmpty) {
                     final schoolTimetableURL = await StorageService(
                             ref:
@@ -100,20 +109,17 @@ class _CalendarState extends State<Calendar> {
                                 "heureFin": e['heureFin'],
                                 "codeActivite": e['codeActivite']
                               });
+                      // Setting the startday and the endday of the calendar (so the startday/endday of school in this case)
                       setState(() {
                         _startDay = _events.entries.first.key;
                         _endDay = _events.entries.last.key;
                       });
                     }
-                    _events.forEach((day, desc) {
-                      if (day.isSameDay(_selectedDay)) {
-                        setState(() {
-                          _dayEvents[day] = desc;
-                        });
-                      }
-                    });
                   }
 
+                  /* 
+                    Basically, its the same thing than the timetable, repeating every steps
+                  */
                   if (_remoteSchoolDays.isEmpty) {
                     final remoteSchoolURL = await StorageService(
                             ref:
@@ -130,6 +136,10 @@ class _CalendarState extends State<Calendar> {
 
                   // Using future.delayed to resolve the setState error happening on build
                   Future.delayed(Duration.zero, () {
+                    /* 
+                    Checking the date of each of our events to then assign them to _dayEvents
+                    _events has to be not empty.
+                  */
                     if (_events.isNotEmpty)
                       _events.forEach((day, data) {
                         if (day.isSameDay(_selectedDay)) {
@@ -138,6 +148,9 @@ class _CalendarState extends State<Calendar> {
                           });
                         }
                       });
+                    /* 
+                      Same thing. We're just checking if we're home or at school here.
+                  */
                     if (_remoteSchoolDays.isNotEmpty)
                       _remoteSchoolDays.forEach((element) {
                         DateTime remoteDay = DateTime.parse(element['date']);
@@ -158,6 +171,9 @@ class _CalendarState extends State<Calendar> {
                       });
                   });
                 },
+                /* 
+                  If a day is selected, redo all the calculations that have been done at the creation of the page ^
+                  */
                 onDaySelected: (day, events, holidays) {
                   setState(() {
                     _selectedDay = day;
@@ -191,11 +207,15 @@ class _CalendarState extends State<Calendar> {
                 },
                 calendarController: _calendarController,
                 availableCalendarFormats: {
+                  // Don't mind this, this calendar is weird...
                   CalendarFormat.month: 'Semaine',
                   CalendarFormat.twoWeeks: 'Mois',
                   CalendarFormat.week: '2 semaines'
                 },
               ),
+              /* 
+                  lazy to describe everything here, this is just the frontend 
+                  */
               Expanded(
                   child: ListView(
                       children: _dayEvents.entries
