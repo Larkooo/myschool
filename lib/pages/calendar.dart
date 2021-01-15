@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -25,13 +26,14 @@ class _CalendarState extends State<Calendar> {
   DateTime _selectedDay = DateTime.now().hour > 17
       ? DateTime.now().setHour(15).addDays(1)
       : DateTime.now();
-  Map<DateTime, dynamic> _events;
-  Map<DateTime, dynamic> _dayEvents = Map<DateTime, dynamic>();
-  bool dayIsHome = false;
-  List remoteSchoolDays;
+  static Map<DateTime, dynamic> _events = {};
+  Map<DateTime, dynamic> _dayEvents = {};
+  bool _dayIsHome = false;
+  static List _remoteSchoolDays = [];
+  bool yes = false;
 
-  DateTime startDay;
-  DateTime endDay;
+  static DateTime _startDay;
+  static DateTime _endDay;
 
   @override
   void initState() {
@@ -64,73 +66,90 @@ class _CalendarState extends State<Calendar> {
           if (snapshot.hasData) {
             UserData userData = snapshot.data;
             return Column(children: [
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: 30,
-                color: dayIsHome ? Colors.blue : Colors.green,
-                child: Center(
-                    child: Text(dayIsHome ? "À la maison" : "À l'école")),
-              ),
+              if (_remoteSchoolDays.isNotEmpty)
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 30,
+                  color: _dayIsHome ? Colors.blue : Colors.green,
+                  child: Center(
+                      child: Text(_dayIsHome ? "À la maison" : "À l'école")),
+                ),
               TableCalendar(
                 initialSelectedDay: _selectedDay,
-                startDay: startDay,
-                endDay: endDay,
+                startDay: _startDay,
+                endDay: _endDay,
                 onCalendarCreated: (first, last, format) async {
-                  final schoolTimetableURL = await StorageService(
-                          ref:
-                              "/schools/${userData.school.uid}/groups/${userData.school.group.uid}/timetable.json")
-                      .getDownloadURL();
+                  yes = true;
+                  if (_events.isEmpty) {
+                    final schoolTimetableURL = await StorageService(
+                            ref:
+                                "/schools/${userData.school.uid}/groups/${userData.school.group.uid}/timetable.json")
+                        .getDownloadURL();
 
-                  final remoteSchoolURL = await StorageService(
-                          ref:
-                              "/schools/${userData.school.uid}/remoteschool.json")
-                      .getDownloadURL();
-
-                  final schoolTimetableFile = await DefaultCacheManager()
-                      .getSingleFile(schoolTimetableURL);
-
-                  final remoteSchoolFile = await DefaultCacheManager()
-                      .getSingleFile(remoteSchoolURL);
-
-                  remoteSchoolDays = List.from(
-                      jsonDecode(await remoteSchoolFile.readAsString()));
-
-                  _events = Map.fromIterable(
-                      jsonDecode(await schoolTimetableFile.readAsString()),
-                      key: (e) => DateTime.parse(
-                          e['dateDebut'] + 'T' + e['heureDebut']),
-                      value: (e) => {
-                            "description": e['description'],
-                            "locaux": e['locaux'],
-                            "intervenants": e['intervenants'],
-                            "heureFin": e['heureFin'],
-                            "codeActivite": e['codeActivite']
-                          });
-                  setState(() {
-                    startDay = _events.entries.first.key;
-                    endDay = _events.entries.last.key;
-                  });
-                  _events.forEach((day, desc) {
-                    if (day.isSameDay(_selectedDay)) {
+                    if (schoolTimetableURL != null) {
+                      final schoolTimetableFile = await DefaultCacheManager()
+                          .getSingleFile(schoolTimetableURL);
+                      _events = Map.fromIterable(
+                          jsonDecode(await schoolTimetableFile.readAsString()),
+                          key: (e) => DateTime.parse(
+                              e['dateDebut'] + 'T' + e['heureDebut']),
+                          value: (e) => {
+                                "description": e['description'],
+                                "locaux": e['locaux'],
+                                "intervenants": e['intervenants'],
+                                "heureFin": e['heureFin'],
+                                "codeActivite": e['codeActivite']
+                              });
                       setState(() {
-                        _dayEvents[day] = desc;
+                        _startDay = _events.entries.first.key;
+                        _endDay = _events.entries.last.key;
                       });
                     }
-                  });
-                  remoteSchoolDays.forEach((element) {
-                    DateTime remoteDay = DateTime.parse(element['date']);
-                    setState(() {
+                    _events.forEach((day, desc) {
+                      if (day.isSameDay(_selectedDay)) {
+                        setState(() {
+                          _dayEvents[day] = desc;
+                        });
+                      }
+                    });
+                  }
+
+                  if (_remoteSchoolDays.isEmpty) {
+                    final remoteSchoolURL = await StorageService(
+                            ref:
+                                "/schools/${userData.school.uid}/remoteschool.json")
+                        .getDownloadURL();
+
+                    if (remoteSchoolURL != null) {
+                      final remoteSchoolFile = await DefaultCacheManager()
+                          .getSingleFile(remoteSchoolURL);
+                      _remoteSchoolDays =
+                          jsonDecode(await remoteSchoolFile.readAsString());
+                    }
+                  }
+                  Future.delayed(Duration(milliseconds: 1), () {
+                    _events.forEach((day, data) {
+                      if (day.isSameDay(_selectedDay)) {
+                        setState(() {
+                          _dayEvents[day] = data;
+                        });
+                      }
+                    });
+                    _remoteSchoolDays.forEach((element) {
+                      DateTime remoteDay = DateTime.parse(element['date']);
+
                       if (_selectedDay.isSameDay(remoteDay)) {
-                        if (userData.school.group.uid.startsWith("5")) {
-                          dayIsHome = element["5"] == 1 ? true : false;
-                        } else if (userData.school.group.uid.startsWith("4")) {
-                          dayIsHome = element["4"] == 1 ? true : false;
-                        } else if (userData.school.group.uid == "301" ||
-                            userData.school.group.uid == "302") {
-                          dayIsHome = element["301302"] == 1 ? true : false;
-                        } else {
-                          dayIsHome = element["303304"] == 1 ? true : false;
-                        }
+                        setState(() {
+                          if ((element['home'] as List)
+                              .contains(int.parse(userData.school.group.uid))) {
+                            _dayIsHome = true;
+                          } else if ((element['home'] as List).contains(
+                              int.parse(userData.school.group.uid[0]))) {
+                            _dayIsHome = true;
+                          } else {
+                            _dayIsHome = false;
+                          }
+                        });
                       }
                     });
                   });
@@ -147,23 +166,24 @@ class _CalendarState extends State<Calendar> {
                       });
                     }
                   });
-                  remoteSchoolDays.forEach((element) {
-                    DateTime remoteDay = DateTime.parse(element['date']);
-                    setState(() {
-                      if (day.isSameDay(remoteDay)) {
-                        if (userData.school.group.uid.startsWith("5")) {
-                          dayIsHome = element["5"] == 1 ? true : false;
-                        } else if (userData.school.group.uid.startsWith("4")) {
-                          dayIsHome = element["4"] == 1 ? true : false;
-                        } else if (userData.school.group.uid == "301" ||
-                            userData.school.group.uid == "302") {
-                          dayIsHome = element["301302"] == 1 ? true : false;
-                        } else {
-                          dayIsHome = element["303304"] == 1 ? true : false;
-                        }
+                  if (_remoteSchoolDays.isNotEmpty)
+                    _remoteSchoolDays.forEach((element) {
+                      DateTime remoteDay = DateTime.parse(element['date']);
+
+                      if (_selectedDay.isSameDay(remoteDay)) {
+                        setState(() {
+                          if ((element['home'] as List)
+                              .contains(int.parse(userData.school.group.uid))) {
+                            _dayIsHome = true;
+                          } else if ((element['home'] as List).contains(
+                              int.parse(userData.school.group.uid[0]))) {
+                            _dayIsHome = true;
+                          } else {
+                            _dayIsHome = false;
+                          }
+                        });
                       }
                     });
-                  });
                 },
                 calendarController: _calendarController,
                 availableCalendarFormats: {
