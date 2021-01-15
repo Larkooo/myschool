@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_crop_new/image_crop_new.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:myschool/components/change_password.dart';
 import 'package:myschool/components/reset_password.dart';
 import 'package:myschool/models/school.dart';
 import 'package:myschool/models/user.dart';
@@ -80,8 +81,7 @@ class _SettingsState extends State<Settings> {
                             title: 'Modifier votre mot de passe',
                             onPressed: (BuildContext context) =>
                                 showSlideDialog(
-                                    context: context,
-                                    child: ResetPasswordComponent())
+                                    context: context, child: ChangePassword())
                             //subtitle: user.email,
                             ),
                         SettingsTile(
