@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:flutter/services.dart';
 import 'package:myschool/components/login.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/pages/homeSkeleton.dart';
@@ -48,12 +49,13 @@ class _RegisterState extends State<Register> {
                   // meow
                   GestureDetector(
                       onTap: () {
+                        SystemSound.play(SystemSoundType.click);
                         setState(() {
-                          _mySchoolLogoHeight += 30;
-                          _mySchoolLogoWidth -= 30;
+                          _mySchoolLogoHeight -= 50;
+                          _mySchoolLogoWidth -= 50;
                         });
                         Future.delayed(
-                            Duration(milliseconds: 100),
+                            Duration(milliseconds: 50),
                             () => setState(() {
                                   _mySchoolLogoHeight = 100;
                                   _mySchoolLogoWidth = 100;

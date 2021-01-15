@@ -64,6 +64,7 @@ class _AnnouncementsState extends State<Announcements> {
                         */
                         Announcement announcement = DatabaseService()
                             .announcementFromSnapshot(announcementsData[index]);
+                        // Rendering part
                         return Card(
                             child: Column(
                                 mainAxisSize: MainAxisSize.min,
