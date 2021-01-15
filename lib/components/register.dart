@@ -176,7 +176,7 @@ class _RegisterState extends State<Register> {
                         obscureText: false,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
-                          labelText: 'Code d\'école',
+                          labelText: 'Code de groupe',
                         ),
                       )),
                   SizedBox(
