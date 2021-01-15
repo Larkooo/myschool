@@ -1,3 +1,4 @@
+import 'package:async/async.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -27,16 +28,22 @@ class _AnnouncementsState extends State<Announcements> {
           if (snapshot.hasData) {
             UserData user = snapshot.data;
             return StreamBuilder(
-              stream: DatabaseService(uid: user.school.uid).announcements,
+              stream: StreamZip([
+                DatabaseService(uid: user.school.uid).announcements,
+                DatabaseService(uid: user.school.uid)
+                    .groupAnnouncements(user.school.group.uid)
+              ]),
               builder: (context, announcementsSnapshot) {
                 if (announcementsSnapshot.hasData) {
-                  QuerySnapshot announcements = announcementsSnapshot.data;
+                  QuerySnapshot schoolAnnouncements =
+                      announcementsSnapshot.data[0];
+                  QuerySnapshot groupAnnouncements =
+                      announcementsSnapshot.data[1];
+                  var announcementsData = schoolAnnouncements.docs.toList();
+                  announcementsData.addAll(groupAnnouncements.docs);
                   return ListView.builder(
-                      itemCount: announcements.docs.length,
+                      itemCount: announcementsData.length,
                       itemBuilder: (context, index) {
-                        var announcementsData =
-                            // Reversing it to get the latest added document
-                            announcements.docs.toList();
                         announcementsData.sort((a, b) => b
                             .data()['createdAt']
                             .compareTo(a.data()['createdAt']));

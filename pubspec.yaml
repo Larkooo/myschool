@@ -44,6 +44,7 @@ dependencies:
   dart_date:
   network_logger:
   flutter_inappwebview:
+  async:
  # firebase_auth_oauth: ^0.2.3
 
   # The following adds the Cupertino Icons font to your application.

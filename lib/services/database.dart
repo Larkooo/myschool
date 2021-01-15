@@ -115,6 +115,16 @@ class DatabaseService {
     return schoolsCollection.doc(uid).collection('announcements').snapshots();
   }
 
+  // Group announcements announcements
+  Stream<QuerySnapshot> groupAnnouncements(String groupUid) {
+    return schoolsCollection
+        .doc(uid)
+        .collection('groups')
+        .doc(groupUid)
+        .collection('announcements')
+        .snapshots();
+  }
+
   // User doc stream
   Stream<UserData> get user {
     return usersCollection.doc(uid).snapshots().map(userDataFromSnapshot);
