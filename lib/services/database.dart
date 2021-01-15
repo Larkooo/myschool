@@ -4,6 +4,7 @@ import 'package:myschool/models/announcement.dart';
 import 'package:myschool/models/group.dart';
 import 'package:myschool/models/school.dart';
 import 'package:myschool/models/user.dart';
+import 'package:myschool/shared/constants.dart';
 
 class DatabaseService {
   final String uid;
@@ -38,7 +39,7 @@ class DatabaseService {
         .update({"usedTimes": FieldValue.increment(1)});
   }
 
-  UserData _userDataFromSnapshot(DocumentSnapshot snapshot) {
+  UserData userDataFromSnapshot(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data();
     return UserData(
         uid: uid,
@@ -52,7 +53,7 @@ class DatabaseService {
         createdAt: (data['createdAt'] as Timestamp).toDate());
   }
 
-  School _schoolFromSnapshot(DocumentSnapshot snapshot) {
+  School schoolFromSnapshot(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data();
     //print(snapshot.reference.collection('announcements').id);
     return School(
@@ -71,7 +72,7 @@ class DatabaseService {
     );
   }
 
-  Code _codeFromSnapshot(DocumentSnapshot snapshot) {
+  Code codeFromSnapshot(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data();
     return Code(
         uid: data['uid'],
@@ -79,6 +80,19 @@ class DatabaseService {
         type: data['type'],
         usedTimes: data['usedTimes'],
         createdAt: data['createdAt']);
+  }
+
+  Announcement announcementFromSnapshot(DocumentSnapshot snapshot) {
+    Map<String, dynamic> data = snapshot.data();
+    return Announcement(
+        scope: snapshot.reference.parent.parent.parent.id == "schools"
+            ? Scope.school
+            : Scope.group,
+        uid: data['uid'],
+        title: data['title'],
+        description: data['description'],
+        createdAt: (data['createdAt'] as Timestamp).toDate(),
+        author: data['author'].id);
   }
 
   // Users stream
@@ -103,16 +117,16 @@ class DatabaseService {
 
   // User doc stream
   Stream<UserData> get user {
-    return usersCollection.doc(uid).snapshots().map(_userDataFromSnapshot);
+    return usersCollection.doc(uid).snapshots().map(userDataFromSnapshot);
   }
 
   // Code doc stream
   Stream<Code> get code {
-    return codesCollection.doc(uid).snapshots().map(_codeFromSnapshot);
+    return codesCollection.doc(uid).snapshots().map(codeFromSnapshot);
   }
 
   // School doc stream
   Stream<School> get school {
-    return schoolsCollection.doc(uid).snapshots().map(_schoolFromSnapshot);
+    return schoolsCollection.doc(uid).snapshots().map(schoolFromSnapshot);
   }
 }

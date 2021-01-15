@@ -127,31 +127,35 @@ class _CalendarState extends State<Calendar> {
                           jsonDecode(await remoteSchoolFile.readAsString());
                     }
                   }
-                  Future.delayed(Duration(milliseconds: 1), () {
-                    _events.forEach((day, data) {
-                      if (day.isSameDay(_selectedDay)) {
-                        setState(() {
-                          _dayEvents[day] = data;
-                        });
-                      }
-                    });
-                    _remoteSchoolDays.forEach((element) {
-                      DateTime remoteDay = DateTime.parse(element['date']);
 
-                      if (_selectedDay.isSameDay(remoteDay)) {
-                        setState(() {
-                          if ((element['home'] as List)
-                              .contains(int.parse(userData.school.group.uid))) {
-                            _dayIsHome = true;
-                          } else if ((element['home'] as List).contains(
-                              int.parse(userData.school.group.uid[0]))) {
-                            _dayIsHome = true;
-                          } else {
-                            _dayIsHome = false;
-                          }
-                        });
-                      }
-                    });
+                  // Using future.delayed to resolve the setState error happening on build
+                  Future.delayed(Duration.zero, () {
+                    if (_events.isNotEmpty)
+                      _events.forEach((day, data) {
+                        if (day.isSameDay(_selectedDay)) {
+                          setState(() {
+                            _dayEvents[day] = data;
+                          });
+                        }
+                      });
+                    if (_remoteSchoolDays.isNotEmpty)
+                      _remoteSchoolDays.forEach((element) {
+                        DateTime remoteDay = DateTime.parse(element['date']);
+
+                        if (_selectedDay.isSameDay(remoteDay)) {
+                          setState(() {
+                            if ((element['home'] as List).contains(
+                                int.parse(userData.school.group.uid))) {
+                              _dayIsHome = true;
+                            } else if ((element['home'] as List).contains(
+                                int.parse(userData.school.group.uid[0]))) {
+                              _dayIsHome = true;
+                            } else {
+                              _dayIsHome = false;
+                            }
+                          });
+                        }
+                      });
                   });
                 },
                 onDaySelected: (day, events, holidays) {

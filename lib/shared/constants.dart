@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
+enum Scope { school, group }
+
 // Not used anymore (for now)
 final BoxDecoration mainBlueBtnDec =
     BoxDecoration(borderRadius: BorderRadius.circular(15), color: Colors.blue);

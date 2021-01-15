@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/services/database.dart';
+import 'package:myschool/shared/constants.dart';
 import 'package:provider/provider.dart';
 import '../services/database.dart';
 
@@ -39,7 +40,8 @@ class _AnnouncementsState extends State<Announcements> {
                         announcementsData.sort((a, b) => b
                             .data()['createdAt']
                             .compareTo(a.data()['createdAt']));
-                        var announcement = announcementsData[index];
+                        var announcement = DatabaseService()
+                            .announcementFromSnapshot(announcementsData[index]);
                         return Card(
                             child: Column(
                                 mainAxisSize: MainAxisSize.min,
@@ -58,9 +60,8 @@ class _AnnouncementsState extends State<Announcements> {
                                           children: [
                                             StreamBuilder(
                                                 stream: DatabaseService(
-                                                        uid: announcement[
-                                                                'author']
-                                                            .id)
+                                                        uid:
+                                                            announcement.author)
                                                     .user,
                                                 builder: (context, snapshot) {
                                                   if (snapshot.hasData) {
@@ -125,9 +126,7 @@ class _AnnouncementsState extends State<Announcements> {
                                             ),
                                             Text(
                                               DateFormat.yMMMMEEEEd().format(
-                                                  (announcement['createdAt']
-                                                          as Timestamp)
-                                                      .toDate()),
+                                                  announcement.createdAt),
                                               style: TextStyle(
                                                   color: Colors.grey[500],
                                                   fontSize: 13),
@@ -136,7 +135,7 @@ class _AnnouncementsState extends State<Announcements> {
                                         ),
                                         Row(
                                           children: [
-                                            Text(announcement['title']),
+                                            Text(announcement.title),
                                             Spacer(),
                                             Container(
                                               width: 50,
@@ -156,13 +155,8 @@ class _AnnouncementsState extends State<Announcements> {
                                                       onTap: () => {},
                                                       child: Center(
                                                           child: Text(
-                                                        announcement
-                                                                    .reference
-                                                                    .parent
-                                                                    .parent
-                                                                    .parent
-                                                                    .id ==
-                                                                "schools"
+                                                        announcement.scope ==
+                                                                Scope.school
                                                             ? "École"
                                                             : "Foyer",
                                                         style: TextStyle(
@@ -176,14 +170,12 @@ class _AnnouncementsState extends State<Announcements> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text((announcement['description']
-                                                        as String)
-                                                    .length <
+                                        Text(announcement.description.length <
                                                 150
-                                            ? announcement['description']
-                                            : (announcement['description']
-                                                        as String)
-                                                    .substring(0, 150) +
+                                            ? announcement.description
+                                            : announcement.description
+                                                    .substring(0, 150)
+                                                    .trim() +
                                                 "..."),
                                       ])),
                               SizedBox(
