@@ -208,7 +208,9 @@ class _SettingsState extends State<Settings> {
                                     SettingsTile(
                                       leading: Icon(Icons.school),
                                       title: school.name,
-                                      // Easter Egg start
+                                      // Easter Egg start 
+                                      /* 
+                                      Commenting it out
                                       onPressed: (context) {
                                         count++;
                                         if (count > 5) {
@@ -245,7 +247,7 @@ class _SettingsState extends State<Settings> {
                                         if (count > 1005) {
                                           Alert(message: "${count}").show();
                                         }
-                                      }, // Easter Egg end
+                                      }, // Easter Egg end */
                                     ),
                                     SettingsTile(
                                       leading: Icon(Icons.group),
