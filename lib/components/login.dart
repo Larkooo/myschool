@@ -31,7 +31,10 @@ class _LoginState extends State<Login> {
 
   final _formKey = GlobalKey<FormState>();
 
-  int secretCount = 0;
+  int _secretCount = 0;
+
+  double _mySchoolLogoWidth = 100;
+  double _mySchoolLogoHeight = 100;
 
   @override
   Widget build(BuildContext context) {
@@ -43,20 +46,34 @@ class _LoginState extends State<Login> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   GestureDetector(
-                    onTap: () {
-                      secretCount++;
-                      if (secretCount > 6) {
-                        Alert(message: "Fait avec meow par Nasr AA. Djeghmoum")
-                            .show();
-                        secretCount = 0;
-                      }
-                    },
-                    child: Image.asset(
-                      "assets/logo.png",
-                      width: 100,
-                      height: 100,
-                    ),
-                  ),
+                      onTap: () {
+                        setState(() {
+                          _mySchoolLogoHeight += 30;
+                          _mySchoolLogoWidth -= 30;
+                        });
+                        Future.delayed(
+                            Duration(milliseconds: 100),
+                            () => setState(() {
+                                  _mySchoolLogoHeight = 100;
+                                  _mySchoolLogoWidth = 100;
+                                }));
+                        _secretCount++;
+                        if (_secretCount > 6) {
+                          Alert(
+                                  message:
+                                      "Fait avec meow par Nasr AA. Djeghmoum")
+                              .show();
+                          _secretCount = 0;
+                        }
+                      },
+                      child: AnimatedContainer(
+                        width: _mySchoolLogoWidth,
+                        height: _mySchoolLogoHeight,
+                        duration: Duration(milliseconds: 300),
+                        child: Image.asset(
+                          "assets/logo.png",
+                        ),
+                      )),
                   Container(
                       width: MediaQuery.of(context).size.width / 1.3,
                       child: TextFormField(

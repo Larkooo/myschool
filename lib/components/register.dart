@@ -13,7 +13,12 @@ import 'package:slide_popup_dialog/slide_popup_dialog.dart';
 import '../main.dart';
 import 'package:alert/alert.dart';
 
-class Register extends StatelessWidget {
+class Register extends StatefulWidget {
+  @override
+  _RegisterState createState() => _RegisterState();
+}
+
+class _RegisterState extends State<Register> {
   TextEditingController _firstNameController = TextEditingController();
   TextEditingController _lastNameController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
@@ -25,6 +30,11 @@ class Register extends StatelessWidget {
 
   final _formKey = GlobalKey<FormState>();
 
+  int _secretCount = 0;
+
+  double _mySchoolLogoWidth = 100;
+  double _mySchoolLogoHeight = 100;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,15 +42,39 @@ class Register extends StatelessWidget {
             key: _formKey,
             child: Center(
                 child: SingleChildScrollView(
-              //mainAxisAlignment: MainAxisAlignment.center,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset(
-                    "assets/logo.png",
-                    width: 100,
-                    height: 100,
-                  ),
+                  // meow
+                  GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _mySchoolLogoHeight += 30;
+                          _mySchoolLogoWidth -= 30;
+                        });
+                        Future.delayed(
+                            Duration(milliseconds: 100),
+                            () => setState(() {
+                                  _mySchoolLogoHeight = 100;
+                                  _mySchoolLogoWidth = 100;
+                                }));
+                        _secretCount++;
+                        if (_secretCount > 6) {
+                          Alert(
+                                  message:
+                                      "Fait avec meow par Nasr AA. Djeghmoum")
+                              .show();
+                          _secretCount = 0;
+                        }
+                      },
+                      child: AnimatedContainer(
+                        width: _mySchoolLogoWidth,
+                        height: _mySchoolLogoHeight,
+                        duration: Duration(milliseconds: 300),
+                        child: Image.asset(
+                          "assets/logo.png",
+                        ),
+                      )),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

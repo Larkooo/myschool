@@ -11,18 +11,18 @@ class ResetPasswordComponent extends StatefulWidget {
 }
 
 class _ResetPasswordComponentState extends State<ResetPasswordComponent> {
-  TextEditingController emailController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
 
   final RoundedLoadingButtonController _btnController =
       new RoundedLoadingButtonController();
 
-  final formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
-  String confirmMessage = "";
+  String _confirmMessage = "";
   @override
   Widget build(BuildContext context) {
     return Form(
-        key: formKey,
+        key: _formKey,
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -36,7 +36,7 @@ class _ResetPasswordComponentState extends State<ResetPasswordComponent> {
               Container(
                   width: MediaQuery.of(context).size.width / 1.3,
                   child: TextFormField(
-                    controller: emailController,
+                    controller: _emailController,
                     validator: (value) {
                       if (value.isEmpty) return 'Ce champs est obligatoire.';
                       bool v = EmailValidator.validate(value);
@@ -55,14 +55,14 @@ class _ResetPasswordComponentState extends State<ResetPasswordComponent> {
                 height: 35,
               ),
               mainBlueLoadingBtn(context, _btnController, "Envoyer", () async {
-                if (formKey.currentState.validate()) {
+                if (_formKey.currentState.validate()) {
                   _btnController.start();
                   bool emailSent = await FirebaseAuthService.resetPassword(
-                      emailController.text);
+                      _emailController.text);
                   if (emailSent) {
                     _btnController.success();
                     setState(() {
-                      confirmMessage =
+                      _confirmMessage =
                           "Un courriel pour réinitialiser votre mot de passe vous a été envoyé.";
                     });
                     //widget.toggleView();
@@ -73,7 +73,7 @@ class _ResetPasswordComponentState extends State<ResetPasswordComponent> {
                 }
               }),
               Text(
-                confirmMessage,
+                _confirmMessage,
                 style: TextStyle(color: Colors.green, fontSize: 13),
               )
             ],
