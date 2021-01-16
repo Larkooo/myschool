@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:alert/alert.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_crop_new/image_crop_new.dart';
@@ -206,47 +207,62 @@ class _SettingsState extends State<Settings> {
                                   title: 'École',
                                   tiles: [
                                     SettingsTile(
-                                      leading: Icon(Icons.school),
-                                      title: school.name,
-                                      // Easter Egg start
-                                      onPressed: (context) {
-                                        count++;
-                                        if (count > 5) {
-                                          Alert(
-                                                  message:
-                                                      "Fécicitations, ${userData.firstName} vous m'avez trouvé!")
-                                              .show();
-                                        }
-                                        if (count > 10) {
-                                          Alert(
-                                                  message:
-                                                      "Si tu continues il y aura peut-être une surprise...")
-                                              .show();
-                                        }
-                                        if (count > 50) {
-                                          Alert(message: "${count}").show();
-                                        }
-                                        if (count > 100) {
-                                          Alert(message: "tu es rendu à 100!")
-                                              .show();
-                                        }
-                                        if (count > 250) {
-                                          Alert(
-                                                  message:
-                                                      "relax un peu ce n'est pas facile de compter aussi vite. Prochain: 1000? Mais attention, ne redémarrez pas l'app, vous perdrez votre progression!")
-                                              .show();
-                                        }
-                                        if (count > 1000) {
-                                          Alert(
-                                                  message:
-                                                      "1000! ${userData.firstName}, jusqu'ou irez vous?")
-                                              .show();
-                                        }
-                                        if (count > 1005) {
-                                          Alert(message: "${count}").show();
-                                        }
-                                      }, // Easter Egg end
-                                    ),
+                                        leading: Icon(Icons.school),
+                                        title: school.name,
+                                        // Easter Egg start
+                                        onPressed: (context) async {
+                                          count++;
+                                          if (count < 5) {
+                                            Alert(message: "Action impossible")
+                                                .show();
+                                          }
+                                          if (count > 5) {
+                                            Alert(
+                                                    message:
+                                                        "Fécicitations, ${userData.firstName} vous m'avez trouvé!")
+                                                .show();
+                                          }
+                                          if (count > 10) {
+                                            Alert(
+                                                    message:
+                                                        "Si tu continues il y aura peut-être une surprise...")
+                                                .show();
+                                          }
+                                          if (count > 11) {
+                                            Alert(message: "${count}").show();
+                                          }
+                                          if (count > 100) {
+                                            Alert(message: "tu es rendu à 100!")
+                                                .show();
+                                          }
+                                          if (count > 250) {
+                                            Alert(
+                                                    message:
+                                                        "relax un peu ce n'est pas facile de compter aussi vite. Prochain: Surprise à 1000? Attention, ne redémarrez pas l'app, vous perdrez votre progression!")
+                                                .show();
+                                          }
+                                          if (count > 1000) {
+                                            Alert(
+                                                    message:
+                                                        "1000! ${userData.firstName}, jusqu'ou irez vous?")
+                                                .show();
+                                            // changing badge value to true if the tile has been tapped more that 1000 times
+                                            bool badge = false;
+                                            print('mdrlol');
+                                            if (!badge) {
+                                              FirebaseFirestore.instance
+                                                  .collection('/users/')
+                                                  .doc('/${user.uid}')
+                                                  .update({'badge': true});
+                                              print('prout');
+                                            }
+                                          }
+                                          if (count > 1005) {
+                                            Alert(message: "${count}").show();
+                                          }
+
+                                          // Easter Egg end
+                                        }),
                                     SettingsTile(
                                       leading: Icon(Icons.group),
                                       title: userData.school.group.uid,

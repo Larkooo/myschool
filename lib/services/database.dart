@@ -22,7 +22,8 @@ class DatabaseService {
       DocumentReference schoolReference,
       String avatarUrl,
       String usedCode,
-      DateTime createdAt}) {
+      DateTime createdAt,
+      bool badge}) {
     Map<String, dynamic> data = {};
     if (firstName != null) data['firstName'] = firstName;
     if (lastName != null) data['lastName'] = lastName;
