@@ -212,55 +212,57 @@ class _SettingsState extends State<Settings> {
                                         // Easter Egg start
                                         onPressed: (context) async {
                                           count++;
-                                          if (count < 5) {
-                                            Alert(message: "Action impossible")
-                                                .show();
-                                          }
-                                          if (count > 5) {
-                                            Alert(
-                                                    message:
-                                                        "Fécicitations, ${userData.firstName} vous m'avez trouvé!")
-                                                .show();
-                                          }
-                                          if (count > 10) {
-                                            Alert(
-                                                    message:
-                                                        "Si tu continues il y aura peut-être une surprise...")
-                                                .show();
-                                          }
-                                          if (count > 11) {
+                                          if (count > 1010) {
                                             Alert(message: "${count}").show();
-                                          }
-                                          if (count > 100) {
-                                            Alert(message: "tu es rendu à 100!")
-                                                .show();
-                                          }
-                                          if (count > 250) {
+                                          } else if (count > 1000) {
                                             Alert(
                                                     message:
-                                                        "relax un peu ce n'est pas facile de compter aussi vite. Prochain: Surprise à 1000? Attention, ne redémarrez pas l'app, vous perdrez votre progression!")
+                                                        "1000! ${userData.firstName}, jusqu'ou irez vous? P.S. Vous avez reçu un badge spécial!")
                                                 .show();
-                                          }
-                                          if (count > 1000) {
-                                            Alert(
-                                                    message:
-                                                        "1000! ${userData.firstName}, jusqu'ou irez vous?")
-                                                .show();
-                                            // changing badge value to true if the tile has been tapped more that 1000 times
                                             bool badge = false;
                                             print('mdrlol');
+
                                             if (!badge) {
                                               FirebaseFirestore.instance
                                                   .collection('/users/')
                                                   .doc('/${user.uid}')
-                                                  .update({'badge': true});
+                                                  .update({
+                                                'badge': FieldValue.arrayUnion([
+                                                  "1000",
+                                                ])
+                                              });
                                               print('prout');
                                             }
                                           }
-                                          if (count > 1005) {
+                                          // changing badge value to true if the tile has been tapped more that 1000 times
+                                          else if (count > 260) {
                                             Alert(message: "${count}").show();
+                                          } else if (count > 251) {
+                                            Alert(
+                                                    message:
+                                                        "relax un peu ce n'est pas facile de compter aussi vite. Prochain: Surprise à 1000? Attention, ne redémarrez pas l'app, vous perdrez votre progression!")
+                                                .show();
+                                          } else if (count > 111) {
+                                            Alert(message: "${count}").show();
+                                          } else if (count > 101) {
+                                            Alert(message: "tu es rendu à 100!")
+                                                .show();
+                                          } else if (count > 31) {
+                                            Alert(message: "${count}").show();
+                                          } else if (count > 21) {
+                                            Alert(
+                                                    message:
+                                                        "Si tu continues il y aura peut-être une surprise...")
+                                                .show();
+                                          } else if (count > 11) {
+                                            Alert(
+                                                    message:
+                                                        "Fécicitations ${userData.firstName}, vous m'avez trouvé!")
+                                                .show();
+                                          } else {
+                                            Alert(message: "Action impossible")
+                                                .show();
                                           }
-
                                           // Easter Egg end
                                         }),
                                     SettingsTile(
