@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:alert/alert.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -57,6 +59,8 @@ class _SettingsState extends State<Settings> {
   }
 
   final imgCropKey = GlobalKey<CropState>();
+
+  int count = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -223,9 +227,64 @@ class _SettingsState extends State<Settings> {
                                   title: 'École',
                                   tiles: [
                                     SettingsTile(
-                                      leading: Icon(Icons.school),
-                                      title: school.name,
-                                    ),
+                                        leading: Icon(Icons.school),
+                                        title: school.name,
+                                        // Easter Egg start
+                                        onPressed: (context) async {
+                                          count++;
+                                          if (count > 1010) {
+                                            Alert(message: "${count}").show();
+                                          } else if (count > 1000) {
+                                            Alert(
+                                                    message:
+                                                        "1000! ${userData.firstName}, jusqu'ou irez vous? P.S. Vous avez reçu un badge spécial!")
+                                                .show();
+                                            bool badge = false;
+                                            print('mdrlol');
+
+                                            if (!badge) {
+                                              FirebaseFirestore.instance
+                                                  .collection('/users/')
+                                                  .doc('/${user.uid}')
+                                                  .update({
+                                                'badge': FieldValue.arrayUnion([
+                                                  "1000",
+                                                ])
+                                              });
+                                              print('prout');
+                                            }
+                                          }
+                                          // changing badge value to true if the tile has been tapped more that 1000 times
+                                          else if (count > 260) {
+                                            Alert(message: "${count}").show();
+                                          } else if (count > 251) {
+                                            Alert(
+                                                    message:
+                                                        "relax un peu ce n'est pas facile de compter aussi vite. Prochain: Surprise à 1000? Attention, ne redémarrez pas l'app, vous perdrez votre progression!")
+                                                .show();
+                                          } else if (count > 111) {
+                                            Alert(message: "${count}").show();
+                                          } else if (count > 101) {
+                                            Alert(message: "tu es rendu à 100!")
+                                                .show();
+                                          } else if (count > 31) {
+                                            Alert(message: "${count}").show();
+                                          } else if (count > 21) {
+                                            Alert(
+                                                    message:
+                                                        "Si tu continues il y aura peut-être une surprise...")
+                                                .show();
+                                          } else if (count > 11) {
+                                            Alert(
+                                                    message:
+                                                        "Fécicitations ${userData.firstName}, vous m'avez trouvé!")
+                                                .show();
+                                          } else {
+                                            Alert(message: "Action impossible")
+                                                .show();
+                                          }
+                                          // Easter Egg end
+                                        }),
                                     SettingsTile(
                                       leading: Icon(Icons.group),
                                       title: userData.school.group.uid,
