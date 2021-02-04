@@ -3,7 +3,7 @@ import '../shared/constants.dart';
 class Announcement {
   final String uid;
   final String title;
-  final String description;
+  final String content;
   final DateTime createdAt;
   final String author;
   final Scope scope;
@@ -11,7 +11,7 @@ class Announcement {
   Announcement(
       {this.uid,
       this.title,
-      this.description,
+      this.content,
       this.createdAt,
       this.author,
       this.scope});

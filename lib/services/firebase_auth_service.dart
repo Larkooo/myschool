@@ -3,19 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:myschool/models/group.dart';
 import 'package:myschool/models/school.dart';
 import 'package:myschool/services/database.dart';
+import 'package:myschool/shared/constants.dart';
 import '../models/user.dart';
-
-enum AuthCodes {
-  ok,
-  accountNotFound,
-  badPassword,
-  error,
-  emailAlreadyUsed,
-  codeNotFound,
-  passwordResetCodeExpired,
-  passwordResetCodeInvalid,
-  accountDisabled
-}
 
 class FirebaseAuthService {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -35,6 +24,7 @@ class FirebaseAuthService {
           uid: user.uid,
           firstName: data['firstName'],
           lastName: data['lastName'],
+          userType: userTypeDefinitions[data['type']],
           school: School(
               uid: doc.get('school').parent.parent.id,
               group: Group(uid: doc.get('school').id)),
@@ -92,6 +82,7 @@ class FirebaseAuthService {
       await users.doc(result.user.uid).set({
         "firstName": firstName,
         "lastName": lastName,
+        "type": 0,
         "avatarUrl": null,
         "school": codeData['school'],
         "usedCode": code,

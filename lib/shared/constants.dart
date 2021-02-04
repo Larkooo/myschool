@@ -2,6 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 enum Scope { school, group }
+enum UserType { student, teacher, principal }
+enum AuthCodes {
+  ok,
+  accountNotFound,
+  badPassword,
+  error,
+  emailAlreadyUsed,
+  codeNotFound,
+  passwordResetCodeExpired,
+  passwordResetCodeInvalid,
+  accountDisabled
+}
+
+const Map<int, UserType> userTypeDefinitions = {
+  0: UserType.student,
+  1: UserType.teacher,
+  2: UserType.student
+};
 
 // Not used anymore (for now)
 final BoxDecoration mainBlueBtnDec =

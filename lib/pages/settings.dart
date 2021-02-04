@@ -1,11 +1,15 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:image_crop_new/image_crop_new.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:myschool/components/change_password.dart';
+import 'package:myschool/components/mozaik_login.dart';
 import 'package:myschool/components/reset_password.dart';
+import 'package:myschool/models/mozaik.dart';
 import 'package:myschool/models/school.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/services/database.dart';
@@ -13,6 +17,7 @@ import 'package:myschool/services/firebase_auth_service.dart';
 import 'package:myschool/services/firebase_storage.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:slide_popup_dialog/slide_popup_dialog.dart';
 
 class Settings extends StatefulWidget {
@@ -34,6 +39,21 @@ class _SettingsState extends State<Settings> {
     } else {
       return null;
     }
+  }
+
+  String _mozaikAccountText = "Lier votre compte Mozaik";
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    SharedPreferences.getInstance().then((prefs) {
+      if (prefs.getString('access_token') != null) {
+        setState(() {
+          _mozaikAccountText = "Compte Mozaik lié";
+        });
+      }
+    });
   }
 
   final imgCropKey = GlobalKey<CropState>();
@@ -232,6 +252,18 @@ class _SettingsState extends State<Settings> {
                     SettingsSection(
                       title: "Compte",
                       tiles: [
+                        SettingsTile(
+                          leading: Icon(Icons.account_tree),
+                          title: _mozaikAccountText,
+                          onPressed:
+                              /*_mozaikAccountText.contains("Lier")
+                              ? */
+                              (context) => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => MozaikLogin()))
+                          /*: null*/,
+                        ),
                         SettingsTile(
                           leading: Icon(Icons.delete_forever),
                           title: "Supprimer votre compte",

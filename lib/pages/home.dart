@@ -37,6 +37,9 @@ class _HomeState extends State<Home> {
             UserData userData = snapshot.data;
             return Center(
                 child: Column(children: [
+              SizedBox(
+                height: 10,
+              ),
               FutureBuilder(
                 future: StorageService(
                         ref:

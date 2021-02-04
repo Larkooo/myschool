@@ -33,10 +33,55 @@ class DatabaseService {
     return usersCollection.doc(uid).update(data);
   }
 
+  Future<bool> createAnnounce(
+      String title, String content, Scope scope, UserData user) async {
+    try {
+      if (scope == Scope.school) {
+        await schoolsCollection.doc(uid).update({
+          'announcements': FieldValue.arrayUnion([
+            {
+              'title': title,
+              'content': content,
+              'author': usersCollection.doc(user.uid),
+              'createdAt': DateTime.now()
+            }
+          ])
+        });
+      } else {
+        await schoolsCollection
+            .doc(uid)
+            .collection('groups')
+            .doc(user.school.group.uid)
+            .update({
+          'announcements': FieldValue.arrayUnion([
+            {
+              'title': title,
+              'content': content,
+              'author': usersCollection.doc(user.uid),
+              'createdAt': DateTime.now()
+            }
+          ])
+        });
+      }
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   Future incrementCodeUsage() {
     return codesCollection
         .doc(uid)
         .update({"usedTimes": FieldValue.increment(1)});
+  }
+
+  Announcement announcementFromData(Map<String, dynamic> data, Scope scope) {
+    return Announcement(
+        scope: scope,
+        title: data['title'],
+        content: data['content'],
+        createdAt: (data['createdAt'] as Timestamp).toDate(),
+        author: data['author'].id);
   }
 
   UserData userDataFromSnapshot(DocumentSnapshot snapshot) {
@@ -45,6 +90,7 @@ class DatabaseService {
         uid: uid,
         firstName: data['firstName'],
         lastName: data['lastName'],
+        userType: userTypeDefinitions[data['type']],
         avatarUrl: data['avatarUrl'],
         usedCode: data['usedCode'],
         school: School(
@@ -55,44 +101,36 @@ class DatabaseService {
 
   School schoolFromSnapshot(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data();
-    //print(snapshot.reference.collection('announcements').id);
-    return School(
-      uid: uid,
-      name: data['name'],
-      //annoucements: (data['announcements'] as Map).map((id, announcement) =>
-      //    MapEntry(
-      //        id,
-      //        Announcement(
-      //            uid: id,
-      //            title: announcement['title'],
-      //            description: announcement['description'],
-      //            createdAt:
-      //                (announcement['createdAt'] as Timestamp).toDate(),
-      //            author: announcement['author'])))
-    );
+    List<Announcement> announcements = List();
+    data['announcements'].forEach((data) => announcements.add(
+        announcementFromData(
+            data,
+            snapshot.reference.parent.id == "schools"
+                ? Scope.school
+                : Scope.group)));
+    return School(uid: uid, name: data['name'], announcements: announcements);
   }
 
   Code codeFromSnapshot(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data();
     return Code(
-        uid: data['uid'],
+        uid: snapshot.id,
         school: School(uid: (data['school'] as DocumentReference).id),
         type: data['type'],
         usedTimes: data['usedTimes'],
         createdAt: data['createdAt']);
   }
 
-  Announcement announcementFromSnapshot(DocumentSnapshot snapshot) {
+  Group groupFromSnapshot(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data();
-    return Announcement(
-        scope: snapshot.reference.parent.parent.parent.id == "schools"
-            ? Scope.school
-            : Scope.group,
-        uid: data['uid'],
-        title: data['title'],
-        description: data['description'],
-        createdAt: (data['createdAt'] as Timestamp).toDate(),
-        author: data['author'].id);
+    List<Announcement> announcements = List();
+    data['announcements'].forEach((data) => announcements.add(
+        announcementFromData(
+            data,
+            snapshot.reference.parent.id == "schools"
+                ? Scope.school
+                : Scope.group)));
+    return Group(uid: snapshot.id, announcements: announcements);
   }
 
   // Users stream
@@ -110,19 +148,9 @@ class DatabaseService {
     return schoolsCollection.snapshots();
   }
 
-  // School announcements
-  Stream<QuerySnapshot> get announcements {
-    return schoolsCollection.doc(uid).collection('announcements').snapshots();
-  }
-
-  // Group announcements announcements
-  Stream<QuerySnapshot> groupAnnouncements(String groupUid) {
-    return schoolsCollection
-        .doc(uid)
-        .collection('groups')
-        .doc(groupUid)
-        .collection('announcements')
-        .snapshots();
+  // Groups
+  Stream<QuerySnapshot> get groups {
+    return schoolsCollection.doc(uid).collection('groups').snapshots();
   }
 
   // User doc stream
@@ -138,5 +166,15 @@ class DatabaseService {
   // School doc stream
   Stream<School> get school {
     return schoolsCollection.doc(uid).snapshots().map(schoolFromSnapshot);
+  }
+
+  // Group
+  Stream<Group> group(String groupUid) {
+    return schoolsCollection
+        .doc(uid)
+        .collection('groups')
+        .doc(groupUid)
+        .snapshots()
+        .map(groupFromSnapshot);
   }
 }

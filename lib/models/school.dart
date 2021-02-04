@@ -6,6 +6,6 @@ class School {
   final String name;
   final Group group;
   // String : ID
-  final Map<String, Announcement> annoucements;
-  School({this.uid, this.name, this.group, this.annoucements});
+  final List<Announcement> announcements;
+  School({this.uid, this.name, this.group, this.announcements});
 }
