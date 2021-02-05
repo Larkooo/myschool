@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+import 'package:dart_date/dart_date.dart';
 
 enum Scope { school, group }
 enum UserType { student, teacher, principal }
@@ -45,6 +46,27 @@ Widget adaptiveDialog(
           actions: actions,
         );
       });
+}
+
+// Get the next apparition of a course
+dynamic getNextCourse(
+    DateTime last, String courseId, Map<DateTime, dynamic> events) {
+  for (final element in events.entries) {
+    if (element.key > last && element.value['codeActivite'] == courseId) {
+      return element;
+    }
+  }
+}
+
+String timeCountdownFormat(DateTime start, DateTime end) {
+  int diffMinutes = start.difference(end).inMinutes;
+  if ((diffMinutes / 60) > 24) {
+    return "Dans ${((diffMinutes / 60) / 24).round()} jour(s)";
+  } else if (diffMinutes > 60) {
+    return "Dans ${(diffMinutes / 60).round()} heure(s)";
+  } else {
+    return "Dans ${diffMinutes.round()} minute(s)";
+  }
 }
 
 // Not used anymore (for now)

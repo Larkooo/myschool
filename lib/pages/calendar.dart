@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/services/database.dart';
 import 'package:myschool/services/firebase_storage.dart';
+import 'package:myschool/shared/constants.dart';
 import 'package:provider/provider.dart';
 import 'package:slide_popup_dialog/slide_popup_dialog.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -38,15 +39,6 @@ class _CalendarState extends State<Calendar> {
   void initState() {
     super.initState();
     _calendarController = CalendarController();
-  }
-
-  // Get the next apparition of a course
-  dynamic getNextCourse(DateTime last, String courseId) {
-    for (final element in _events.entries) {
-      if (element.key > last && element.value['codeActivite'] == courseId) {
-        return element;
-      }
-    }
   }
 
   @override
@@ -212,7 +204,7 @@ class _CalendarState extends State<Calendar> {
                 },
               ),
               /* 
-                  lazy to describe everything here, this is just the frontend 
+                  lazy to describe everything here, this is just the frontend part of the courses list
                   */
               Expanded(
                   child: ListView(
@@ -341,8 +333,10 @@ class _CalendarState extends State<Calendar> {
                                                             [0]['prenom'] +
                                                         " - " +
                                                         DateFormat.MEd().format(
-                                                            getNextCourse(e.key,
-                                                                    e.value['codeActivite'])
+                                                            getNextCourse(
+                                                                    e.key,
+                                                                    e.value['codeActivite'],
+                                                                    _events)
                                                                 .key))),
                                               )),
                                         ],

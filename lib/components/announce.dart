@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:myschool/models/announcement.dart';
@@ -16,7 +19,7 @@ class Announce extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = context.watch<User>();
-    return Card(
+    final Card announcementCard = Card(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
       ListTile(
         title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -72,6 +75,7 @@ class Announce extends StatelessWidget {
               ),
             ],
           ),
+          SizedBox(height: 5),
           Row(
             children: [
               Text(announcement.title),
@@ -104,7 +108,9 @@ class Announce extends StatelessWidget {
           Text(announcement.content.length < 150
               ? announcement.content
               : announcement.content.substring(0, 150).trim() + "..."),
-          if (user.uid == announcement.author && announcement.uid != -1)
+          if (user.uid == announcement.author &&
+              announcement.uid != -1 &&
+              Platform.isAndroid)
             Row(children: [
               Spacer(),
               TextButton(
@@ -127,5 +133,31 @@ class Announce extends StatelessWidget {
         height: 5,
       ),
     ]));
+
+    return Platform.isIOS &&
+            user.uid == announcement.author &&
+            announcement.uid != -1
+        ? CupertinoContextMenu(actions: [
+            CupertinoContextMenuAction(
+              child: Text("Supprimer",
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.red,
+                  )),
+              onPressed: () {
+                Navigator.pop(context);
+                adaptiveDialog(
+                    context: context,
+                    content:
+                        Text("Voulez vous vraiment supprimer cette annonce?"),
+                    actions: [
+                      adaptativeDialogTextButton(
+                          context, "Non", () => Navigator.pop(context)),
+                      adaptativeDialogTextButton(context, "Oui", () => null)
+                    ]);
+              },
+            )
+          ], child: announcementCard)
+        : announcementCard;
   }
 }

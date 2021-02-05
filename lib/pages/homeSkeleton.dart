@@ -179,7 +179,7 @@ class _HomeState extends State<HomeSkeleton> {
                       label: "Accueil"),
                   BottomNavigationBarItem(
                       icon: Icon(Platform.isIOS
-                          ? CupertinoIcons.speaker
+                          ? CupertinoIcons.news
                           : Icons.announcement),
                       label: "Annonces"),
                   BottomNavigationBarItem(
