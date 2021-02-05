@@ -1,10 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/services.dart';
 import 'package:myschool/components/login.dart';
+import 'package:myschool/components/select_groups.dart';
 import 'package:myschool/models/user.dart';
-import 'package:myschool/pages/homeSkeleton.dart';
+import 'package:myschool/pages/home_skeleton.dart';
+import 'package:myschool/services/database.dart';
 import 'package:myschool/services/firebase_auth_service.dart';
 import 'package:myschool/shared/constants.dart';
 import 'package:password_validator/password_validator.dart';
@@ -25,6 +28,7 @@ class _RegisterState extends State<Register> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _codeController = TextEditingController();
+  // UserType _userType = UserType.student;
 
   final RoundedLoadingButtonController _btnController =
       new RoundedLoadingButtonController();
@@ -178,9 +182,33 @@ class _RegisterState extends State<Register> {
                         obscureText: false,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
-                          labelText: 'Code de groupe',
+                          labelText: "Code",
                         ),
                       )),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  /* May not be needed Container(
+                      width: MediaQuery.of(context).size.width / 2.6,
+                      height: 60,
+                      child: DropdownButtonFormField(
+                        icon: Icon(Icons.person),
+                        decoration:
+                            InputDecoration(border: OutlineInputBorder()),
+                        items: [
+                          DropdownMenuItem(
+                              child: Text("Élève"), value: UserType.student),
+                          DropdownMenuItem(
+                            child: Text("Enseignant"),
+                            value: UserType.teacher,
+                          ),
+                        ],
+                        onChanged: (value) {
+                          setState(() {
+                            _userType = value;
+                          });
+                        },
+                      )), */
                   SizedBox(
                     height: 10,
                   ),
@@ -218,6 +246,14 @@ class _RegisterState extends State<Register> {
                         //      ],
                         //    ));
                         Navigator.pop(context);
+                        if (registerStatus.userType == UserType.teacher)
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => SelectGroups(
+                                        userUid: registerStatus.uid,
+                                        schoolUid: registerStatus.school.uid,
+                                      )));
                       } else if (registerStatus == AuthCodes.emailAlreadyUsed) {
                         Alert(
                                 message:

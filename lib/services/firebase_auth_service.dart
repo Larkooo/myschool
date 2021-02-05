@@ -79,20 +79,34 @@ class FirebaseAuthService {
       UserCredential result = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
       await DatabaseService(uid: code).incrementCodeUsage();
-      await users.doc(result.user.uid).set({
-        "firstName": firstName,
-        "lastName": lastName,
-        "type": 0,
-        "avatarUrl": null,
-        "school": codeData['school'],
-        "usedCode": code,
-        "createdAt": DateTime.now()
-      });
+
+      // Student
+      codeData['type'] == 0
+          ? await users.doc(result.user.uid).set({
+              "firstName": firstName,
+              "lastName": lastName,
+              "type": 0,
+              "avatarUrl": null,
+              "school": codeData['school'],
+              "usedCode": code,
+              "createdAt": DateTime.now()
+            })
+          : await users.doc(result.user.uid).set({
+              "firstName": firstName,
+              "lastName": lastName,
+              "type": 1,
+              "groups": [],
+              "avatarUrl": null,
+              "school": codeData['school'],
+              "usedCode": code,
+              "createdAt": DateTime.now()
+            });
       return UserData(
           uid: result.user.uid,
           firstName: firstName,
           lastName: lastName,
           avatarUrl: null,
+          userType: codeData['type'] == 0 ? UserType.student : UserType.teacher,
           school: School(uid: (codeData['school'] as DocumentReference).id),
           usedCode: code,
           createdAt: DateTime.now());

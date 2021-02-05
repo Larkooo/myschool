@@ -123,7 +123,11 @@ class Announce extends StatelessWidget {
                     actions: [
                       adaptativeDialogTextButton(
                           context, "Non", () => Navigator.pop(context)),
-                      adaptativeDialogTextButton(context, "Oui", () => null)
+                      adaptativeDialogTextButton(context, "Oui", () async {
+                        await DatabaseService().deleteAnnounce(
+                            announcement.raw, announcement.reference);
+                        Navigator.pop(context);
+                      })
                     ]),
               )
             ])
@@ -153,7 +157,11 @@ class Announce extends StatelessWidget {
                     actions: [
                       adaptativeDialogTextButton(
                           context, "Non", () => Navigator.pop(context)),
-                      adaptativeDialogTextButton(context, "Oui", () => null)
+                      adaptativeDialogTextButton(context, "Oui", () async {
+                        await DatabaseService().deleteAnnounce(
+                            announcement.raw, announcement.reference);
+                        Navigator.pop(context);
+                      })
                     ]);
               },
             )

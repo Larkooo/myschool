@@ -19,19 +19,42 @@ class DatabaseService {
   Future updateUserData(
       {String firstName,
       String lastName,
-      DocumentReference schoolReference,
+      UserType userType,
+      DocumentReference school,
       String avatarUrl,
       String usedCode,
-      DateTime createdAt,
-      bool badge}) {
+      DateTime createdAt}) {
     Map<String, dynamic> data = {};
     if (firstName != null) data['firstName'] = firstName;
     if (lastName != null) data['lastName'] = lastName;
-    if (schoolReference != null) data['schoolReference'] = schoolReference;
+    if (school != null) data['schoolReference'] = school;
     if (avatarUrl != null) data['avatarUrl'] = avatarUrl;
     if (usedCode != null) data['usedCode'] = usedCode;
     if (createdAt != null) data['createdAt'] = createdAt;
     return usersCollection.doc(uid).update(data);
+  }
+
+  Future<bool> deleteAnnounce(
+      Map<dynamic, dynamic> data, DocumentReference reference) async {
+    try {
+      if (reference.parent.id == 'schools') {
+        await schoolsCollection.doc(reference.id).update({
+          'announcements': FieldValue.arrayRemove([data])
+        });
+      } else {
+        await schoolsCollection
+            .doc(reference.parent.parent.id)
+            .collection('groups')
+            .doc(reference.id)
+            .update({
+          'announcements': FieldValue.arrayRemove([data])
+        });
+      }
+      return true;
+    } catch (_) {
+      print(_);
+      return false;
+    }
   }
 
   Future<bool> createAnnounce(
@@ -76,29 +99,45 @@ class DatabaseService {
         .update({"usedTimes": FieldValue.increment(1)});
   }
 
-  Announcement announcementFromData(
-      int index, Map<String, dynamic> data, Scope scope) {
+  Announcement announcementFromData(int index, Map<String, dynamic> data,
+      Scope scope, DocumentReference reference) {
     return Announcement(
         uid: index,
         scope: scope,
         title: data['title'],
         content: data['content'],
         createdAt: (data['createdAt'] as Timestamp).toDate(),
-        author: data['author'].id);
+        author: data['author'].id,
+        reference: reference,
+        raw: data);
   }
 
   UserData userDataFromSnapshot(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data();
+    // Student
+    if (userTypeDefinitions[data['type']] == UserType.student)
+      return UserData(
+          uid: uid,
+          firstName: data['firstName'],
+          lastName: data['lastName'],
+          userType: UserType.student,
+          avatarUrl: data['avatarUrl'],
+          usedCode: data['usedCode'],
+          school: School(
+              uid: data['school'].parent.parent.id,
+              group: Group(uid: data['school'].id)),
+          createdAt: (data['createdAt'] as Timestamp).toDate());
+
+    // Teacher
     return UserData(
         uid: uid,
         firstName: data['firstName'],
         lastName: data['lastName'],
-        userType: userTypeDefinitions[data['type']],
+        userType: UserType.teacher,
+        groups: data['groups'],
         avatarUrl: data['avatarUrl'],
         usedCode: data['usedCode'],
-        school: School(
-            uid: data['school'].parent.parent.id,
-            group: Group(uid: data['school'].id)),
+        school: School(uid: data['school'].id),
         createdAt: (data['createdAt'] as Timestamp).toDate());
   }
 
@@ -112,7 +151,8 @@ class DatabaseService {
           data,
           snapshot.reference.parent.id == "schools"
               ? Scope.school
-              : Scope.group));
+              : Scope.group,
+          snapshot.reference));
       announcementCount++;
     });
     return School(uid: uid, name: data['name'], announcements: announcements);
@@ -138,7 +178,8 @@ class DatabaseService {
           data,
           snapshot.reference.parent.id == "schools"
               ? Scope.school
-              : Scope.group));
+              : Scope.group,
+          snapshot.reference));
       announcementCount++;
     });
     return Group(uid: snapshot.id, announcements: announcements);

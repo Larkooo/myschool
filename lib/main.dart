@@ -27,9 +27,7 @@ class MyApp extends StatelessWidget {
       value: FirebaseAuthService.user,
       child: MaterialApp(
         title: 'MonEcole',
-        theme: ThemeData.dark().copyWith(
-            primaryColor: Colors.indigo[400],
-            accentColor: Colors.lightBlue[400]),
+        theme: ThemeData.dark(),
         home: Welcome(),
       ),
     );

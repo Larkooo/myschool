@@ -6,7 +6,8 @@ import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:dart_date/dart_date.dart';
 
 enum Scope { school, group }
-enum UserType { student, teacher, principal }
+enum UserType { student, teacher }
+enum CodeType { student, staff }
 enum AuthCodes {
   ok,
   accountNotFound,
