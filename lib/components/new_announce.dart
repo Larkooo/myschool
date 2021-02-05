@@ -48,10 +48,19 @@ class _NewAnnounceState extends State<NewAnnounce> {
                           SizedBox(
                             height: 20,
                           ),
+                          Text(
+                            "Preview",
+                            style: TextStyle(
+                                fontSize: 20, color: Colors.grey[600]),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
                           Container(
-                              width: MediaQuery.of(context).size.width / 1.2,
+                              width: MediaQuery.of(context).size.width / 1.26,
                               child: Announce(
                                 announcement: Announcement(
+                                    uid: -1,
                                     author: user.uid,
                                     title: _announceTitleText,
                                     content: _announceContent.text,

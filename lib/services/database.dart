@@ -76,8 +76,10 @@ class DatabaseService {
         .update({"usedTimes": FieldValue.increment(1)});
   }
 
-  Announcement announcementFromData(Map<String, dynamic> data, Scope scope) {
+  Announcement announcementFromData(
+      int index, Map<String, dynamic> data, Scope scope) {
     return Announcement(
+        uid: index,
         scope: scope,
         title: data['title'],
         content: data['content'],
@@ -103,12 +105,16 @@ class DatabaseService {
   School schoolFromSnapshot(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data();
     List<Announcement> announcements = List();
-    data['announcements'].forEach((data) => announcements.add(
-        announcementFromData(
-            data,
-            snapshot.reference.parent.id == "schools"
-                ? Scope.school
-                : Scope.group)));
+    int announcementCount = 0;
+    data['announcements'].forEach((data) {
+      announcements.add(announcementFromData(
+          announcementCount,
+          data,
+          snapshot.reference.parent.id == "schools"
+              ? Scope.school
+              : Scope.group));
+      announcementCount++;
+    });
     return School(uid: uid, name: data['name'], announcements: announcements);
   }
 
@@ -125,12 +131,16 @@ class DatabaseService {
   Group groupFromSnapshot(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data();
     List<Announcement> announcements = List();
-    data['announcements'].forEach((data) => announcements.add(
-        announcementFromData(
-            data,
-            snapshot.reference.parent.id == "schools"
-                ? Scope.school
-                : Scope.group)));
+    int announcementCount = 0;
+    data['announcements'].forEach((data) {
+      announcements.add(announcementFromData(
+          announcementCount,
+          data,
+          snapshot.reference.parent.id == "schools"
+              ? Scope.school
+              : Scope.group));
+      announcementCount++;
+    });
     return Group(uid: snapshot.id, announcements: announcements);
   }
 

@@ -1,7 +1,7 @@
 import '../shared/constants.dart';
 
 class Announcement {
-  final String uid;
+  final int uid;
   final String title;
   final String content;
   final DateTime createdAt;
