@@ -17,6 +17,7 @@ import 'package:myschool/models/user.dart';
 import 'package:myschool/services/database.dart';
 import 'package:myschool/services/firebase_auth_service.dart';
 import 'package:myschool/services/firebase_storage.dart';
+import 'package:myschool/shared/constants.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -131,80 +132,62 @@ class _SettingsState extends State<Settings> {
                                           ],
                                         ));
                               }
-                              showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                        title: Text(
-                                            "Êtes vous sur de vouloir choisir cette photo de profil ?"),
-                                        content: Container(
-                                            height: MediaQuery.of(context)
-                                                    .size
-                                                    .height /
-                                                2.4,
-                                            width: MediaQuery.of(context)
-                                                    .size
-                                                    .width /
-                                                1.5,
-                                            child: Crop(
-                                                aspectRatio: 1 / 1,
-                                                key: imgCropKey,
-                                                image: FileImage(image))),
-                                        actions: [
-                                          FlatButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                            child: Text("Non"),
-                                          ),
-                                          FlatButton(
-                                              onPressed: () async {
-                                                final crop =
-                                                    imgCropKey.currentState;
-                                                final croppedImage =
-                                                    await ImageCrop.cropImage(
-                                                        file: image,
-                                                        area: crop.area);
-                                                // Decoding image to get its dimensions
-                                                final decodedImage =
-                                                    await decodeImageFromList(
-                                                        croppedImage
-                                                            .readAsBytesSync());
-                                                // If dimensions below 256/256, cancel everything
-                                                if (decodedImage.width < 256 ||
-                                                    decodedImage.height < 256) {
-                                                  Navigator.pop(context);
-                                                  return showDialog(
-                                                      context: context,
-                                                      builder: (context) =>
-                                                          AlertDialog(
-                                                            title: Text(
-                                                                "Résolution de l'image trop petite"),
-                                                            content: Text(
-                                                                "Votre image doit faire au minimum 256px par 256px"),
-                                                            actions: [
-                                                              FlatButton(
-                                                                  onPressed: () =>
-                                                                      Navigator.pop(
-                                                                          context),
-                                                                  child: Text(
-                                                                      "Ok"))
-                                                            ],
-                                                          ));
-                                                }
-                                                String avatarUrl =
-                                                    await StorageService(
-                                                            ref:
-                                                                'users/${user.uid}/avatar.png')
-                                                        .uploadFile(
-                                                            croppedImage);
-                                                await DatabaseService(
-                                                        uid: user.uid)
-                                                    .updateUserData(
-                                                        avatarUrl: avatarUrl);
-                                                Navigator.pop(context);
-                                              },
-                                              child: Text("Oui")),
-                                        ],
-                                      ));
+                              adaptiveDialog(
+                                context: context,
+                                title: Text(
+                                    "Êtes vous sur de vouloir choisir cette photo de profil ?"),
+                                content: Container(
+                                    height: MediaQuery.of(context).size.height /
+                                        2.4,
+                                    width:
+                                        MediaQuery.of(context).size.width / 1.5,
+                                    child: Crop(
+                                        aspectRatio: 1 / 1,
+                                        key: imgCropKey,
+                                        image: FileImage(image))),
+                                actions: [
+                                  adaptativeDialogTextButton(context, "Non",
+                                      () => Navigator.pop(context)),
+                                  adaptativeDialogTextButton(context, "Oui",
+                                      () async {
+                                    final crop = imgCropKey.currentState;
+                                    final croppedImage =
+                                        await ImageCrop.cropImage(
+                                            file: image, area: crop.area);
+                                    // Decoding image to get its dimensions
+                                    final decodedImage =
+                                        await decodeImageFromList(
+                                            croppedImage.readAsBytesSync());
+                                    // If dimensions below 256/256, cancel everything
+                                    if (decodedImage.width < 256 ||
+                                        decodedImage.height < 256) {
+                                      Navigator.pop(context);
+                                      return showDialog(
+                                          context: context,
+                                          builder: (context) => AlertDialog(
+                                                title: Text(
+                                                    "Résolution de l'image trop petite"),
+                                                content: Text(
+                                                    "Votre image doit faire au minimum 256px par 256px"),
+                                                actions: [
+                                                  adaptativeDialogTextButton(
+                                                    context,
+                                                    "Ok",
+                                                    () =>
+                                                        Navigator.pop(context),
+                                                  )
+                                                ],
+                                              ));
+                                    }
+                                    String avatarUrl = await StorageService(
+                                            ref: 'users/${user.uid}/avatar.png')
+                                        .uploadFile(croppedImage);
+                                    await DatabaseService(uid: user.uid)
+                                        .updateUserData(avatarUrl: avatarUrl);
+                                    Navigator.pop(context);
+                                  }),
+                                ],
+                              );
                             } else {
                               print('could not get image');
                             }
@@ -328,45 +311,38 @@ class _SettingsState extends State<Settings> {
                           title: "Supprimer votre compte",
                           subtitle: "Cette action est irréversible!",
                           onPressed: (context) {
-                            showDialog(
+                            adaptiveDialog(
                                 context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    content: Text(
-                                        "Voulez vous vraiment supprimer votre compte?"),
-                                    actions: [
-                                      FlatButton(
-                                          onPressed: () =>
-                                              Navigator.pop(context),
-                                          child: Text("Non")),
-                                      FlatButton(
-                                          onPressed: () async {
-                                            bool deleted =
-                                                await FirebaseAuthService
-                                                    .deleteUser(user);
-                                            Navigator.pop(context);
-                                            if (!deleted) {
-                                              showDialog(
-                                                  context: context,
-                                                  builder: (context) {
-                                                    return AlertDialog(
-                                                      content: Text(
-                                                          "Cette action est sensible et requiert que vous vous ré-authentifier, Déconnectez et reconnectez vous pour procéder."),
-                                                      actions: [
-                                                        FlatButton(
-                                                            onPressed: () =>
-                                                                Navigator.pop(
-                                                                    context),
-                                                            child: Text("Ok"))
-                                                      ],
-                                                    );
-                                                  });
-                                            }
-                                          },
-                                          child: Text("Oui")),
-                                    ],
-                                  );
-                                });
+                                content: Text(
+                                    "Voulez vous vraiment supprimer votre compte?"),
+                                actions: [
+                                  adaptativeDialogTextButton(context, "Non",
+                                      () => Navigator.pop(context)),
+                                  adaptativeDialogTextButton(
+                                    context,
+                                    "Oui",
+                                    () async {
+                                      bool deleted =
+                                          await FirebaseAuthService.deleteUser(
+                                              user);
+                                      Navigator.pop(context);
+                                      if (!deleted) {
+                                        adaptiveDialog(
+                                          context: context,
+                                          content: Text(
+                                              "Cette action est sensible et requiert que vous vous ré-authentifier, Déconnectez et reconnectez vous pour procéder."),
+                                          actions: [
+                                            adaptativeDialogTextButton(
+                                              context,
+                                              "Ok",
+                                              () => Navigator.pop(context),
+                                            )
+                                          ],
+                                        );
+                                      }
+                                    },
+                                  )
+                                ]);
                           },
                         )
                       ],

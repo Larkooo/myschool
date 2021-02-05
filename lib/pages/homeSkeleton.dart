@@ -1,10 +1,14 @@
+import 'dart:io';
+
 import 'package:alert/alert.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/pages/settings.dart';
 import 'package:myschool/services/database.dart';
+import 'package:myschool/shared/constants.dart';
 import 'home.dart';
 import 'calendar.dart';
 import 'announcements.dart';
@@ -167,14 +171,22 @@ class _HomeState extends State<HomeSkeleton> {
                 ),
               ),
               body: _widgetOptions.elementAt(_selectedIndex),
-              bottomNavigationBar: BottomNavigationBar(
-                items: const <BottomNavigationBarItem>[
+              bottomNavigationBar: adaptativeBottomNavBar(
+                items: <BottomNavigationBarItem>[
                   BottomNavigationBarItem(
-                      icon: Icon(Icons.home), label: "Accueil"),
+                      icon: Icon(
+                          Platform.isIOS ? CupertinoIcons.home : Icons.home),
+                      label: "Accueil"),
                   BottomNavigationBarItem(
-                      icon: Icon(Icons.announcement), label: "Annonces"),
+                      icon: Icon(Platform.isIOS
+                          ? CupertinoIcons.speaker
+                          : Icons.announcement),
+                      label: "Annonces"),
                   BottomNavigationBarItem(
-                      icon: Icon(Icons.calendar_today), label: "Calendrier")
+                      icon: Icon(Platform.isIOS
+                          ? CupertinoIcons.calendar
+                          : Icons.calendar_today),
+                      label: "Calendrier")
                 ],
                 currentIndex: _selectedIndex,
                 onTap: _onItemTapped,
