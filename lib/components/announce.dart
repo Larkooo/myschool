@@ -10,6 +10,8 @@ import 'package:myschool/models/user.dart';
 import 'package:myschool/services/database.dart';
 import 'package:myschool/shared/constants.dart';
 import 'package:provider/provider.dart';
+import 'package:clipboard/clipboard.dart';
+import 'package:dart_date/dart_date.dart';
 
 class Announce extends StatelessWidget {
   final Announcement announcement;
@@ -19,6 +21,7 @@ class Announce extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = context.watch<User>();
+    int diffInDaysNow = announcement.createdAt.differenceInDays(DateTime.now());
     final Card announcementCard = Card(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
       ListTile(
@@ -70,7 +73,16 @@ class Announce extends StatelessWidget {
                 width: 5,
               ),
               Text(
-                DateFormat.yMMMMEEEEd().format(announcement.createdAt),
+                diffInDaysNow == 0
+                    ? "Aujourd'hui"
+                    : diffInDaysNow == -1
+                        ? "Hier"
+                        : diffInDaysNow == -2
+                            ? "Avant-hier"
+                            : DateFormat.yMMMMEEEEd()
+                                    .format(announcement.createdAt) +
+                                " à " +
+                                DateFormat.Hm().format(announcement.createdAt),
                 style: TextStyle(color: Colors.grey[500], fontSize: 13),
               ),
             ],
@@ -151,9 +163,29 @@ class Announce extends StatelessWidget {
             },*/
             actions: [
                 CupertinoContextMenuAction(
+                  trailingIcon: Icons.copy,
+                  child: Text("Copier",
+                      style: TextStyle(
+                        fontSize: 14,
+                      )),
+                  onPressed: () {
+                    FlutterClipboard.copy(announcement.content).then((_) {
+                      Navigator.pop(context);
+                      adaptiveDialog(
+                          context: context,
+                          content: Text("Contenu de l'annonce copié."),
+                          actions: [
+                            adaptativeDialogTextButton(
+                                context, "Ok", () => Navigator.pop(context))
+                          ]);
+                    });
+                  },
+                ),
+                CupertinoContextMenuAction(
+                  trailingIcon: Icons.delete,
                   child: Text("Supprimer",
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 14,
                         color: Colors.red,
                       )),
                   onPressed: () {
@@ -172,7 +204,7 @@ class Announce extends StatelessWidget {
                           })
                         ]);
                   },
-                )
+                ),
               ], child: announcementCard)
         : announcementCard;
   }

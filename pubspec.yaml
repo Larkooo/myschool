@@ -49,6 +49,7 @@ dependencies:
   http:
   jwt_decode:
   rxdart: 
+  clipboard: ^0.1.2+8
  # firebase_auth_oauth: ^0.2.3
 
   # The following adds the Cupertino Icons font to your application.
