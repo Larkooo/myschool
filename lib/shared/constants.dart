@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:myschool/shared/cachemanager.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:dart_date/dart_date.dart';
 
@@ -69,6 +70,9 @@ String timeCountdownFormat(DateTime start, DateTime end) {
     return "Dans ${diffMinutes.round()} minute(s)";
   }
 }
+
+final String dayIsHomeString =
+    CacheManagerMemory.dayIsHome ? "À la maison" : "À l'école";
 
 // Not used anymore (for now)
 final BoxDecoration mainBlueBtnDec =

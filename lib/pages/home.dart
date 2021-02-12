@@ -15,7 +15,7 @@ import 'package:myschool/shared/constants.dart';
 import 'package:provider/provider.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:slide_popup_dialog/slide_popup_dialog.dart';
-import 'calendar.dart';
+import 'package:myschool/shared/cachemanager.dart';
 
 class Home extends StatefulWidget {
   //final UserData user;
@@ -26,12 +26,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  static File _schoolTimetable;
-  static bool _dayIsHome;
-  static Map<DateTime, dynamic> _dayEvents;
   DateTime _now = DateTime.now();
-  static Map<String, dynamic> _nextCourse;
-  static Map<DateTime, dynamic> _events;
 
   @override
   Widget build(BuildContext context) {
@@ -43,73 +38,63 @@ class _HomeState extends State<Home> {
             UserData userData = snapshot.data;
             return Center(
                 child: Column(children: [
-              _dayIsHome == null
-                  ? FutureBuilder(
-                      future: StorageService(
-                              ref:
-                                  "/schools/${userData.school.uid}/remoteschool.json")
-                          .getDownloadURL(),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          return FutureBuilder(
-                              future: DefaultCacheManager()
-                                  .getSingleFile(snapshot.data),
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  File remoteSchoolFile = snapshot.data;
-                                  List remoteSchoolDays = jsonDecode(
-                                      remoteSchoolFile.readAsStringSync());
-                                  remoteSchoolDays.forEach((element) {
-                                    DateTime remoteDay =
-                                        DateTime.parse(element['date']);
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: 30,
+                child: Center(
+                    child: CacheManagerMemory.dayIsHome == null
+                        ? FutureBuilder(
+                            future: StorageService(
+                                    ref:
+                                        "/schools/${userData.school.uid}/remoteschool.json")
+                                .getDownloadURL(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return FutureBuilder(
+                                    future: DefaultCacheManager()
+                                        .getSingleFile(snapshot.data),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.hasData) {
+                                        File remoteSchoolFile = snapshot.data;
+                                        List remoteSchoolDays = jsonDecode(
+                                            remoteSchoolFile
+                                                .readAsStringSync());
+                                        remoteSchoolDays.forEach((element) {
+                                          DateTime remoteDay =
+                                              DateTime.parse(element['date']);
 
-                                    if (_now.isSameDay(remoteDay)) {
-                                      if ((element['home'] as List).contains(
-                                          int.parse(
-                                              userData.school.group.uid))) {
-                                        _dayIsHome = true;
-                                      } else if ((element['home'] as List)
-                                          .contains(int.parse(
-                                              userData.school.group.uid[0]))) {
-                                        _dayIsHome = true;
+                                          if (_now.isSameDay(remoteDay)) {
+                                            CacheManagerMemory.dayIsHome =
+                                                (element['home'] as List)
+                                                        .contains(int.parse(
+                                                            userData.school
+                                                                .group.uid)) ||
+                                                    (element['home'] as List)
+                                                        .contains(int.parse(
+                                                            userData.school
+                                                                .group.uid[0]));
+                                          }
+                                        });
+                                        return Text(dayIsHomeString);
                                       } else {
-                                        _dayIsHome = false;
+                                        return CircularProgressIndicator();
                                       }
-                                    }
-                                  });
-                                  return Container(
-                                    width: MediaQuery.of(context).size.width,
-                                    height: 30,
-                                    color:
-                                        _dayIsHome ? Colors.blue : Colors.green,
-                                    child: Center(
-                                        child: Text(_dayIsHome
-                                            ? "À la maison"
-                                            : "À l'école")),
-                                  );
-                                } else {
-                                  return CircularProgressIndicator();
-                                }
-                              });
-                        } else {
-                          return CircularProgressIndicator();
-                        }
-                      })
-                  : Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: 30,
-                      color: _dayIsHome ? Colors.blue : Colors.green,
-                      child: Center(
-                          child:
-                              Text(_dayIsHome ? "À la maison" : "À l'école")),
-                    ),
+                                    });
+                              } else {
+                                return CircularProgressIndicator();
+                              }
+                            })
+                        : Text(dayIsHomeString)),
+                color: Colors.blue,
+              ),
               SizedBox(
                 height: 10,
               ),
-              _schoolTimetable == null ||
-                      (DateTime.parse(_nextCourse['dateDebut'] +
+              CacheManagerMemory.schoolTimetableFile == null ||
+                      (DateTime.parse(CacheManagerMemory
+                                  .nextCourse['dateDebut'] +
                               "T" +
-                              _nextCourse['heureDebut'])) <=
+                              CacheManagerMemory.nextCourse['heureDebut'])) <=
                           _now
                   ? FutureBuilder(
                       future: StorageService(
@@ -123,11 +108,13 @@ class _HomeState extends State<Home> {
                                 .getSingleFile(snapshot.data),
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
-                                _schoolTimetable = snapshot.data;
+                                CacheManagerMemory.schoolTimetableFile =
+                                    snapshot.data;
 
-                                _events = Map.fromIterable(
-                                    jsonDecode(
-                                        _schoolTimetable.readAsStringSync()),
+                                CacheManagerMemory.courses = Map.fromIterable(
+                                    jsonDecode(CacheManagerMemory
+                                        .schoolTimetableFile
+                                        .readAsStringSync()),
                                     key: (e) => DateTime.parse(
                                         e['dateDebut'] + 'T' + e['heureDebut']),
                                     value: (e) => {
@@ -138,20 +125,19 @@ class _HomeState extends State<Home> {
                                           "codeActivite": e['codeActivite']
                                         });
 
-                                _events.forEach((day, data) {
+                                CacheManagerMemory.courses.forEach((day, data) {
                                   if (day.isSameDay(_now)) {
-                                    setState(() {
-                                      _dayEvents[day] = data;
-                                    });
+                                    CacheManagerMemory.dayCourses[day] = data;
                                   }
                                 });
 
-                                for (final e in (jsonDecode(
-                                    _schoolTimetable.readAsStringSync()))) {
+                                for (final e in (jsonDecode(CacheManagerMemory
+                                    .schoolTimetableFile
+                                    .readAsStringSync()))) {
                                   DateTime courseStart = DateTime.parse(
                                       e['dateDebut'] + "T" + e['heureDebut']);
                                   if (courseStart > _now) {
-                                    _nextCourse = e;
+                                    CacheManagerMemory.nextCourse = e;
                                     break;
                                   }
                                 }
@@ -170,21 +156,19 @@ class _HomeState extends State<Home> {
                                                 1.3,
                                         child: Card(
                                           child: ListTile(
-                                              title: Text(_nextCourse['description'] +
-                                                  " (${_nextCourse['locaux'][0]})"),
-                                              subtitle: Text(_nextCourse['intervenants']
+                                              title: Text(CacheManagerMemory.nextCourse[
+                                                      'description'] +
+                                                  " (${CacheManagerMemory.nextCourse['locaux'][0]})"),
+                                              subtitle: Text(CacheManagerMemory
+                                                          .nextCourse['intervenants']
                                                       [0]['nom'] +
                                                   " " +
-                                                  _nextCourse['intervenants'][0]
-                                                      ['prenom'] +
+                                                  CacheManagerMemory
+                                                          .nextCourse['intervenants']
+                                                      [0]['prenom'] +
                                                   " - " +
                                                   timeCountdownFormat(
-                                                      (DateTime.parse(
-                                                          _nextCourse['dateDebut'] +
-                                                              "T" +
-                                                              _nextCourse[
-                                                                  'heureDebut'])),
-                                                      _now))),
+                                                      (DateTime.parse(CacheManagerMemory.nextCourse['dateDebut'] + "T" + CacheManagerMemory.nextCourse['heureDebut'])), _now))),
                                         )),
                                   ],
                                 );
@@ -210,18 +194,18 @@ class _HomeState extends State<Home> {
                             width: MediaQuery.of(context).size.width / 1.3,
                             child: Card(
                               child: ListTile(
-                                  title: Text(_nextCourse['description'] +
-                                      " (${_nextCourse['locaux'][0]})"),
-                                  subtitle: Text(_nextCourse['intervenants'][0]
-                                          ['nom'] +
+                                  title: Text(CacheManagerMemory.nextCourse['description'] +
+                                      " (${CacheManagerMemory.nextCourse['locaux'][0]})"),
+                                  subtitle: Text(CacheManagerMemory.nextCourse['intervenants'][0]['nom'] +
                                       " " +
-                                      _nextCourse['intervenants'][0]['prenom'] +
+                                      CacheManagerMemory.nextCourse['intervenants']
+                                          [0]['prenom'] +
                                       " - " +
                                       timeCountdownFormat(
-                                          (DateTime.parse(
-                                              _nextCourse['dateDebut'] +
-                                                  "T" +
-                                                  _nextCourse['heureDebut'])),
+                                          (DateTime.parse(CacheManagerMemory
+                                                  .nextCourse['dateDebut'] +
+                                              "T" +
+                                              CacheManagerMemory.nextCourse['heureDebut'])),
                                           _now))),
                             )),
                       ],

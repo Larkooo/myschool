@@ -13,6 +13,7 @@ import 'package:provider/provider.dart';
 import 'package:slide_popup_dialog/slide_popup_dialog.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:dart_date/dart_date.dart';
+import 'package:myschool/shared/cachemanager.dart';
 
 class Calendar extends StatefulWidget {
   //final UserData user;
@@ -24,13 +25,10 @@ class Calendar extends StatefulWidget {
 
 class _CalendarState extends State<Calendar> {
   CalendarController _calendarController;
+  bool _todayAtHome;
   DateTime _selectedDay = DateTime.now().hour > 17
       ? DateTime.now().setHour(15).addDays(1)
       : DateTime.now();
-  static Map<DateTime, dynamic> _events = {};
-  Map<DateTime, dynamic> _dayEvents = {};
-  bool _dayIsHome = false;
-  static List _remoteSchoolDays = [];
 
   static DateTime _startDay;
   static DateTime _endDay;
@@ -44,6 +42,9 @@ class _CalendarState extends State<Calendar> {
   @override
   void dispose() {
     _calendarController.dispose();
+    // Since home page uses the same variable as calendar to know if we're at home, we need to
+    // reset it to today for home page to get the correct info
+    CacheManagerMemory.dayIsHome = _todayAtHome;
     super.dispose();
   }
 
@@ -59,13 +60,14 @@ class _CalendarState extends State<Calendar> {
               /* 
                   
                   */
-              if (_remoteSchoolDays.isNotEmpty)
+              if (CacheManagerMemory.remoteSchoolDays.isNotEmpty)
                 Container(
                   width: MediaQuery.of(context).size.width,
                   height: 30,
-                  color: _dayIsHome ? Colors.blue : Colors.green,
+                  color:
+                      CacheManagerMemory.dayIsHome ? Colors.blue : Colors.green,
                   child: Center(
-                      child: Text(_dayIsHome ? "À la maison" : "À l'école")),
+                      child: Text(dayIsHomeString)),
                 ),
               TableCalendar(
                 initialSelectedDay: _selectedDay,
@@ -73,13 +75,13 @@ class _CalendarState extends State<Calendar> {
                 endDay: _endDay,
                 onCalendarCreated: (first, last, format) async {
                   /* 
-                    If _events has a length of 0 => get the download URL of our timetable
+                    If CacheManagerMemory.courses has a length of 0 => get the download URL of our timetable
                     download it,
                     cache it,
                     and decode it as JSON to assign it to our static variable
 
                   */
-                  if (_events.isEmpty) {
+                  if (CacheManagerMemory.courses.isEmpty) {
                     final schoolTimetableURL = await StorageService(
                             ref:
                                 "/schools/${userData.school.uid}/groups/${userData.school.group.uid}/timetable.json")
@@ -88,7 +90,7 @@ class _CalendarState extends State<Calendar> {
                     if (schoolTimetableURL != null) {
                       final schoolTimetableFile = await DefaultCacheManager()
                           .getSingleFile(schoolTimetableURL);
-                      _events = Map.fromIterable(
+                      CacheManagerMemory.courses = Map.fromIterable(
                           jsonDecode(await schoolTimetableFile.readAsString()),
                           key: (e) => DateTime.parse(
                               e['dateDebut'] + 'T' + e['heureDebut']),
@@ -101,8 +103,9 @@ class _CalendarState extends State<Calendar> {
                               });
                       // Setting the startday and the endday of the calendar (so the startday/endday of school in this case)
                       setState(() {
-                        _startDay = _events.entries.first.key;
-                        _endDay = _events.entries.last.key;
+                        _startDay =
+                            CacheManagerMemory.courses.entries.first.key;
+                        _endDay = CacheManagerMemory.courses.entries.last.key;
                       });
                     }
                   }
@@ -110,7 +113,7 @@ class _CalendarState extends State<Calendar> {
                   /* 
                     Basically, its the same thing than the timetable, repeating every steps
                   */
-                  if (_remoteSchoolDays.isEmpty) {
+                  if (CacheManagerMemory.remoteSchoolDays.isEmpty) {
                     final remoteSchoolURL = await StorageService(
                             ref:
                                 "/schools/${userData.school.uid}/remoteschool.json")
@@ -119,7 +122,7 @@ class _CalendarState extends State<Calendar> {
                     if (remoteSchoolURL != null) {
                       final remoteSchoolFile = await DefaultCacheManager()
                           .getSingleFile(remoteSchoolURL);
-                      _remoteSchoolDays =
+                      CacheManagerMemory.remoteSchoolDays =
                           jsonDecode(await remoteSchoolFile.readAsString());
                     }
                   }
@@ -127,35 +130,32 @@ class _CalendarState extends State<Calendar> {
                   // Using future.delayed to resolve the setState error happening on build
                   Future.delayed(Duration.zero, () {
                     /* 
-                    Checking the date of each of our events to then assign them to _dayEvents
-                    _events has to be not empty.
+                    Checking the date of each of our events to then assign them to CacheManagerMemory.dayCourses
+                    CacheManagerMemory.courses has to be not empty.
                   */
-                    if (_events.isNotEmpty)
-                      _events.forEach((day, data) {
+                    if (CacheManagerMemory.courses.isNotEmpty)
+                      CacheManagerMemory.courses.forEach((day, data) {
                         if (day.isSameDay(_selectedDay)) {
                           setState(() {
-                            _dayEvents[day] = data;
+                            CacheManagerMemory.dayCourses[day] = data;
                           });
                         }
                       });
                     /* 
                       Same thing. We're just checking if we're home or at school here.
                   */
-                    if (_remoteSchoolDays.isNotEmpty)
-                      _remoteSchoolDays.forEach((element) {
+                    if (CacheManagerMemory.remoteSchoolDays.isNotEmpty)
+                      CacheManagerMemory.remoteSchoolDays.forEach((element) {
                         DateTime remoteDay = DateTime.parse(element['date']);
 
                         if (_selectedDay.isSameDay(remoteDay)) {
                           setState(() {
-                            if ((element['home'] as List).contains(
-                                int.parse(userData.school.group.uid))) {
-                              _dayIsHome = true;
-                            } else if ((element['home'] as List).contains(
-                                int.parse(userData.school.group.uid[0]))) {
-                              _dayIsHome = true;
-                            } else {
-                              _dayIsHome = false;
-                            }
+                            bool atHome = (element['home'] as List).contains(
+                                    int.parse(userData.school.group.uid)) ||
+                                (element['home'] as List).contains(
+                                    int.parse(userData.school.group.uid[0]));
+                            CacheManagerMemory.dayIsHome = atHome;
+                            _todayAtHome = atHome;
                           });
                         }
                       });
@@ -167,30 +167,26 @@ class _CalendarState extends State<Calendar> {
                 onDaySelected: (day, events, holidays) {
                   setState(() {
                     _selectedDay = day;
-                    _dayEvents.clear();
+                    CacheManagerMemory.dayCourses.clear();
                   });
-                  _events.forEach((day, desc) {
+                  CacheManagerMemory.courses.forEach((day, desc) {
                     if (day.isSameDay(_selectedDay)) {
                       setState(() {
-                        _dayEvents[day] = desc;
+                        CacheManagerMemory.dayCourses[day] = desc;
                       });
                     }
                   });
-                  if (_remoteSchoolDays.isNotEmpty)
-                    _remoteSchoolDays.forEach((element) {
+                  if (CacheManagerMemory.remoteSchoolDays.isNotEmpty)
+                    CacheManagerMemory.remoteSchoolDays.forEach((element) {
                       DateTime remoteDay = DateTime.parse(element['date']);
 
                       if (_selectedDay.isSameDay(remoteDay)) {
                         setState(() {
-                          if ((element['home'] as List)
-                              .contains(int.parse(userData.school.group.uid))) {
-                            _dayIsHome = true;
-                          } else if ((element['home'] as List).contains(
-                              int.parse(userData.school.group.uid[0]))) {
-                            _dayIsHome = true;
-                          } else {
-                            _dayIsHome = false;
-                          }
+                          bool atHome = (element['home'] as List).contains(
+                                  int.parse(userData.school.group.uid)) ||
+                              (element['home'] as List).contains(
+                                  int.parse(userData.school.group.uid[0]));
+                          CacheManagerMemory.dayIsHome = atHome;
                         });
                       }
                     });
@@ -208,7 +204,7 @@ class _CalendarState extends State<Calendar> {
                   */
               Expanded(
                   child: ListView(
-                      children: _dayEvents.entries
+                      children: CacheManagerMemory.dayCourses.entries
                           .map((e) => Card(
                                 child: ListTile(
                                   onTap: () => showSlideDialog(
@@ -336,7 +332,7 @@ class _CalendarState extends State<Calendar> {
                                                             getNextCourse(
                                                                     e.key,
                                                                     e.value['codeActivite'],
-                                                                    _events)
+                                                                    CacheManagerMemory.courses)
                                                                 .key))),
                                               )),
                                         ],

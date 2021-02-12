@@ -141,31 +141,39 @@ class Announce extends StatelessWidget {
     return Platform.isIOS &&
             user.uid == announcement.author &&
             announcement.uid != -1
-        ? CupertinoContextMenu(actions: [
-            CupertinoContextMenuAction(
-              child: Text("Supprimer",
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.red,
-                  )),
-              onPressed: () {
-                Navigator.pop(context);
-                adaptiveDialog(
-                    context: context,
-                    content:
-                        Text("Voulez vous vraiment supprimer cette annonce?"),
-                    actions: [
-                      adaptativeDialogTextButton(
-                          context, "Non", () => Navigator.pop(context)),
-                      adaptativeDialogTextButton(context, "Oui", () async {
-                        await DatabaseService().deleteAnnounce(
-                            announcement.raw, announcement.reference);
-                        Navigator.pop(context);
-                      })
-                    ]);
-              },
-            )
-          ], child: announcementCard)
+        ? CupertinoContextMenu(
+            /*previewBuilder: (BuildContext context, Animation<double> animation,
+                Widget child) {
+              return Container(
+                  child: Announce(announcement: announcement),
+                  width: 1000 / animation.value,
+                  height: 200 / animation.value);
+            },*/
+            actions: [
+                CupertinoContextMenuAction(
+                  child: Text("Supprimer",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.red,
+                      )),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    adaptiveDialog(
+                        context: context,
+                        content: Text(
+                            "Voulez vous vraiment supprimer cette annonce?"),
+                        actions: [
+                          adaptativeDialogTextButton(
+                              context, "Non", () => Navigator.pop(context)),
+                          adaptativeDialogTextButton(context, "Oui", () async {
+                            await DatabaseService().deleteAnnounce(
+                                announcement.raw, announcement.reference);
+                            Navigator.pop(context);
+                          })
+                        ]);
+                  },
+                )
+              ], child: announcementCard)
         : announcementCard;
   }
 }
