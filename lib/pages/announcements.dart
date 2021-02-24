@@ -81,6 +81,7 @@ class _AnnouncementsState extends State<Announcements> {
                         */
                                 Announcement announcement =
                                     announcements[index];
+                                    // print(announcement.title);
                                 // Rendering part
                                 return Announce(announcement: announcement);
                               });

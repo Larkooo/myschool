@@ -75,7 +75,7 @@ class _HomeState extends State<Home> {
                                                                 .group.uid[0]));
                                           }
                                         });
-                                        return Text(dayIsHomeString);
+                                        return Text(dayIsHome());
                                       } else {
                                         return CircularProgressIndicator();
                                       }
@@ -84,7 +84,7 @@ class _HomeState extends State<Home> {
                                 return CircularProgressIndicator();
                               }
                             })
-                        : Text(dayIsHomeString)),
+                        : Text(dayIsHome())),
                 color: Colors.blue,
               ),
               SizedBox(

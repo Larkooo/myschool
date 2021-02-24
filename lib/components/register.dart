@@ -150,8 +150,8 @@ class _RegisterState extends State<Register> {
                           if (value.isEmpty)
                             return 'Ce champs est obligatoire.';
                           bool v = PasswordValidator(min: 6, max: 30)
-                              .validate(value);
-                          if (!v && value.length <= 30) {
+                              .validate(value.trim());
+                          if (!v && value.trim().length <= 30) {
                             return "6 caractères minimum.";
                           } else if (!v) {
                             return "Mot de passe trop long.";
@@ -220,9 +220,9 @@ class _RegisterState extends State<Register> {
                           await FirebaseAuthService.register(
                               _firstNameController.text,
                               _lastNameController.text,
-                              _emailController.text,
-                              _passwordController.text,
-                              _codeController.text);
+                              _emailController.text.trim(),  
+                              _passwordController.text.trim(),
+                              _codeController.text.trim());
                       print(registerStatus);
                       if (registerStatus is UserData) {
                         Alert(message: "Compte crée").show();
