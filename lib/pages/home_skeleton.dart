@@ -15,7 +15,6 @@ import 'home.dart';
 import 'calendar.dart';
 import 'announcements.dart';
 import 'package:provider/provider.dart';
-import '../pages/teacher/groups.dart';
 
 class HomeSkeleton extends StatefulWidget {
   final UserData user;
@@ -35,8 +34,6 @@ class _HomeState extends State<HomeSkeleton> {
 
   static UserData userData;
 
-
-  // Student
   int _selectedIndex = 0;
   static List<Widget> _widgetOptions = <Widget>[
     Home(),
@@ -45,17 +42,6 @@ class _HomeState extends State<HomeSkeleton> {
   ];
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  // Teacher
-  int _selectedIndexT = 0;
-  static List<Widget> _widgetOptionsT = <Widget>[
-  ];
-
-  void _onItemTappedT(int index) {
     setState(() {
       _selectedIndex = index;
     });
@@ -114,7 +100,8 @@ class _HomeState extends State<HomeSkeleton> {
                     body: Center(
                         child: TextButton(
                       child: Text("delete"),
-                      onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => Groups())),
+                      onPressed: () async =>
+                          await FirebaseAuthService.deleteUser(firebaseUser),
                     )));
           } else {
             return Center(child: CircularProgressIndicator());

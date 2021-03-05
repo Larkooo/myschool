@@ -12,8 +12,6 @@ import 'package:myschool/shared/constants.dart';
 import 'package:provider/provider.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:dart_date/dart_date.dart';
-import 'announce_page.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Announce extends StatelessWidget {
   final Announcement announcement;
@@ -25,18 +23,16 @@ class Announce extends StatelessWidget {
     final user = context.watch<User>();
     int diffInDaysNow = announcement.createdAt.differenceInDays(DateTime.now());
     final Card announcementCard = Card(
-      
         child: Column(mainAxisSize: MainAxisSize.min, children: [
       ListTile(
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AnnouncePage(announcement: announcement,))),
         title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(
             children: [
-              FutureBuilder(
-                  future: FirebaseFirestore.instance.collection('users').doc(announcement.author).get(),
+              StreamBuilder(
+                  stream: DatabaseService(uid: announcement.author).user,
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
-                      UserData announceUser = DatabaseService().userDataFromSnapshot(snapshot.data);
+                      UserData announceUser = snapshot.data;
                       return Row(
                         children: [
                           ClipRRect(
@@ -87,7 +83,7 @@ class Announce extends StatelessWidget {
                                     .format(announcement.createdAt) +
                                 " à " +
                                 DateFormat.Hm().format(announcement.createdAt),
-                style: TextStyle(color: Colors.grey[500], fontSize: MediaQuery.of(context).size.width / 30),
+                style: TextStyle(color: Colors.grey[500], fontSize: 13),
               ),
             ],
           ),

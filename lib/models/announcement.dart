@@ -7,7 +7,7 @@ class Announcement {
   final String title;
   final String content;
   final DateTime createdAt;
-  final dynamic author;
+  final String author;
   final Scope scope;
   final DocumentReference reference;
   final Map<dynamic, dynamic> raw;
