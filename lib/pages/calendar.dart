@@ -67,8 +67,8 @@ class _CalendarState extends State<Calendar> {
                   color:
                       CacheManagerMemory.dayIsHome ? Colors.blue : Colors.green,
                   child: Center(
-                      child: Text(dayIsHomeString)),
-                ),
+                      child: Text(dayIsHome()),
+                )),
               TableCalendar(
                 initialSelectedDay: _selectedDay,
                 startDay: _startDay,

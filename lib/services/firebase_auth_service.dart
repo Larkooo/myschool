@@ -80,27 +80,21 @@ class FirebaseAuthService {
           email: email, password: password);
       await DatabaseService(uid: code).incrementCodeUsage();
 
-      // Student
-      codeData['type'] == 0
-          ? await users.doc(result.user.uid).set({
+      // Data 
+      Map<String, dynamic> data = {
               "firstName": firstName,
               "lastName": lastName,
-              "type": 0,
+              "type": codeData['type'],
               "avatarUrl": null,
               "school": codeData['school'],
               "usedCode": code,
               "createdAt": DateTime.now()
-            })
-          : await users.doc(result.user.uid).set({
-              "firstName": firstName,
-              "lastName": lastName,
-              "type": 1,
-              "groups": [],
-              "avatarUrl": null,
-              "school": codeData['school'],
-              "usedCode": code,
-              "createdAt": DateTime.now()
-            });
+            };
+
+      // If teacher, add groups field
+      if(codeData['type'] == 1)
+        data['groups'] = [];
+
       return UserData(
           uid: result.user.uid,
           firstName: firstName,
@@ -110,6 +104,7 @@ class FirebaseAuthService {
           school: School(uid: (codeData['school'] as DocumentReference).id),
           usedCode: code,
           createdAt: DateTime.now());
+
     } on FirebaseAuthException catch (e) {
       if (e.code == "email-already-in-use") {
         return AuthCodes.emailAlreadyUsed;

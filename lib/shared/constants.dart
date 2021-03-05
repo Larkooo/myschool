@@ -71,7 +71,7 @@ String timeCountdownFormat(DateTime start, DateTime end) {
   }
 }
 
-final String dayIsHomeString =
+String dayIsHome() =>
     CacheManagerMemory.dayIsHome ? "À la maison" : "À l'école";
 
 // Not used anymore (for now)
