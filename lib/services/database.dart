@@ -14,7 +14,6 @@ class DatabaseService {
   DatabaseService({this.uid});
 
   static final FirebaseFirestore _database = FirebaseFirestore.instance;
-  static final FirebaseAuth _auth = FirebaseAuth.instance;
 
   final CollectionReference _usersCollection = _database.collection('users');
   final CollectionReference _codesCollection = _database.collection('codes');

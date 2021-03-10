@@ -25,18 +25,26 @@ class Announce extends StatelessWidget {
     final user = context.watch<User>();
     int diffInDaysNow = announcement.createdAt.differenceInDays(DateTime.now());
     final Card announcementCard = Card(
-      
         child: Column(mainAxisSize: MainAxisSize.min, children: [
       ListTile(
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AnnouncePage(announcement: announcement,))),
+        onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => AnnouncePage(
+                      announcement: announcement,
+                    ))),
         title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(
             children: [
               FutureBuilder(
-                  future: FirebaseFirestore.instance.collection('users').doc(announcement.author).get(),
+                  future: FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(announcement.author)
+                      .get(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
-                      UserData announceUser = DatabaseService().userDataFromSnapshot(snapshot.data);
+                      UserData announceUser =
+                          DatabaseService().userDataFromSnapshot(snapshot.data);
                       return Row(
                         children: [
                           ClipRRect(
@@ -87,7 +95,9 @@ class Announce extends StatelessWidget {
                                     .format(announcement.createdAt) +
                                 " à " +
                                 DateFormat.Hm().format(announcement.createdAt),
-                style: TextStyle(color: Colors.grey[500], fontSize: MediaQuery.of(context).size.width / 30),
+                style: TextStyle(
+                    color: Colors.grey[500],
+                    fontSize: MediaQuery.of(context).size.width / 30),
               ),
             ],
           ),
@@ -157,7 +167,6 @@ class Announce extends StatelessWidget {
     return Platform.isIOS &&
             user.uid == announcement.author &&
             announcement.uid != -1
-<<<<<<< Updated upstream
         ? CupertinoContextMenu(
             /*previewBuilder: (BuildContext context, Animation<double> animation,
                 Widget child) {
@@ -180,7 +189,7 @@ class Announce extends StatelessWidget {
                           context: context,
                           content: Text("Contenu de l'annonce copié."),
                           actions: [
-                            adaptativeDialogTextButton(
+                            adaptiveDialogTextButton(
                                 context, "Ok", () => Navigator.pop(context))
                           ]);
                     });
@@ -200,9 +209,9 @@ class Announce extends StatelessWidget {
                         content: Text(
                             "Voulez vous vraiment supprimer cette annonce?"),
                         actions: [
-                          adaptativeDialogTextButton(
+                          adaptiveDialogTextButton(
                               context, "Non", () => Navigator.pop(context)),
-                          adaptativeDialogTextButton(context, "Oui", () async {
+                          adaptiveDialogTextButton(context, "Oui", () async {
                             await DatabaseService().deleteAnnounce(
                                 announcement.raw, announcement.reference);
                             Navigator.pop(context);
@@ -211,33 +220,6 @@ class Announce extends StatelessWidget {
                   },
                 ),
               ], child: announcementCard)
-=======
-        ? CupertinoContextMenu(actions: [
-            CupertinoContextMenuAction(
-              child: Text("Supprimer",
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.red,
-                  )),
-              onPressed: () {
-                Navigator.pop(context);
-                adaptiveDialog(
-                    context: context,
-                    content:
-                        Text("Voulez vous vraiment supprimer cette annonce?"),
-                    actions: [
-                      adaptiveDialogTextButton(
-                          context, "Non", () => Navigator.pop(context)),
-                      adaptiveDialogTextButton(context, "Oui", () async {
-                        await DatabaseService().deleteAnnounce(
-                            announcement.raw, announcement.reference);
-                        Navigator.pop(context);
-                      })
-                    ]);
-              },
-            )
-          ], child: announcementCard)
->>>>>>> Stashed changes
         : announcementCard;
   }
 }
