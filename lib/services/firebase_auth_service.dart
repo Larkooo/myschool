@@ -88,6 +88,7 @@ class FirebaseAuthService {
               "avatarUrl": null,
               "school": codeData['school'],
               "usedCode": code,
+<<<<<<< Updated upstream
               "createdAt": DateTime.now()
             };
 
@@ -95,6 +96,20 @@ class FirebaseAuthService {
       if(codeData['type'] == 1)
         data['groups'] = [];
 
+=======
+              "createdAt": FieldValue.serverTimestamp()
+            })
+          : await users.doc(result.user.uid).set({
+              "firstName": firstName,
+              "lastName": lastName,
+              "type": 1,
+              "groups": [],
+              "avatarUrl": null,
+              "school": codeData['school'],
+              "usedCode": code,
+              "createdAt": FieldValue.serverTimestamp()
+            });
+>>>>>>> Stashed changes
       return UserData(
           uid: result.user.uid,
           firstName: firstName,

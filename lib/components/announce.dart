@@ -137,9 +137,9 @@ class Announce extends StatelessWidget {
                     content:
                         Text("Voulez vous vraiment supprimer cette annonce?"),
                     actions: [
-                      adaptativeDialogTextButton(
+                      adaptiveDialogTextButton(
                           context, "Non", () => Navigator.pop(context)),
-                      adaptativeDialogTextButton(context, "Oui", () async {
+                      adaptiveDialogTextButton(context, "Oui", () async {
                         await DatabaseService().deleteAnnounce(
                             announcement.raw, announcement.reference);
                         Navigator.pop(context);
@@ -157,6 +157,7 @@ class Announce extends StatelessWidget {
     return Platform.isIOS &&
             user.uid == announcement.author &&
             announcement.uid != -1
+<<<<<<< Updated upstream
         ? CupertinoContextMenu(
             /*previewBuilder: (BuildContext context, Animation<double> animation,
                 Widget child) {
@@ -210,6 +211,33 @@ class Announce extends StatelessWidget {
                   },
                 ),
               ], child: announcementCard)
+=======
+        ? CupertinoContextMenu(actions: [
+            CupertinoContextMenuAction(
+              child: Text("Supprimer",
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.red,
+                  )),
+              onPressed: () {
+                Navigator.pop(context);
+                adaptiveDialog(
+                    context: context,
+                    content:
+                        Text("Voulez vous vraiment supprimer cette annonce?"),
+                    actions: [
+                      adaptiveDialogTextButton(
+                          context, "Non", () => Navigator.pop(context)),
+                      adaptiveDialogTextButton(context, "Oui", () async {
+                        await DatabaseService().deleteAnnounce(
+                            announcement.raw, announcement.reference);
+                        Navigator.pop(context);
+                      })
+                    ]);
+              },
+            )
+          ], child: announcementCard)
+>>>>>>> Stashed changes
         : announcementCard;
   }
 }
