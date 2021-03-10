@@ -27,12 +27,12 @@ const Map<int, UserType> userTypeDefinitions = {
   2: UserType.student
 };
 
-Widget adaptiveDialog(
+dynamic adaptiveDialog(
     {BuildContext context,
     Widget title,
     Widget content,
     List<Widget> actions}) {
-  showDialog(
+  return showDialog(
       context: context,
       builder: (context) {
         if (Platform.isIOS) {
@@ -88,7 +88,7 @@ TextButton textButton(BuildContext context, String text, Function onPressed) {
           Text(text, style: TextStyle(color: Colors.blue[400], fontSize: 13)));
 }
 
-TextButton adaptativeDialogTextButton(
+TextButton adaptiveDialogTextButton(
     BuildContext context, String text, Function onPressed) {
   if (Platform.isIOS) {
     return textButton(context, text, onPressed);
@@ -96,14 +96,14 @@ TextButton adaptativeDialogTextButton(
   return TextButton(child: Text(text), onPressed: onPressed);
 }
 
-Widget adaptativeAppBar({String title, Widget leading}) {
+Widget adaptiveAppBar({String title, Widget leading}) {
   if (Platform.isIOS) {
     return CupertinoNavigationBar(middle: Text(title), leading: leading);
   }
   return AppBar(title: Text(title), leading: leading);
 }
 
-Widget adaptativeBottomNavBar(
+Widget adaptiveBottomNavBar(
     {List<BottomNavigationBarItem> items, int currentIndex, Function onTap}) {
   if (Platform.isIOS) {
     return CupertinoTabBar(

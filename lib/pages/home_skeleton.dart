@@ -83,7 +83,7 @@ class _HomeState extends State<HomeSkeleton> {
                       userData: userData,
                     ),
                     body: _widgetOptions.elementAt(_selectedIndex),
-                    bottomNavigationBar: adaptativeBottomNavBar(
+                    bottomNavigationBar: adaptiveBottomNavBar(
                       items: <BottomNavigationBarItem>[
                         BottomNavigationBarItem(
                             icon: Icon(Platform.isIOS

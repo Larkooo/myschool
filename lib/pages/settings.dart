@@ -100,6 +100,22 @@ class _SettingsState extends State<Settings> {
                           leading: Icon(Icons.email),
                           title: 'Courriel',
                           subtitle: user.email,
+                          onPressed: (BuildContext context) {
+                            adaptiveDialog(
+                                context: context,
+                                title: Text(
+                                    "Voulez vous modifier votre adresse email"),
+                                actions: [
+                                  adaptiveDialogTextButton(context, "Non",
+                                      () => Navigator.pop(context)),
+                                  adaptiveDialogTextButton(context, "Oui", () {
+                                    Alert(
+                                        message:
+                                            "Un courriel pour modifier votre adresse courriel vous a été envoyé");
+                                    Navigator.pop(context);
+                                  }),
+                                ]);
+                          },
                         ),
                         SettingsTile(
                             leading: Icon(Icons.security),
@@ -115,6 +131,7 @@ class _SettingsState extends State<Settings> {
                           onPressed: (context) async {
                             File image = await getImage();
                             if (image != null) {
+                              // two megabytes
                               const twoMb = 2 * (1e+6);
                               if (await image.length() > twoMb) {
                                 return showDialog(
@@ -146,9 +163,9 @@ class _SettingsState extends State<Settings> {
                                         key: imgCropKey,
                                         image: FileImage(image))),
                                 actions: [
-                                  adaptativeDialogTextButton(context, "Non",
+                                  adaptiveDialogTextButton(context, "Non",
                                       () => Navigator.pop(context)),
-                                  adaptativeDialogTextButton(context, "Oui",
+                                  adaptiveDialogTextButton(context, "Oui",
                                       () async {
                                     final crop = imgCropKey.currentState;
                                     final croppedImage =
@@ -170,7 +187,7 @@ class _SettingsState extends State<Settings> {
                                                 content: Text(
                                                     "Votre image doit faire au minimum 256px par 256px"),
                                                 actions: [
-                                                  adaptativeDialogTextButton(
+                                                  adaptiveDialogTextButton(
                                                     context,
                                                     "Ok",
                                                     () =>
@@ -271,9 +288,9 @@ class _SettingsState extends State<Settings> {
                                 content: Text(
                                     "Voulez vous vraiment supprimer votre compte?"),
                                 actions: [
-                                  adaptativeDialogTextButton(context, "Non",
+                                  adaptiveDialogTextButton(context, "Non",
                                       () => Navigator.pop(context)),
-                                  adaptativeDialogTextButton(
+                                  adaptiveDialogTextButton(
                                     context,
                                     "Oui",
                                     () async {
@@ -287,7 +304,7 @@ class _SettingsState extends State<Settings> {
                                           content: Text(
                                               "Cette action est sensible et requiert que vous vous ré-authentifier, Déconnectez et reconnectez vous pour procéder."),
                                           actions: [
-                                            adaptativeDialogTextButton(
+                                            adaptiveDialogTextButton(
                                               context,
                                               "Ok",
                                               () => Navigator.pop(context),
