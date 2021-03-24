@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:myschool/components/drawer.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/pages/settings.dart';
+import 'package:myschool/pages/teacher/home.dart';
 import 'package:myschool/services/database.dart';
 import 'package:myschool/services/firebase_auth_service.dart';
 import 'package:myschool/shared/constants.dart';
@@ -46,7 +47,7 @@ class _HomeState extends State<HomeSkeleton> {
       Calendar()
     ],
     UserType.teacher: [
-      Center(child:Text('lol')),
+      HomeTeacher(),
       Groups()
     ]
   };
