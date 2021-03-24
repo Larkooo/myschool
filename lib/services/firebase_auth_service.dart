@@ -94,6 +94,8 @@ class FirebaseAuthService {
       // If teacher, add groups field
       if (codeData['type'] == 1) data['groups'] = [];
 
+      await users.doc(result.user.uid).set(data);
+
       return UserData(
           uid: result.user.uid,
           firstName: firstName,

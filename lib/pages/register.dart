@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/services.dart';
-import 'package:myschool/components/login.dart';
+import 'package:myschool/pages/login.dart';
 import 'package:myschool/components/select_groups.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/pages/home_skeleton.dart';

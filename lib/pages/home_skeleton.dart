@@ -38,24 +38,20 @@ class _HomeState extends State<HomeSkeleton> {
 
   // Student
   int _selectedIndex = 0;
-  static List<Widget> _widgetOptions = <Widget>[
-    Home(),
-    Announcements(),
-    Calendar()
-  ];
+
+  static Map<UserType, List<Widget>> _widgetOptions = {
+    UserType.student: [
+      Home(),
+      Announcements(),
+      Calendar()
+    ],
+    UserType.teacher: [
+      Center(child:Text('lol')),
+      Groups()
+    ]
+  };
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  // Teacher
-  int _selectedIndexT = 0;
-  static List<Widget> _widgetOptionsT = <Widget>[
-  ];
-
-  void _onItemTappedT(int index) {
     setState(() {
       _selectedIndex = index;
     });
@@ -82,7 +78,7 @@ class _HomeState extends State<HomeSkeleton> {
                     drawer: DrawerComp(
                       userData: userData,
                     ),
-                    body: _widgetOptions.elementAt(_selectedIndex),
+                    body: _widgetOptions[UserType.student].elementAt(_selectedIndex),
                     bottomNavigationBar: adaptiveBottomNavBar(
                       items: <BottomNavigationBarItem>[
                         BottomNavigationBarItem(
@@ -111,11 +107,23 @@ class _HomeState extends State<HomeSkeleton> {
                     drawer: DrawerComp(
                       userData: userData,
                     ),
-                    body: Center(
-                        child: TextButton(
-                      child: Text("delete"),
-                      onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => Groups())),
-                    )));
+                    body: _widgetOptions[UserType.teacher].elementAt(_selectedIndex),
+                    bottomNavigationBar: adaptiveBottomNavBar(
+                      items: <BottomNavigationBarItem>[
+                        BottomNavigationBarItem(
+                          icon: Icon(Platform.isIOS
+                              ? CupertinoIcons.group
+                              : Icons.group),
+                          label: "Accueil"),
+                        BottomNavigationBarItem(
+                            icon: Icon(Platform.isIOS
+                                ? CupertinoIcons.group
+                                : Icons.group),
+                            label: "Groupes"),
+                      ],
+                      currentIndex: _selectedIndex,
+                      onTap: _onItemTapped,
+                    ));
           } else {
             return Center(child: CircularProgressIndicator());
           }
