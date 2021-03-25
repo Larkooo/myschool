@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/services.dart';
-import 'package:myschool/components/register.dart';
+import 'package:myschool/pages/register.dart';
 import 'package:myschool/components/reset_password.dart';
 import 'package:myschool/services/firebase_auth_service.dart';
 import 'package:myschool/shared/constants.dart';
@@ -12,7 +12,7 @@ import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:slide_popup_dialog/slide_popup_dialog.dart';
 
 import '../main.dart';
-import 'mozaik_login.dart';
+//import 'mozaik_login.dart';
 
 class Login extends StatefulWidget {
   final Stream<int> stream;

@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:intl/intl.dart';
 import 'package:myschool/components/announce.dart';
-import 'package:myschool/components/login.dart';
+import 'package:myschool/pages/login.dart';
 import 'package:myschool/models/school.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/services/database.dart';

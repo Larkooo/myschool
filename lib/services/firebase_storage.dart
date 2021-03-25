@@ -24,15 +24,17 @@ class StorageService {
 
   Future<String> getDownloadURL() async {
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      if (prefs.getString(ref) != null) {
-        return prefs.getString(ref);
-      } else {
-        String downloadUrl =
-            await FirebaseStorage.instance.ref(ref).getDownloadURL();
-        prefs.setString(ref, downloadUrl);
-        return downloadUrl;
-      }
+      //SharedPreferences prefs = await SharedPreferences.getInstance();
+      //if (prefs.getString(ref) != null) {
+      //  return prefs.getString(ref);
+      //} else {
+      String downloadUrl =
+          await FirebaseStorage.instance.ref(ref).getDownloadURL();
+      //prefs.setStringList(ref, [
+      //  downloadUrl,
+      //]);
+      return downloadUrl;
+      //  }
     } catch (e) {
       print(e);
       return null;

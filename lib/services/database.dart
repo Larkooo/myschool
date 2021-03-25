@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:myschool/models/Code.dart';
 import 'package:myschool/models/announcement.dart';
 import 'package:myschool/models/group.dart';
@@ -12,9 +15,10 @@ class DatabaseService {
 
   static final FirebaseFirestore _database = FirebaseFirestore.instance;
 
-  final CollectionReference usersCollection = _database.collection('users');
-  final CollectionReference codesCollection = _database.collection('codes');
-  final CollectionReference schoolsCollection = _database.collection('schools');
+  final CollectionReference _usersCollection = _database.collection('users');
+  final CollectionReference _codesCollection = _database.collection('codes');
+  final CollectionReference _schoolsCollection =
+      _database.collection('schools');
 
   Future updateUserData(
       {String firstName,
@@ -31,18 +35,18 @@ class DatabaseService {
     if (avatarUrl != null) data['avatarUrl'] = avatarUrl;
     if (usedCode != null) data['usedCode'] = usedCode;
     if (createdAt != null) data['createdAt'] = createdAt;
-    return usersCollection.doc(uid).update(data);
+    return _usersCollection.doc(uid).update(data);
   }
 
   Future<bool> deleteAnnounce(
       Map<dynamic, dynamic> data, DocumentReference reference) async {
     try {
       if (reference.parent.id == 'schools') {
-        await schoolsCollection.doc(reference.id).update({
+        await _schoolsCollection.doc(reference.id).update({
           'announcements': FieldValue.arrayRemove([data])
         });
       } else {
-        await schoolsCollection
+        await _schoolsCollection
             .doc(reference.parent.parent.id)
             .collection('groups')
             .doc(reference.id)
@@ -61,18 +65,18 @@ class DatabaseService {
       String title, String content, Scope scope, UserData user) async {
     try {
       if (scope == Scope.school) {
-        await schoolsCollection.doc(uid).update({
+        await _schoolsCollection.doc(uid).update({
           'announcements': FieldValue.arrayUnion([
             {
               'title': title,
               'content': content,
-              'author': usersCollection.doc(user.uid),
-              'createdAt': DateTime.now()
+              'author': _usersCollection.doc(user.uid),
+              'createdAt': FieldValue.serverTimestamp()
             }
           ])
         });
       } else {
-        await schoolsCollection
+        await _schoolsCollection
             .doc(uid)
             .collection('groups')
             .doc(user.school.group.uid)
@@ -81,8 +85,8 @@ class DatabaseService {
             {
               'title': title,
               'content': content,
-              'author': usersCollection.doc(user.uid),
-              'createdAt': DateTime.now()
+              'author': _usersCollection.doc(user.uid),
+              'createdAt': FieldValue.serverTimestamp()
             }
           ])
         });
@@ -94,7 +98,7 @@ class DatabaseService {
   }
 
   Future incrementCodeUsage() {
-    return codesCollection
+    return _codesCollection
         .doc(uid)
         .update({"usedTimes": FieldValue.increment(1)});
   }
@@ -187,42 +191,42 @@ class DatabaseService {
 
   // Users stream
   Stream<QuerySnapshot> get users {
-    return usersCollection.snapshots();
+    return _usersCollection.snapshots();
   }
 
   // Codes stream
   Stream<QuerySnapshot> get codes {
-    return codesCollection.snapshots();
+    return _codesCollection.snapshots();
   }
 
   // Schools stream
   Stream<QuerySnapshot> get schools {
-    return schoolsCollection.snapshots();
+    return _schoolsCollection.snapshots();
   }
 
   // Groups
   Stream<QuerySnapshot> get groups {
-    return schoolsCollection.doc(uid).collection('groups').snapshots();
+    return _schoolsCollection.doc(uid).collection('groups').snapshots();
   }
 
   // User doc stream
   Stream<UserData> get user {
-    return usersCollection.doc(uid).snapshots().map(userDataFromSnapshot);
+    return _usersCollection.doc(uid).snapshots().map(userDataFromSnapshot);
   }
 
   // Code doc stream
   Stream<Code> get code {
-    return codesCollection.doc(uid).snapshots().map(codeFromSnapshot);
+    return _codesCollection.doc(uid).snapshots().map(codeFromSnapshot);
   }
 
   // School doc stream
   Stream<School> get school {
-    return schoolsCollection.doc(uid).snapshots().map(schoolFromSnapshot);
+    return _schoolsCollection.doc(uid).snapshots().map(schoolFromSnapshot);
   }
 
   // Group
   Stream<Group> group(String groupUid) {
-    return schoolsCollection
+    return _schoolsCollection
         .doc(uid)
         .collection('groups')
         .doc(groupUid)

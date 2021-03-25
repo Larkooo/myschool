@@ -40,6 +40,11 @@ class Groups extends StatelessWidget {
                 }, itemCount: levelGroups.length, scrollDirection: Axis.horizontal,),
                 
               ],);
-            },  ); }}));
+            },  
+            ); 
+            }
+            else {
+              return CircularProgressIndicator();
+            }}));
   }
 }

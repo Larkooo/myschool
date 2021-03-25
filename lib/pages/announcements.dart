@@ -7,7 +7,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:intl/intl.dart';
 import 'package:myschool/components/announce.dart';
 import 'package:myschool/components/new_announce.dart';
-import 'package:myschool/components/register.dart';
+import 'package:myschool/pages/register.dart';
 import 'package:myschool/models/announcement.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/pages/settings.dart';
