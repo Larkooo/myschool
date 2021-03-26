@@ -36,20 +36,12 @@ class _HomeState extends State<HomeSkeleton> {
 
   static UserData userData;
 
-
   // Student
   int _selectedIndex = 0;
 
   static Map<UserType, List<Widget>> _widgetOptions = {
-    UserType.student: [
-      Home(),
-      Announcements(),
-      Calendar()
-    ],
-    UserType.teacher: [
-      HomeTeacher(),
-      Groups()
-    ]
+    UserType.student: [Home(), Announcements(), Calendar()],
+    UserType.teacher: [HomeTeacher(), Announcements(), Groups()]
   };
 
   void _onItemTapped(int index) {
@@ -79,7 +71,8 @@ class _HomeState extends State<HomeSkeleton> {
                     drawer: DrawerComp(
                       userData: userData,
                     ),
-                    body: _widgetOptions[UserType.student].elementAt(_selectedIndex),
+                    body: _widgetOptions[UserType.student]
+                        .elementAt(_selectedIndex),
                     bottomNavigationBar: adaptiveBottomNavBar(
                       items: <BottomNavigationBarItem>[
                         BottomNavigationBarItem(
@@ -108,14 +101,20 @@ class _HomeState extends State<HomeSkeleton> {
                     drawer: DrawerComp(
                       userData: userData,
                     ),
-                    body: _widgetOptions[UserType.teacher].elementAt(_selectedIndex),
+                    body: _widgetOptions[UserType.teacher]
+                        .elementAt(_selectedIndex),
                     bottomNavigationBar: adaptiveBottomNavBar(
                       items: <BottomNavigationBarItem>[
                         BottomNavigationBarItem(
-                          icon: Icon(Platform.isIOS
-                              ? CupertinoIcons.group
-                              : Icons.group),
-                          label: "Accueil"),
+                            icon: Icon(Platform.isIOS
+                                ? CupertinoIcons.home
+                                : Icons.home),
+                            label: "Accueil"),
+                        BottomNavigationBarItem(
+                            icon: Icon(Platform.isIOS
+                                ? CupertinoIcons.news
+                                : Icons.announcement),
+                            label: "Annonces"),
                         BottomNavigationBarItem(
                             icon: Icon(Platform.isIOS
                                 ? CupertinoIcons.group
@@ -126,7 +125,7 @@ class _HomeState extends State<HomeSkeleton> {
                       onTap: _onItemTapped,
                     ));
           } else {
-            return Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator.adaptive());
           }
         });
   }

@@ -54,7 +54,7 @@ class Announce extends StatelessWidget {
                                       imageUrl: announceUser.avatarUrl,
                                       progressIndicatorBuilder: (context, url,
                                               downloadProgress) =>
-                                          CircularProgressIndicator(
+                                          CircularProgressIndicator.adaptive(
                                               value: downloadProgress.progress),
                                       errorWidget: (context, url, error) =>
                                           Icon(Icons.error),
@@ -164,9 +164,7 @@ class Announce extends StatelessWidget {
       ),
     ]));
 
-    return Platform.isIOS &&
-            user.uid == announcement.author &&
-            announcement.uid != -1
+    return Platform.isIOS && announcement.uid != -1
         ? CupertinoContextMenu(
             /*previewBuilder: (BuildContext context, Animation<double> animation,
                 Widget child) {
@@ -195,30 +193,31 @@ class Announce extends StatelessWidget {
                     });
                   },
                 ),
-                CupertinoContextMenuAction(
-                  trailingIcon: Icons.delete,
-                  child: Text("Supprimer",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.red,
-                      )),
-                  onPressed: () {
-                    Navigator.pop(context);
-                    adaptiveDialog(
-                        context: context,
-                        content: Text(
-                            "Voulez vous vraiment supprimer cette annonce?"),
-                        actions: [
-                          adaptiveDialogTextButton(
-                              context, "Non", () => Navigator.pop(context)),
-                          adaptiveDialogTextButton(context, "Oui", () async {
-                            await DatabaseService().deleteAnnounce(
-                                announcement.raw, announcement.reference);
-                            Navigator.pop(context);
-                          })
-                        ]);
-                  },
-                ),
+                if (user.uid == announcement.author)
+                  CupertinoContextMenuAction(
+                    trailingIcon: Icons.delete,
+                    child: Text("Supprimer",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.red,
+                        )),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      adaptiveDialog(
+                          context: context,
+                          content: Text(
+                              "Voulez vous vraiment supprimer cette annonce?"),
+                          actions: [
+                            adaptiveDialogTextButton(
+                                context, "Non", () => Navigator.pop(context)),
+                            adaptiveDialogTextButton(context, "Oui", () async {
+                              await DatabaseService().deleteAnnounce(
+                                  announcement.raw, announcement.reference);
+                              Navigator.pop(context);
+                            })
+                          ]);
+                    },
+                  ),
               ], child: announcementCard)
         : announcementCard;
   }

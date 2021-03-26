@@ -88,7 +88,7 @@ class _SelectGroupsState extends State<SelectGroups> {
                                 })
                     ]);
               } else {
-                return CircularProgressIndicator();
+                return CircularProgressIndicator.adaptive();
               }
             }));
   }

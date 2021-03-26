@@ -2,8 +2,10 @@ import 'package:alert/alert.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:myschool/components/new_announce.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/pages/settings.dart';
+import 'package:myschool/shared/constants.dart';
 
 class DrawerComp extends StatefulWidget {
   final UserData userData;
@@ -63,10 +65,11 @@ class _DrawerCompState extends State<DrawerComp> {
                                             ? CachedNetworkImage(
                                                 imageUrl:
                                                     widget.userData.avatarUrl,
-                                                progressIndicatorBuilder:
-                                                    (context, url,
-                                                            downloadProgress) =>
-                                                        CircularProgressIndicator(
+                                                progressIndicatorBuilder: (context,
+                                                        url,
+                                                        downloadProgress) =>
+                                                    CircularProgressIndicator
+                                                        .adaptive(
                                                             value:
                                                                 downloadProgress
                                                                     .progress),
@@ -100,6 +103,17 @@ class _DrawerCompState extends State<DrawerComp> {
                                 (drawerExpanded && drawerStartedAnimation))
                               Text("meow"),
                           ]))))),
+          if (widget.userData.userType == UserType.teacher)
+            ListTile(
+              leading: Text('Publier une annonce'),
+              trailing: Icon(Icons.settings),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => NewAnnounce()));
+              },
+            ),
+          Divider(),
           ListTile(
             leading: Text('Paramètres'),
             trailing: Icon(Icons.settings),

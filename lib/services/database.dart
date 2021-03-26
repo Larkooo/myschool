@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -62,7 +63,7 @@ class DatabaseService {
   }
 
   Future<bool> createAnnounce(
-      String title, String content, Scope scope, UserData user) async {
+      String title, String content, dynamic scope, UserData user) async {
     try {
       if (scope == Scope.school) {
         await _schoolsCollection.doc(uid).update({
@@ -71,7 +72,7 @@ class DatabaseService {
               'title': title,
               'content': content,
               'author': _usersCollection.doc(user.uid),
-              'createdAt': FieldValue.serverTimestamp()
+              'createdAt': DateTime.now()
             }
           ])
         });
@@ -79,20 +80,22 @@ class DatabaseService {
         await _schoolsCollection
             .doc(uid)
             .collection('groups')
-            .doc(user.school.group.uid)
+            // make sure its a string
+            .doc(scope.toString())
             .update({
           'announcements': FieldValue.arrayUnion([
             {
               'title': title,
               'content': content,
               'author': _usersCollection.doc(user.uid),
-              'createdAt': FieldValue.serverTimestamp()
+              'createdAt': DateTime.now()
             }
           ])
         });
       }
       return true;
     } catch (_) {
+      print(_);
       return false;
     }
   }

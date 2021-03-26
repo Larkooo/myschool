@@ -11,21 +11,30 @@ import 'package:provider/provider.dart';
 
 import 'announce.dart';
 
+// ignore: must_be_immutable
 class NewAnnounce extends StatefulWidget {
+  String group;
+  NewAnnounce({this.group});
+
   @override
   _NewAnnounceState createState() => _NewAnnounceState();
 }
 
 class _NewAnnounceState extends State<NewAnnounce> {
-  String _announceTitleText = "";
-  String _announceContentText = "";
   TextEditingController _announceTitle = TextEditingController();
   TextEditingController _announceContent = TextEditingController();
 
   final RoundedLoadingButtonController _btnController =
       new RoundedLoadingButtonController();
 
-  Scope _announceScope = Scope.group;
+  Scope _announceScope;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    _announceScope = widget.group != null ? Scope.group : Scope.school;
+    super.initState();
+  }
 
   final _formKey = GlobalKey<FormState>();
 
@@ -62,7 +71,7 @@ class _NewAnnounceState extends State<NewAnnounce> {
                                 announcement: Announcement(
                                     uid: -1,
                                     author: user.uid,
-                                    title: _announceTitleText,
+                                    title: _announceTitle.text,
                                     content: _announceContent.text,
                                     scope: _announceScope,
                                     createdAt: DateTime.now()),
@@ -73,11 +82,11 @@ class _NewAnnounceState extends State<NewAnnounce> {
                           Container(
                               width: MediaQuery.of(context).size.width / 1.3,
                               child: TextFormField(
-                                onChanged: (text) {
-                                  setState(() {
-                                    _announceTitleText = text;
-                                  });
+                                // dummy setstates to refresh values
+                                onChanged: (_) {
+                                  setState(() {});
                                 },
+                                maxLength: 25,
                                 controller: _announceTitle,
                                 validator: (value) {
                                   if (value.isEmpty)
@@ -102,11 +111,11 @@ class _NewAnnounceState extends State<NewAnnounce> {
                                 keyboardType: TextInputType.multiline,
                                 maxLines: null,
                                 minLines: 5,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _announceContentText = value;
-                                  });
+                                // dummy setstate to refresh values
+                                onChanged: (_) {
+                                  setState(() {});
                                 },
+
                                 controller: _announceContent,
                                 validator: (value) {
                                   if (value.isEmpty)
@@ -137,13 +146,33 @@ class _NewAnnounceState extends State<NewAnnounce> {
                                     value: Scope.group,
                                   ),
                                 ],
-                                value: Scope.group,
+                                value: _announceScope,
                                 onChanged: (value) {
                                   setState(() {
                                     _announceScope = value;
                                   });
                                 },
                               )),
+                          SizedBox(
+                            height: 15,
+                          ),
+                          if (_announceScope == Scope.group)
+                            Container(
+                                width: MediaQuery.of(context).size.width / 2.3,
+                                child: DropdownButtonFormField(
+                                  items: user.groups
+                                      .map((e) => DropdownMenuItem(
+                                            child: Text(e.toString()),
+                                            value: e.toString(),
+                                          ))
+                                      .toList(),
+                                  value: widget.group,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      widget.group = value;
+                                    });
+                                  },
+                                )),
                           SizedBox(
                             height: 15,
                           ),
@@ -156,7 +185,9 @@ class _NewAnnounceState extends State<NewAnnounce> {
                                       .createAnnounce(
                                           _announceTitle.text,
                                           _announceContent.text,
-                                          _announceScope,
+                                          _announceScope == Scope.group
+                                              ? widget.group
+                                              : _announceScope,
                                           user);
                               if (announce == true) {
                                 _btnController.success();
@@ -171,7 +202,7 @@ class _NewAnnounceState extends State<NewAnnounce> {
                       )),
                     );
                   } else {
-                    return Center(child: CircularProgressIndicator());
+                    return Center(child: CircularProgressIndicator.adaptive());
                   }
                 })));
   }

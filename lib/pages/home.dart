@@ -77,11 +77,12 @@ class _HomeState extends State<Home> {
                                         });
                                         return Text(dayIsHome());
                                       } else {
-                                        return CircularProgressIndicator();
+                                        return CircularProgressIndicator
+                                            .adaptive();
                                       }
                                     });
                               } else {
-                                return CircularProgressIndicator();
+                                return CircularProgressIndicator.adaptive();
                               }
                             })
                         : Text(dayIsHome())),
@@ -174,12 +175,14 @@ class _HomeState extends State<Home> {
                                 );
                               } else {
                                 return Center(
-                                    child: CircularProgressIndicator());
+                                    child:
+                                        CircularProgressIndicator.adaptive());
                               }
                             },
                           );
                         } else {
-                          return Center(child: CircularProgressIndicator());
+                          return Center(
+                              child: CircularProgressIndicator.adaptive());
                         }
                       },
                     )
@@ -227,12 +230,12 @@ class _HomeState extends State<Home> {
                           child: Announce(
                               announcement: school.announcements.last));
                     } else {
-                      return CircularProgressIndicator();
+                      return CircularProgressIndicator.adaptive();
                     }
                   }),
             ]));
           } else {
-            return Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator.adaptive());
           }
         });
   }

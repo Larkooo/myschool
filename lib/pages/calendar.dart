@@ -62,13 +62,14 @@ class _CalendarState extends State<Calendar> {
                   */
               if (CacheManagerMemory.remoteSchoolDays.isNotEmpty)
                 Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 30,
-                  color:
-                      CacheManagerMemory.dayIsHome ? Colors.blue : Colors.green,
-                  child: Center(
+                    width: MediaQuery.of(context).size.width,
+                    height: 30,
+                    color: CacheManagerMemory.dayIsHome
+                        ? Colors.blue
+                        : Colors.green,
+                    child: Center(
                       child: Text(dayIsHome()),
-                )),
+                    )),
               TableCalendar(
                 initialSelectedDay: _selectedDay,
                 startDay: _startDay,
@@ -350,7 +351,7 @@ class _CalendarState extends State<Calendar> {
                           .toList()))
             ]);
           } else {
-            return Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator.adaptive());
           }
         });
   }

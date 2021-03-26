@@ -60,8 +60,12 @@ class _AnnouncementsState extends State<Announcements> {
                     List<Announcement> announcements =
                         schoolSnapshot.data.announcements;
                     return StreamBuilder(
-                      stream: DatabaseService(uid: user.school.uid)
-                          .group(user.school.group.uid),
+                      stream: user.userType == UserType.student
+                          ? DatabaseService(uid: user.school.uid)
+                              .group(user.school.group.uid)
+                          : StreamGroup.merge(user.groups.map((e) =>
+                              DatabaseService(uid: user.school.uid)
+                                  .group(e.toString()))),
                       builder: (context, groupSnapshot) {
                         if (groupSnapshot.hasData) {
                           List<Announcement> groupAnnouncements =
@@ -81,24 +85,25 @@ class _AnnouncementsState extends State<Announcements> {
                         */
                                 Announcement announcement =
                                     announcements[index];
-                                    // print(announcement.title);
+                                // print(announcement.title);
                                 // Rendering part
                                 return Announce(announcement: announcement);
                               });
                         } else {
-                          return Center(child: CircularProgressIndicator());
+                          return Center(
+                              child: CircularProgressIndicator.adaptive());
                         }
                       },
                     );
                   } else {
                     return Center(
-                      child: CircularProgressIndicator(),
+                      child: CircularProgressIndicator.adaptive(),
                     );
                   }
                 },
               );
             } else {
-              return Center(child: CircularProgressIndicator());
+              return Center(child: CircularProgressIndicator.adaptive());
             }
           }),
       floatingActionButton: userType == UserType.teacher

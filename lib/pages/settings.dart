@@ -251,7 +251,8 @@ class _SettingsState extends State<Settings> {
                                   title: 'École',
                                   tiles: [
                                     SettingsTile(
-                                      leading: CircularProgressIndicator(),
+                                      leading:
+                                          CircularProgressIndicator.adaptive(),
                                       title:
                                           "Mhh quelque chose semble être cassé!",
                                     ),
@@ -323,7 +324,7 @@ class _SettingsState extends State<Settings> {
                 );
               } else {
                 return Center(
-                  child: CircularProgressIndicator(),
+                  child: CircularProgressIndicator.adaptive(),
                 );
               }
             }));
