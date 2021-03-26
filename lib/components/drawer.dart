@@ -106,7 +106,7 @@ class _DrawerCompState extends State<DrawerComp> {
           if (widget.userData.userType == UserType.teacher)
             ListTile(
               leading: Text('Publier une annonce'),
-              trailing: Icon(Icons.settings),
+              trailing: Icon(Icons.announcement),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(context,
