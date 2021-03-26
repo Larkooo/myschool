@@ -109,9 +109,11 @@ class _SettingsState extends State<Settings> {
                                   adaptiveDialogTextButton(context, "Non",
                                       () => Navigator.pop(context)),
                                   adaptiveDialogTextButton(context, "Oui", () {
+                                    //user.updateEmail('ds');
                                     Alert(
-                                        message:
-                                            "Un courriel pour modifier votre adresse courriel vous a été envoyé");
+                                            message:
+                                                "Un courriel pour modifier votre adresse courriel vous a été envoyé")
+                                        .show();
                                     Navigator.pop(context);
                                   }),
                                 ]);
