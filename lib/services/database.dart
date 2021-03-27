@@ -100,6 +100,44 @@ class DatabaseService {
     }
   }
 
+  /*Future<bool> createHomework(
+      String title, String content, dynamic scope, UserData user, DateTime limitDate) async {
+    try {
+      if (scope == Scope.school) {
+        await _schoolsCollection.doc(uid).update({
+          'announcements': FieldValue.arrayUnion([
+            {
+              'title': title,
+              'content': content,
+              'author': _usersCollection.doc(user.uid),
+              'createdAt': DateTime.now()
+            }
+          ])
+        });
+      } else {
+        await _schoolsCollection
+            .doc(uid)
+            .collection('groups')
+            // make sure its a string
+            .doc(scope.toString())
+            .update({
+          'announcements': FieldValue.arrayUnion([
+            {
+              'title': title,
+              'content': content,
+              'author': _usersCollection.doc(user.uid),
+              'createdAt': DateTime.now()
+            }
+          ])
+        });
+      }
+      return true;
+    } catch (_) {
+      print(_);
+      return false;
+    }
+  }*/
+
   Future incrementCodeUsage() {
     return _codesCollection
         .doc(uid)

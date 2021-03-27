@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:myschool/components/new_announce.dart';
+import 'package:myschool/pages/teacher/group.dart';
 import '../../models/user.dart';
 import '../../services/database.dart';
 import 'package:provider/provider.dart';
@@ -55,7 +56,7 @@ class Groups extends StatelessWidget {
                                       onTap: () => Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (context) => NewAnnounce(
+                                              builder: (context) => GroupPage(
                                                   group: e.toString()))),
                                       child: Container(
                                         height:
