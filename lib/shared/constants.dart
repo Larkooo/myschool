@@ -2,14 +2,17 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:myschool/shared/cachemanager.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:dart_date/dart_date.dart';
 
+enum GroupAttribute { Alias, Image }
+enum AnnounceCategory { Essay, Homework, Important, Message }
 enum Scope { school, group }
 enum UserType { student, teacher }
 enum CodeType { student, staff }
-enum AuthCodes {
+enum AuthCode {
   ok,
   accountNotFound,
   badPassword,
@@ -26,6 +29,16 @@ const Map<int, UserType> userTypeDefinitions = {
   1: UserType.teacher,
   2: UserType.student
 };
+
+Future getImage(ImagePicker picker) async {
+  final pickedFile = await picker.getImage(source: ImageSource.gallery);
+
+  if (pickedFile != null) {
+    return File(pickedFile.path);
+  } else {
+    return null;
+  }
+}
 
 dynamic adaptiveDialog(
     {BuildContext context,

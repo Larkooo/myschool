@@ -42,7 +42,9 @@ class _NewAnnounceState extends State<NewAnnounce> {
   Widget build(BuildContext context) {
     final user = context.watch<User>();
     return Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(
+          title: Text('Nouvelle annonce'),
+        ),
         body: SingleChildScrollView(
             child: StreamBuilder(
                 stream: DatabaseService(uid: user.uid).user,
@@ -166,7 +168,8 @@ class _NewAnnounceState extends State<NewAnnounce> {
                                             value: e.toString(),
                                           ))
                                       .toList(),
-                                  value: widget.group,
+                                  value:
+                                      widget.group ?? user.groups[0].toString(),
                                   onChanged: (value) {
                                     setState(() {
                                       widget.group = value;

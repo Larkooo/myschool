@@ -88,35 +88,35 @@ class _ResetPasswordNextComponentState
                       () async {
                     if (_formKey.currentState.validate()) {
                       _btnController.start();
-                      AuthCodes valid =
+                      AuthCode valid =
                           await FirebaseAuthService.checkResetPasswordCode(
                               _codeController.text, _passwordController.text);
                       switch (valid) {
-                        case AuthCodes.ok:
+                        case AuthCode.ok:
                           _btnController.success();
                           Alert(message: "Mot de passe modifié").show();
                           await Future.delayed(const Duration(seconds: 2),
                               () => Navigator.pop(context));
                           break;
-                        case AuthCodes.passwordResetCodeExpired:
+                        case AuthCode.passwordResetCodeExpired:
                           _btnController.error();
                           Alert(message: "Code expiré").show();
                           await Future.delayed(const Duration(seconds: 2),
                               () => Navigator.pop(context));
                           break;
-                        case AuthCodes.passwordResetCodeInvalid:
+                        case AuthCode.passwordResetCodeInvalid:
                           _btnController.error();
                           Alert(message: "Code invalide").show();
                           await Future.delayed(const Duration(seconds: 2),
                               () => Navigator.pop(context));
                           break;
-                        case AuthCodes.accountDisabled:
+                        case AuthCode.accountDisabled:
                           _btnController.error();
                           Alert(message: "Ce compte est désactivé").show();
                           await Future.delayed(const Duration(seconds: 2),
                               () => Navigator.pop(context));
                           break;
-                        case AuthCodes.accountNotFound:
+                        case AuthCode.accountNotFound:
                           _btnController.error();
                           Alert(message: "Compte introuvable").show();
                           await Future.delayed(const Duration(seconds: 2),

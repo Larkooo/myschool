@@ -133,10 +133,10 @@ class _LoginState extends State<Login> {
                       if (loginStatus is User) {
                         Alert(message: "Connecté").show();
                         _btnController.success();
-                      } else if (loginStatus == AuthCodes.accountNotFound) {
+                      } else if (loginStatus == AuthCode.accountNotFound) {
                         Alert(message: "Compte non existant").show();
                         _btnController.stop();
-                      } else if (loginStatus == AuthCodes.badPassword) {
+                      } else if (loginStatus == AuthCode.badPassword) {
                         Alert(message: "Mot de passe invalide").show();
                         _btnController.stop();
                       } else {

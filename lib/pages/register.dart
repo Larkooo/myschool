@@ -220,7 +220,7 @@ class _RegisterState extends State<Register> {
                           await FirebaseAuthService.register(
                               _firstNameController.text,
                               _lastNameController.text,
-                              _emailController.text.trim(),  
+                              _emailController.text.trim(),
                               _passwordController.text.trim(),
                               _codeController.text.trim());
                       print(registerStatus);
@@ -254,13 +254,13 @@ class _RegisterState extends State<Register> {
                                         userUid: registerStatus.uid,
                                         schoolUid: registerStatus.school.uid,
                                       )));
-                      } else if (registerStatus == AuthCodes.emailAlreadyUsed) {
+                      } else if (registerStatus == AuthCode.emailAlreadyUsed) {
                         Alert(
                                 message:
                                     "Un compte avec cette adresse email existe déjà")
                             .show();
                         _btnController.stop();
-                      } else if (registerStatus == AuthCodes.codeNotFound) {
+                      } else if (registerStatus == AuthCode.codeNotFound) {
                         Alert(message: "Code inexistant").show();
                         _btnController.stop();
                       } else {

@@ -55,15 +55,15 @@ class FirebaseAuthService {
       return result.user;
     } on FirebaseAuthException catch (e) {
       if (e.code == "wrong-password") {
-        return AuthCodes.badPassword;
+        return AuthCode.badPassword;
       } else if (e.code == "user-not-found") {
-        return AuthCodes.accountNotFound;
+        return AuthCode.accountNotFound;
       } else {
-        return AuthCodes.error;
+        return AuthCode.error;
       }
     } catch (e) {
       print(e.code);
-      return AuthCodes.error;
+      return AuthCode.error;
     }
   }
 
@@ -73,7 +73,7 @@ class FirebaseAuthService {
       DocumentSnapshot codeSnapshot = await codes.doc(code).get();
 
       if (!codeSnapshot.exists) {
-        return AuthCodes.codeNotFound;
+        return AuthCode.codeNotFound;
       }
       Map<String, dynamic> codeData = codeSnapshot.data();
       UserCredential result = await _auth.createUserWithEmailAndPassword(
@@ -107,14 +107,14 @@ class FirebaseAuthService {
           createdAt: DateTime.now());
     } on FirebaseAuthException catch (e) {
       if (e.code == "email-already-in-use") {
-        return AuthCodes.emailAlreadyUsed;
+        return AuthCode.emailAlreadyUsed;
       } else {
         print(e);
-        return AuthCodes.error;
+        return AuthCode.error;
       }
     } catch (e) {
       print(e.code);
-      return AuthCodes.error;
+      return AuthCode.error;
     }
   }
 
@@ -135,22 +135,22 @@ class FirebaseAuthService {
     }
   }
 
-  static Future<AuthCodes> checkResetPasswordCode(
+  static Future<AuthCode> checkResetPasswordCode(
       String code, String newPassword) async {
     try {
       await _auth.confirmPasswordReset(code: code, newPassword: newPassword);
-      return AuthCodes.ok;
+      return AuthCode.ok;
     } on FirebaseAuthException catch (e) {
       if (e.code == "expired-action-code") {
-        return AuthCodes.passwordResetCodeExpired;
+        return AuthCode.passwordResetCodeExpired;
       } else if (e.code == "invalid-action-code") {
-        return AuthCodes.passwordResetCodeInvalid;
+        return AuthCode.passwordResetCodeInvalid;
       } else if (e.code == "user-disabled") {
-        return AuthCodes.accountDisabled;
+        return AuthCode.accountDisabled;
       } else if (e.code == "user-not-found") {
-        return AuthCodes.accountNotFound;
+        return AuthCode.accountNotFound;
       } else {
-        return AuthCodes.error;
+        return AuthCode.error;
       }
     }
   }

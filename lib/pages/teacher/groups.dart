@@ -4,6 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:myschool/components/new_announce.dart';
 import 'package:myschool/pages/teacher/group.dart';
+import 'package:myschool/shared/cachemanager.dart';
+import 'package:myschool/shared/constants.dart';
+import 'package:myschool/shared/local_storage.dart';
 import '../../models/user.dart';
 import '../../services/database.dart';
 import 'package:provider/provider.dart';
@@ -48,30 +51,163 @@ class Groups extends StatelessWidget {
                                   .where((element) =>
                                       element.toString()[0] == level)
                                   .map((e) {
-                                Widget groupCard = Material(
-                                  borderRadius: BorderRadius.circular(5),
-                                  color: Colors.grey[800],
-                                  child: InkWell(
-                                      borderRadius: BorderRadius.circular(5),
-                                      onTap: () => Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => GroupPage(
-                                                  group: e.toString()))),
-                                      child: Container(
-                                        height:
-                                            MediaQuery.of(context).size.height /
-                                                10,
-                                        width:
-                                            MediaQuery.of(context).size.width /
-                                                2.5,
-                                        child: Center(
-                                            child: Text(
-                                          e.toString(),
-                                          style: TextStyle(fontSize: 15),
+                                Widget groupCard() {
+                                  String groupAlias = CacheManagerMemory
+                                          .groupPreferences[e.toString()]
+                                      [GroupAttribute.Alias];
+                                  File groupImage = CacheManagerMemory
+                                          .groupPreferences[e.toString()]
+                                      [GroupAttribute.Image];
+                                  return Material(
+                                    borderRadius: BorderRadius.circular(5),
+                                    color: Colors.grey[800],
+                                    child: InkWell(
+                                        borderRadius: BorderRadius.circular(5),
+                                        onTap: () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => GroupPage(
+                                                    group: e.toString(),
+                                                    alias: groupAlias,
+                                                    image: groupImage))),
+                                        child: Ink(
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .height /
+                                              10,
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              2.5,
+                                          decoration: groupImage != null
+                                              ? BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(5),
+                                                  shape: BoxShape.rectangle,
+                                                  image: DecorationImage(
+                                                      fit: BoxFit.fill,
+                                                      image: FileImage(
+                                                          groupImage)))
+                                              : null,
+                                          child: groupAlias != null
+                                              ? Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      groupAlias,
+                                                      style: TextStyle(
+                                                          fontSize: 15),
+                                                    ),
+                                                    Text(
+                                                      e.toString(),
+                                                      style: TextStyle(
+                                                          fontSize: 13,
+                                                          color:
+                                                              Colors.grey[900]),
+                                                    )
+                                                  ],
+                                                )
+                                              : Center(
+                                                  child: Text(
+                                                  e.toString(),
+                                                  style:
+                                                      TextStyle(fontSize: 15),
+                                                )),
                                         )),
-                                      )),
-                                );
+                                  );
+                                }
+
+                                Widget groupCardFuture = FutureBuilder(
+                                    future: Future.wait([
+                                      LocalStorage.getGroupAlias(e.toString()),
+                                      LocalStorage.getGroupImage(e.toString())
+                                    ]),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.hasData) {
+                                        String groupAlias = snapshot.data[0];
+                                        File groupImage = snapshot.data[1];
+                                        CacheManagerMemory
+                                            .groupPreferences[e.toString()] = {
+                                          GroupAttribute.Alias: groupAlias,
+                                          GroupAttribute.Image: groupImage
+                                        };
+                                        return Material(
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                          color: Colors.grey[800],
+                                          child: InkWell(
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                              onTap: () => Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          GroupPage(
+                                                              group:
+                                                                  e.toString(),
+                                                              alias: groupAlias,
+                                                              image:
+                                                                  groupImage))),
+                                              child: Ink(
+                                                height: MediaQuery.of(context)
+                                                        .size
+                                                        .height /
+                                                    10,
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width /
+                                                    2.5,
+                                                decoration: groupImage != null
+                                                    ? BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(5),
+                                                        shape:
+                                                            BoxShape.rectangle,
+                                                        image: DecorationImage(
+                                                            fit: BoxFit.fill,
+                                                            image: FileImage(
+                                                                groupImage)))
+                                                    : null,
+                                                child: groupAlias != null
+                                                    ? Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Text(
+                                                            groupAlias,
+                                                            style: TextStyle(
+                                                                fontSize: 15),
+                                                          ),
+                                                          Text(
+                                                            e.toString(),
+                                                            style: TextStyle(
+                                                                fontSize: 13,
+                                                                color: Colors
+                                                                    .grey[900]),
+                                                          )
+                                                        ],
+                                                      )
+                                                    : Center(
+                                                        child: Text(
+                                                        e.toString(),
+                                                        style: TextStyle(
+                                                            fontSize: 15),
+                                                      )),
+                                              )),
+                                        );
+                                      } else {
+                                        return Center(
+                                            child: CircularProgressIndicator
+                                                .adaptive());
+                                      }
+                                    });
+                                Widget card = CacheManagerMemory
+                                        .groupPreferences.isNotEmpty
+                                    ? groupCard()
+                                    : groupCardFuture;
                                 return Platform.isIOS
                                     ? CupertinoContextMenu(actions: [
                                         CupertinoContextMenuAction(
@@ -91,14 +227,14 @@ class Groups extends StatelessWidget {
                                                                 e.toString())));
                                           },
                                         )
-                                      ], child: groupCard)
-                                    : groupCard;
+                                      ], child: card)
+                                    : card;
                               }).toList(),
                             )),
                       );
                     });
               } else {
-                return CircularProgressIndicator.adaptive();
+                return Center(child: CircularProgressIndicator.adaptive());
               }
             }));
   }

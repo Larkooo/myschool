@@ -34,16 +34,6 @@ class Settings extends StatefulWidget {
 class _SettingsState extends State<Settings> {
   final picker = ImagePicker();
 
-  Future getImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      return File(pickedFile.path);
-    } else {
-      return null;
-    }
-  }
-
   String _mozaikAccountText = "Lier votre compte Mozaik";
 
   @override
@@ -131,7 +121,7 @@ class _SettingsState extends State<Settings> {
                           leading: Icon(Icons.image_search),
                           title: "Choisir une photo de profil",
                           onPressed: (context) async {
-                            File image = await getImage();
+                            File image = await getImage(picker);
                             if (image != null) {
                               // two megabytes
                               const twoMb = 2 * (1e+6);
@@ -144,7 +134,7 @@ class _SettingsState extends State<Settings> {
                                           content: Text(
                                               "La taille de votre image doit faire au maximum 2 mégaoctets"),
                                           actions: [
-                                            FlatButton(
+                                            TextButton(
                                                 onPressed: () =>
                                                     Navigator.pop(context),
                                                 child: Text("Ok"))
