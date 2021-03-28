@@ -21,6 +21,10 @@ class DatabaseService {
   final CollectionReference _schoolsCollection =
       _database.collection('schools');
 
+  Future<bool> HWIDBanned() async {
+    return (await _database.collection('banlist').doc(uid).get()).exists;
+  }
+
   Future updateUserData(
       {String firstName,
       String lastName,

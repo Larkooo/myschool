@@ -52,6 +52,7 @@ dependencies:
   rxdart: 
   clipboard: ^0.1.2+8
   badges: ^1.2.0
+  device_info: ^2.0.0
  # firebase_auth_oauth: ^0.2.3
 
   # The following adds the Cupertino Icons font to your application.

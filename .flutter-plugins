@@ -2,6 +2,7 @@
 alert=/Users/salima/Documents/development/flutter/.pub-cache/hosted/pub.dartlang.org/alert-1.0.1/
 cloud_firestore=/Users/salima/Documents/development/flutter/.pub-cache/hosted/pub.dartlang.org/cloud_firestore-0.14.4/
 cloud_firestore_web=/Users/salima/Documents/development/flutter/.pub-cache/hosted/pub.dartlang.org/cloud_firestore_web-0.2.1+2/
+device_info=/Users/salima/Documents/development/flutter/.pub-cache/hosted/pub.dartlang.org/device_info-2.0.0/
 firebase_auth=/Users/salima/Documents/development/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_auth-0.18.4+1/
 firebase_auth_web=/Users/salima/Documents/development/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_auth_web-0.3.2+3/
 firebase_core=/Users/salima/Documents/development/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_core-0.5.3/
