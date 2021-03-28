@@ -45,60 +45,51 @@ class _AnnouncementsState extends State<Announcements> {
                   .addPostFrameCallback((_) => setState(() {
                         userType = user.userType;
                       }));
-
+              // grouping different streams into a list to then merge them.
+              // to get school and group(s) announcements
+              List<Stream> streams = [
+                DatabaseService(uid: user.school.uid).school
+              ];
+              if (user.userType == UserType.student) {
+                streams.add(DatabaseService(uid: user.school.uid)
+                    .group(user.school.group.uid));
+              } else {
+                user.groups.forEach((group) {
+                  streams.add(DatabaseService(uid: user.school.uid)
+                      .group(group.toString()));
+                });
+              }
               return StreamBuilder(
                 /* 
-                  Using StreamZip to merge 2 streams, the group announcements and school ones
+                  Merging the streams, the group(s) announcements and school ones
                   */
-                stream: //CombineLatestStream.list([
-                    DatabaseService(uid: user.school.uid).school,
-                //DatabaseService(uid: user.school.uid)
-                //    .group(user.school.group.uid)
-                //]),
-                builder: (context, schoolSnapshot) {
-                  if (schoolSnapshot.hasData) {
-                    List<Announcement> announcements =
-                        schoolSnapshot.data.announcements;
-                    return StreamBuilder(
-                      stream: user.userType == UserType.student
-                          ? DatabaseService(uid: user.school.uid)
-                              .group(user.school.group.uid)
-                          : StreamGroup.merge(user.groups.map((e) =>
-                              DatabaseService(uid: user.school.uid)
-                                  .group(e.toString()))),
-                      builder: (context, groupSnapshot) {
-                        if (groupSnapshot.hasData) {
-                          List<Announcement> groupAnnouncements =
-                              groupSnapshot.data.announcements;
-                          announcements.addAll(groupAnnouncements);
-                          return ListView.builder(
-                              itemCount: announcements.length,
-                              itemBuilder: (context, index) {
-                                /* 
+                stream: CombineLatestStream.list(streams),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    //print(snapshot.data.length);
+                    List<Announcement> announcements = [];
+                    snapshot.data.forEach((e) {
+                      announcements.addAll(e.announcements);
+                    });
+                    return ListView.builder(
+                        itemCount: announcements.length,
+                        itemBuilder: (context, index) {
+                          /* 
                           Sorting the announcements by comparing their time of creation 
                   */
-                                announcements.sort((a, b) =>
-                                    b.createdAt.compareTo(a.createdAt));
+                          announcements.sort(
+                              (a, b) => b.createdAt.compareTo(a.createdAt));
 
-                                /* 
+                          /* 
                           Transforming our data to a an Announcement 
                         */
-                                Announcement announcement =
-                                    announcements[index];
-                                // print(announcement.title);
-                                // Rendering part
-                                return Announce(announcement: announcement);
-                              });
-                        } else {
-                          return Center(
-                              child: CircularProgressIndicator.adaptive());
-                        }
-                      },
-                    );
+                          Announcement announcement = announcements[index];
+                          // print(announcement.title);
+                          // Rendering part
+                          return Announce(announcement: announcement);
+                        });
                   } else {
-                    return Center(
-                      child: CircularProgressIndicator.adaptive(),
-                    );
+                    return Center(child: CircularProgressIndicator.adaptive());
                   }
                 },
               );
