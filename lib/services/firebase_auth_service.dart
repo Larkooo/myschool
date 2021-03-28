@@ -24,7 +24,7 @@ class FirebaseAuthService {
           uid: user.uid,
           firstName: data['firstName'],
           lastName: data['lastName'],
-          userType: userTypeDefinitions[data['type']],
+          type: userTypeDefinitions[data['type']],
           school: School(
               uid: doc.get('school').parent.parent.id,
               group: Group(uid: doc.get('school').id)),
@@ -101,7 +101,7 @@ class FirebaseAuthService {
           firstName: firstName,
           lastName: lastName,
           avatarUrl: null,
-          userType: codeData['type'] == 0 ? UserType.student : UserType.teacher,
+          type: codeData['type'] == 0 ? UserType.student : UserType.teacher,
           school: School(uid: (codeData['school'] as DocumentReference).id),
           usedCode: code,
           createdAt: DateTime.now());

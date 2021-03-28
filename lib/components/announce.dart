@@ -7,18 +7,21 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:myschool/models/announcement.dart';
 import 'package:myschool/models/user.dart';
+import 'package:myschool/pages/announce_page.dart';
 import 'package:myschool/services/database.dart';
 import 'package:myschool/shared/constants.dart';
 import 'package:provider/provider.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:dart_date/dart_date.dart';
-import 'announce_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:slide_popup_dialog/slide_popup_dialog.dart';
 
 class Announce extends StatelessWidget {
   final Announcement announcement;
 
   Announce({this.announcement});
+
+  UserData announceUser;
 
   @override
   Widget build(BuildContext context) {
@@ -27,12 +30,10 @@ class Announce extends StatelessWidget {
     final Card announcementCard = Card(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
       ListTile(
-        onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => AnnouncePage(
-                      announcement: announcement,
-                    ))),
+        onTap: () => showSlideDialog(
+            context: context,
+            child:
+                AnnouncePage(announcement: announcement, author: announceUser)),
         title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(
             children: [
@@ -43,38 +44,9 @@ class Announce extends StatelessWidget {
                       .get(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
-                      UserData announceUser =
+                      announceUser =
                           DatabaseService().userDataFromSnapshot(snapshot.data);
-                      return Row(
-                        children: [
-                          ClipRRect(
-                              borderRadius: BorderRadius.circular(30),
-                              child: announceUser.avatarUrl != null
-                                  ? CachedNetworkImage(
-                                      imageUrl: announceUser.avatarUrl,
-                                      progressIndicatorBuilder: (context, url,
-                                              downloadProgress) =>
-                                          CircularProgressIndicator.adaptive(
-                                              value: downloadProgress.progress),
-                                      errorWidget: (context, url, error) =>
-                                          Icon(Icons.error),
-                                      height: 20,
-                                      width: 20,
-                                    )
-                                  : Container(
-                                      width: 20,
-                                      height: 20,
-                                      color: Colors.grey[900],
-                                      child: Icon(
-                                        Icons.person,
-                                        size: 10,
-                                      ))),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Text(announceUser.firstName)
-                        ],
-                      );
+                      return userLeading(announceUser, 1);
                     } else {
                       return CircularProgressIndicator(
                         strokeWidth: 2,

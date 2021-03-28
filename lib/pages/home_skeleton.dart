@@ -65,7 +65,7 @@ class _HomeState extends State<HomeSkeleton> {
           if (snapshot.hasData) {
             userData = snapshot.data;
             // Student pages
-            return userData.userType == UserType.student
+            return userData.type == UserType.student
                 ? Scaffold(
                     appBar: AppBar(),
                     drawer: DrawerComp(

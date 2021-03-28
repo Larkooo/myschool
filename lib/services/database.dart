@@ -165,7 +165,7 @@ class DatabaseService {
           uid: uid,
           firstName: data['firstName'],
           lastName: data['lastName'],
-          userType: UserType.student,
+          type: UserType.student,
           avatarUrl: data['avatarUrl'],
           usedCode: data['usedCode'],
           school: School(
@@ -178,7 +178,7 @@ class DatabaseService {
         uid: uid,
         firstName: data['firstName'],
         lastName: data['lastName'],
-        userType: UserType.teacher,
+        type: UserType.teacher,
         groups: data['groups'],
         avatarUrl: data['avatarUrl'],
         usedCode: data['usedCode'],

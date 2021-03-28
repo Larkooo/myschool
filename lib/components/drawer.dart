@@ -103,7 +103,7 @@ class _DrawerCompState extends State<DrawerComp> {
                                 (drawerExpanded && drawerStartedAnimation))
                               Text("meow"),
                           ]))))),
-          if (widget.userData.userType == UserType.teacher)
+          if (widget.userData.type == UserType.teacher)
             ListTile(
               leading: Text('Publier une annonce'),
               trailing: Icon(Icons.announcement),

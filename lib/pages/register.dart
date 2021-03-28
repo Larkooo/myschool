@@ -246,7 +246,7 @@ class _RegisterState extends State<Register> {
                         //      ],
                         //    ));
                         Navigator.pop(context);
-                        if (registerStatus.userType == UserType.teacher)
+                        if (registerStatus.type == UserType.teacher)
                           Navigator.push(
                               context,
                               MaterialPageRoute(

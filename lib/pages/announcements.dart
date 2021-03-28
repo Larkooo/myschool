@@ -40,7 +40,7 @@ class _AnnouncementsState extends State<Announcements> {
             List<Stream> streams = [
               DatabaseService(uid: user.school.uid).school
             ];
-            if (user.userType == UserType.student) {
+            if (user.type == UserType.student) {
               streams.add(DatabaseService(uid: user.school.uid)
                   .group(user.school.group.uid));
             } else {
@@ -84,7 +84,7 @@ class _AnnouncementsState extends State<Announcements> {
                   }
                 },
               ),
-              floatingActionButton: user.userType == UserType.teacher
+              floatingActionButton: user.type == UserType.teacher
                   ? IconButton(
                       icon: Icon(Icons.add),
                       onPressed: () => Navigator.push(

@@ -223,7 +223,7 @@ class _SettingsState extends State<Settings> {
                                       title: school.name,
                                       // Easter Egg start
                                     ),
-                                    userData.userType == UserType.student
+                                    userData.type == UserType.student
                                         ?
                                         // If student, display his group
                                         SettingsTile(

@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:myschool/models/user.dart';
 import 'package:myschool/shared/cachemanager.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:dart_date/dart_date.dart';
@@ -39,6 +41,36 @@ Future getImage(ImagePicker picker) async {
     return null;
   }
 }
+
+Row userLeading(UserData user, double size) => Row(
+      children: [
+        ClipRRect(
+            borderRadius: BorderRadius.circular(30),
+            child: user.avatarUrl != null
+                ? CachedNetworkImage(
+                    imageUrl: user.avatarUrl,
+                    progressIndicatorBuilder:
+                        (context, url, downloadProgress) =>
+                            CircularProgressIndicator.adaptive(
+                                value: downloadProgress.progress),
+                    errorWidget: (context, url, error) => Icon(Icons.error),
+                    height: 20 * size,
+                    width: 20 * size,
+                  )
+                : Container(
+                    width: 20 * size,
+                    height: 20 * size,
+                    color: Colors.grey[900],
+                    child: Icon(
+                      Icons.person,
+                      size: 10 * size,
+                    ))),
+        SizedBox(
+          width: 5,
+        ),
+        Text(user.firstName, style: TextStyle(fontSize: 18 * size)),
+      ],
+    );
 
 dynamic adaptiveDialog(
     {BuildContext context,
