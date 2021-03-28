@@ -27,39 +27,30 @@ class Announcements extends StatefulWidget {
 }
 
 class _AnnouncementsState extends State<Announcements> {
-  // Default value -> student
-  UserType userType = UserType.student;
-
   @override
   Widget build(BuildContext context) {
     final user = context.watch<User>();
-    return Scaffold(
-      body: StreamBuilder(
-          stream: DatabaseService(uid: user.uid).user,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              UserData user = snapshot.data;
-
-              // Calling setstate after build is finisehd
-              SchedulerBinding.instance
-                  .addPostFrameCallback((_) => setState(() {
-                        userType = user.userType;
-                      }));
-              // grouping different streams into a list to then merge them.
-              // to get school and group(s) announcements
-              List<Stream> streams = [
-                DatabaseService(uid: user.school.uid).school
-              ];
-              if (user.userType == UserType.student) {
+    return StreamBuilder(
+        stream: DatabaseService(uid: user.uid).user,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            UserData user = snapshot.data;
+            // grouping different streams into a list to then merge them.
+            // to get school and group(s) announcements
+            List<Stream> streams = [
+              DatabaseService(uid: user.school.uid).school
+            ];
+            if (user.userType == UserType.student) {
+              streams.add(DatabaseService(uid: user.school.uid)
+                  .group(user.school.group.uid));
+            } else {
+              user.groups.forEach((group) {
                 streams.add(DatabaseService(uid: user.school.uid)
-                    .group(user.school.group.uid));
-              } else {
-                user.groups.forEach((group) {
-                  streams.add(DatabaseService(uid: user.school.uid)
-                      .group(group.toString()));
-                });
-              }
-              return StreamBuilder(
+                    .group(group.toString()));
+              });
+            }
+            return Scaffold(
+              body: StreamBuilder(
                 /* 
                   Merging the streams, the group(s) announcements and school ones
                   */
@@ -84,7 +75,7 @@ class _AnnouncementsState extends State<Announcements> {
                           Transforming our data to a an Announcement 
                         */
                           Announcement announcement = announcements[index];
-                          // print(announcement.title);
+
                           // Rendering part
                           return Announce(announcement: announcement);
                         });
@@ -92,17 +83,19 @@ class _AnnouncementsState extends State<Announcements> {
                     return Center(child: CircularProgressIndicator.adaptive());
                   }
                 },
-              );
-            } else {
-              return Center(child: CircularProgressIndicator.adaptive());
-            }
-          }),
-      floatingActionButton: userType == UserType.teacher
-          ? IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => NewAnnounce())))
-          : null,
-    );
+              ),
+              floatingActionButton: user.userType == UserType.teacher
+                  ? IconButton(
+                      icon: Icon(Icons.add),
+                      onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => NewAnnounce())))
+                  : null,
+            );
+          } else {
+            return Center(child: CircularProgressIndicator.adaptive());
+          }
+        });
   }
 }
