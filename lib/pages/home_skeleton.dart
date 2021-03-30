@@ -6,7 +6,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:myschool/components/drawer.dart';
+import 'package:myschool/models/homework.dart';
 import 'package:myschool/models/user.dart';
+import 'package:myschool/pages/homeworks.dart';
 import 'package:myschool/pages/settings.dart';
 import 'package:myschool/pages/teacher/home.dart';
 import 'package:myschool/services/database.dart';
@@ -41,7 +43,7 @@ class _HomeState extends State<HomeSkeleton> {
 
   static Map<UserType, List<Widget>> _widgetOptions = {
     UserType.student: [Home(), Announcements(), Calendar()],
-    UserType.teacher: [HomeTeacher(), Announcements(), Groups()]
+    UserType.teacher: [HomeTeacher(), Announcements(), Homeworks(), Groups()]
   };
 
   void _onItemTapped(int index) {
@@ -115,6 +117,11 @@ class _HomeState extends State<HomeSkeleton> {
                                 ? CupertinoIcons.news
                                 : Icons.announcement),
                             label: "Annonces"),
+                        BottomNavigationBarItem(
+                            icon: Icon(Platform.isIOS
+                                ? CupertinoIcons.plus_slash_minus
+                                : Icons.home),
+                            label: "Devoirs"),
                         BottomNavigationBarItem(
                             icon: Icon(Platform.isIOS
                                 ? CupertinoIcons.group

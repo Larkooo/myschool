@@ -1,24 +1,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../shared/constants.dart';
-
-class Announcement {
+class Homework {
   final int uid;
   final String title;
-  final String content;
-  final DateTime createdAt;
+  final String description;
+  final String subject;
   final dynamic author;
-  final Scope scope;
+  final DateTime due;
+  final DateTime createdAt;
   final DocumentReference reference;
   final Map raw;
 
-  Announcement(
+  Homework(
       {this.uid,
       this.title,
-      this.content,
-      this.createdAt,
+      this.description,
+      this.subject,
       this.author,
-      this.scope,
+      this.due,
+      this.createdAt,
       this.reference,
       this.raw});
 }

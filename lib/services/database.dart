@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:myschool/models/Code.dart';
 import 'package:myschool/models/announcement.dart';
 import 'package:myschool/models/group.dart';
+import 'package:myschool/models/homework.dart';
 import 'package:myschool/models/school.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/shared/constants.dart';
@@ -66,6 +67,23 @@ class DatabaseService {
     }
   }
 
+  Future<bool> deleteHomework(
+      Map<dynamic, dynamic> data, DocumentReference reference) async {
+    try {
+      await _schoolsCollection
+          .doc(reference.parent.parent.id)
+          .collection('groups')
+          .doc(reference.id)
+          .update({
+        'homeworks': FieldValue.arrayRemove([data])
+      });
+      return true;
+    } catch (_) {
+      print(_);
+      return false;
+    }
+  }
+
   Future<bool> createAnnounce(
       String title, String content, dynamic scope, UserData user) async {
     try {
@@ -104,43 +122,27 @@ class DatabaseService {
     }
   }
 
-  /*Future<bool> createHomework(
-      String title, String content, dynamic scope, UserData user, DateTime limitDate) async {
+  Future<bool> createHomework(String title, String description, String subject,
+      UserData user, DateTime due, String group) async {
     try {
-      if (scope == Scope.school) {
-        await _schoolsCollection.doc(uid).update({
-          'announcements': FieldValue.arrayUnion([
-            {
-              'title': title,
-              'content': content,
-              'author': _usersCollection.doc(user.uid),
-              'createdAt': DateTime.now()
-            }
-          ])
-        });
-      } else {
-        await _schoolsCollection
-            .doc(uid)
-            .collection('groups')
-            // make sure its a string
-            .doc(scope.toString())
-            .update({
-          'announcements': FieldValue.arrayUnion([
-            {
-              'title': title,
-              'content': content,
-              'author': _usersCollection.doc(user.uid),
-              'createdAt': DateTime.now()
-            }
-          ])
-        });
-      }
+      await _schoolsCollection.doc(uid).collection('groups').doc(group).update({
+        'homeworks': FieldValue.arrayUnion([
+          {
+            'title': title,
+            'description': description,
+            'subject': subject,
+            'author': _usersCollection.doc(user.uid),
+            'due': due,
+            'createdAt': DateTime.now()
+          }
+        ])
+      });
       return true;
     } catch (_) {
       print(_);
       return false;
     }
-  }*/
+  }
 
   Future incrementCodeUsage() {
     return _codesCollection
@@ -157,6 +159,20 @@ class DatabaseService {
         content: data['content'],
         createdAt: (data['createdAt'] as Timestamp).toDate(),
         author: data['author'].id,
+        reference: reference,
+        raw: data);
+  }
+
+  Homework homeworkFromData(
+      int index, Map<String, dynamic> data, DocumentReference reference) {
+    return Homework(
+        uid: index,
+        author: data['author'].id,
+        title: data['title'],
+        description: data['description'],
+        subject: data['subject'],
+        due: (data['due'] as Timestamp).toDate(),
+        createdAt: (data['createdAt'] as Timestamp).toDate(),
         reference: reference,
         raw: data);
   }
@@ -192,7 +208,7 @@ class DatabaseService {
 
   School schoolFromSnapshot(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data();
-    List<Announcement> announcements = List();
+    List<Announcement> announcements = [];
     int announcementCount = 0;
     data['announcements'].forEach((data) {
       announcements.add(announcementFromData(
@@ -219,8 +235,12 @@ class DatabaseService {
 
   Group groupFromSnapshot(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data();
-    List<Announcement> announcements = List();
+    List<Announcement> announcements = [];
+    List<Homework> homeworks = [];
+
     int announcementCount = 0;
+    int homeworkCount = 0;
+
     data['announcements'].forEach((data) {
       announcements.add(announcementFromData(
           announcementCount,
@@ -231,7 +251,14 @@ class DatabaseService {
           snapshot.reference));
       announcementCount++;
     });
-    return Group(uid: snapshot.id, announcements: announcements);
+
+    data['homeworks'].forEach((data) {
+      homeworks.add(homeworkFromData(homeworkCount, data, snapshot.reference));
+      homeworkCount++;
+    });
+
+    return Group(
+        uid: snapshot.id, announcements: announcements, homeworks: homeworks);
   }
 
   // Users stream

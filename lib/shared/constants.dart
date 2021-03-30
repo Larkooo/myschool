@@ -42,7 +42,37 @@ Future getImage(ImagePicker picker) async {
   }
 }
 
-Row userLeading(UserData user, double size) => Row(
+Row userLeadingHorizontal(UserData user, double size) => Row(
+      children: [
+        ClipRRect(
+            borderRadius: BorderRadius.circular(30),
+            child: user.avatarUrl != null
+                ? CachedNetworkImage(
+                    imageUrl: user.avatarUrl,
+                    progressIndicatorBuilder:
+                        (context, url, downloadProgress) =>
+                            CircularProgressIndicator.adaptive(
+                                value: downloadProgress.progress),
+                    errorWidget: (context, url, error) => Icon(Icons.error),
+                    height: 20 * size,
+                    width: 20 * size,
+                  )
+                : Container(
+                    width: 20 * size,
+                    height: 20 * size,
+                    color: Colors.grey[900],
+                    child: Icon(
+                      Icons.person,
+                      size: 10 * size,
+                    ))),
+        SizedBox(
+          width: 5,
+        ),
+        Text(user.firstName, style: TextStyle(fontSize: 18 * size)),
+      ],
+    );
+
+Column userLeadingVertical(UserData user, double size) => Column(
       children: [
         ClipRRect(
             borderRadius: BorderRadius.circular(30),
@@ -133,6 +163,24 @@ TextButton textButton(BuildContext context, String text, Function onPressed) {
           Text(text, style: TextStyle(color: Colors.blue[400], fontSize: 13)));
 }
 
+Widget adaptiveCalendarPicker(
+    DateTime initialDate, DateTime firstDate, DateTime lastDate,
+    [Function(DateTime) onDateChanged]) {
+  if (Platform.isIOS) {
+    return CupertinoDatePicker(
+        initialDateTime: initialDate,
+        minimumDate: firstDate,
+        maximumDate: lastDate,
+        onDateTimeChanged: onDateChanged);
+  } else {
+    return CalendarDatePicker(
+        initialDate: initialDate,
+        firstDate: firstDate,
+        lastDate: lastDate,
+        onDateChanged: onDateChanged);
+  }
+}
+
 TextButton adaptiveDialogTextButton(
     BuildContext context, String text, Function onPressed) {
   if (Platform.isIOS) {
@@ -159,6 +207,7 @@ Widget adaptiveBottomNavBar(
   }
 
   return BottomNavigationBar(
+    selectedItemColor: Colors.grey[400],
     items: items,
     currentIndex: currentIndex,
     onTap: onTap,

@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:myschool/models/announcement.dart';
+import 'package:myschool/models/homework.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/components/announce_page.dart';
 import 'package:myschool/services/database.dart';
@@ -16,10 +17,10 @@ import 'package:dart_date/dart_date.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:slide_popup_dialog/slide_popup_dialog.dart';
 
-class Announce extends StatelessWidget {
-  final Announcement announcement;
+class HomeworkComp extends StatelessWidget {
+  final Homework homework;
 
-  Announce({this.announcement});
+  HomeworkComp({this.homework});
 
   GlobalKey _toolTipKey = GlobalKey();
 
@@ -28,20 +29,18 @@ class Announce extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = context.watch<User>();
-    int diffInDaysNow = announcement.createdAt.differenceInDays(DateTime.now());
+    int diffInDaysNow = homework.createdAt.differenceInDays(DateTime.now());
     final Card announcementCard = Card(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
       ListTile(
-        onTap: () => showSlideDialog(
-            context: context,
-            child: AnnouncePage(announcement: announcement, author: author)),
+        onTap: () {},
         title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(
             children: [
               FutureBuilder(
                   future: FirebaseFirestore.instance
                       .collection('users')
-                      .doc(announcement.author)
+                      .doc(homework.author)
                       .get(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
@@ -65,9 +64,9 @@ class Announce extends StatelessWidget {
                         : diffInDaysNow == -2
                             ? "Avant-hier"
                             : DateFormat.yMMMMEEEEd()
-                                    .format(announcement.createdAt) +
+                                    .format(homework.createdAt) +
                                 " à " +
-                                DateFormat.Hm().format(announcement.createdAt),
+                                DateFormat.Hm().format(homework.createdAt),
                 style: TextStyle(
                     color: Colors.grey[500],
                     fontSize: MediaQuery.of(context).size.width / 30),
@@ -77,46 +76,35 @@ class Announce extends StatelessWidget {
           SizedBox(height: 5),
           Row(
             children: [
-              Text(announcement.title),
+              Text(homework.title),
               Spacer(),
               Container(
-                width: MediaQuery.of(context).size.width / 7,
-                height: MediaQuery.of(context).size.height / 35,
-                decoration: BoxDecoration(
-                  color: Colors.grey[700],
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Material(
+                  width: MediaQuery.of(context).size.width / 5,
+                  height: MediaQuery.of(context).size.height / 35,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[700],
                     borderRadius: BorderRadius.circular(10),
-                    child: Tooltip(
-                        key: _toolTipKey,
-                        message: announcement.scope == Scope.group
-                            ? announcement.reference.id
-                            : "École",
-                        child: InkWell(
-                            onTap: () {
-                              final dynamic tooltip = _toolTipKey.currentState;
-                              tooltip.ensureTooltipVisible();
-                            },
-                            borderRadius: BorderRadius.circular(10),
-                            child: Center(
-                                child: Text(
-                              announcement.scope == Scope.school
-                                  ? "École"
-                                  : "Foyer",
-                              style: TextStyle(fontSize: 10),
-                            ))))),
-              )
+                  ),
+                  child: Material(
+                      borderRadius: BorderRadius.circular(10),
+                      child: InkWell(
+                          onTap: () {},
+                          borderRadius: BorderRadius.circular(10),
+                          child: Center(
+                              child: Text(
+                            homework.subject,
+                            style: TextStyle(fontSize: 10),
+                          ))))),
             ],
           ),
         ]),
         subtitle:
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(announcement.content.length < 150
-              ? announcement.content
-              : announcement.content.substring(0, 150).trim() + "..."),
-          if (user.uid == announcement.author &&
-              announcement.uid != -1 &&
+          Text(homework.description.length < 150
+              ? homework.description
+              : homework.description.substring(0, 150).trim() + "..."),
+          if (user.uid == homework.author &&
+              homework.uid != -1 &&
               Platform.isAndroid)
             Row(children: [
               Spacer(),
@@ -124,19 +112,26 @@ class Announce extends StatelessWidget {
                 icon: Icon(Icons.delete, color: Colors.grey),
                 onPressed: () => adaptiveDialog(
                     context: context,
-                    content:
-                        Text("Voulez vous vraiment supprimer cette annonce?"),
+                    content: Text("Voulez vous vraiment annuler ce devoir?"),
                     actions: [
                       adaptiveDialogTextButton(
                           context, "Non", () => Navigator.pop(context)),
                       adaptiveDialogTextButton(context, "Oui", () async {
-                        await DatabaseService().deleteAnnounce(
-                            announcement.raw, announcement.reference);
+                        await DatabaseService()
+                            .deleteAnnounce(homework.raw, homework.reference);
                         Navigator.pop(context);
                       })
                     ]),
               )
-            ])
+            ]),
+          Text(
+            'À remettre le ' + homework.due.format('d MMMM H:m', 'fr_FR'),
+            style: TextStyle(
+                fontSize: 13,
+                color: homework.due.compareTo(DateTime.now()) < 0
+                    ? Colors.red
+                    : Colors.grey[500]),
+          )
         ]),
       ),
       SizedBox(
@@ -144,7 +139,7 @@ class Announce extends StatelessWidget {
       ),
     ]));
 
-    return Platform.isIOS && announcement.uid != -1
+    return Platform.isIOS && homework.uid != -1
         ? CupertinoContextMenu(
             /*previewBuilder: (BuildContext context, Animation<double> animation,
                 Widget child) {
@@ -161,7 +156,7 @@ class Announce extends StatelessWidget {
                         fontSize: 14,
                       )),
                   onPressed: () {
-                    FlutterClipboard.copy(announcement.content).then((_) {
+                    FlutterClipboard.copy(homework.description).then((_) {
                       Navigator.pop(context);
                       adaptiveDialog(
                           context: context,
@@ -173,7 +168,7 @@ class Announce extends StatelessWidget {
                     });
                   },
                 ),
-                if (user.uid == announcement.author)
+                if (user.uid == homework.author)
                   CupertinoContextMenuAction(
                     trailingIcon: Icons.delete,
                     child: Text("Supprimer",
@@ -185,14 +180,14 @@ class Announce extends StatelessWidget {
                       Navigator.pop(context);
                       adaptiveDialog(
                           context: context,
-                          content: Text(
-                              "Voulez vous vraiment supprimer cette annonce?"),
+                          content:
+                              Text("Voulez vous vraiment annuler ce devoir?"),
                           actions: [
                             adaptiveDialogTextButton(
                                 context, "Non", () => Navigator.pop(context)),
                             adaptiveDialogTextButton(context, "Oui", () async {
                               await DatabaseService().deleteAnnounce(
-                                  announcement.raw, announcement.reference);
+                                  homework.raw, homework.reference);
                               Navigator.pop(context);
                             })
                           ]);

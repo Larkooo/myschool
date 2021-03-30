@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/shared/constants.dart';
@@ -27,15 +28,7 @@ class AnnouncePage extends StatelessWidget {
         SizedBox(
           height: 2,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 10,
-            ),
-            userLeading(author, 1.3),
-          ],
-        ),
+        userLeadingVertical(author, 1.3),
         SizedBox(
           height: 5,
         ),
@@ -45,21 +38,27 @@ class AnnouncePage extends StatelessWidget {
         ),
         Text(
           announcement.title,
-          style: TextStyle(fontSize: 30),
+          style: TextStyle(fontSize: 25),
         ),
         Text(
           'Contenu',
           style: TextStyle(color: Colors.grey[600], fontSize: 13),
         ),
         Container(
-            child: SingleChildScrollView(
-                child: Card(
-          margin: EdgeInsets.fromLTRB(40, 10, 40, 0),
-          color: Colors.grey[800],
-          child: Container(
-              child: Text(announcement.content,
-                  style: TextStyle(fontSize: 20, color: Colors.grey[200]))),
-        ))),
+            height: announcement.content.length > 500
+                ? MediaQuery.of(context).size.height / 3
+                : null,
+            child: Card(
+                margin: EdgeInsets.fromLTRB(40, 10, 40, 0),
+                color: Colors.grey[900],
+                child: SingleChildScrollView(
+                  child: Container(
+                      margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                      //width: MediaQuery.of(context).size.width / 10,
+                      child: Text(announcement.content,
+                          style: TextStyle(
+                              fontSize: 15, color: Colors.grey[200]))),
+                ))),
         SizedBox(
           height: 5,
         ),
@@ -73,9 +72,7 @@ class AnnouncePage extends StatelessWidget {
                       : DateFormat.yMMMMEEEEd().format(announcement.createdAt) +
                           " à " +
                           DateFormat.Hm().format(announcement.createdAt),
-          style: TextStyle(
-              color: Colors.grey[500],
-              fontSize: MediaQuery.of(context).size.width / 30),
+          style: TextStyle(color: Colors.grey[500], fontSize: 15),
         ),
       ],
     );

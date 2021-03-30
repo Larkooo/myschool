@@ -149,6 +149,7 @@ class _GroupPageState extends State<GroupPage> {
                             actions: [
                               TextButton(
                                   onPressed: () async {
+                                    _groupAliasController.clear();
                                     Navigator.pop(context);
                                   },
                                   child: Text('Annuler')),
@@ -167,6 +168,8 @@ class _GroupPageState extends State<GroupPage> {
                                   child: Text('Ok')),
                             ],
                             content: TextField(
+                              decoration: InputDecoration(
+                                  hintText: 'Mon groupe favoris!'),
                               controller: _groupAliasController,
                               maxLength: 50,
                               onSubmitted: (value) async {

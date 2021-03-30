@@ -6,7 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:intl/intl.dart';
 import 'package:myschool/components/announce.dart';
+import 'package:myschool/components/homeworkcomp.dart';
 import 'package:myschool/components/new_announce.dart';
+import 'package:myschool/components/new_homework.dart';
+import 'package:myschool/models/homework.dart';
 import 'package:myschool/pages/register.dart';
 import 'package:myschool/models/announcement.dart';
 import 'package:myschool/models/user.dart';
@@ -18,15 +21,15 @@ import 'package:rxdart/rxdart.dart';
 import '../services/database.dart';
 import '../models/school.dart';
 
-class Announcements extends StatefulWidget {
+class Homeworks extends StatefulWidget {
   //final UserData user;
   //Announcements({this.user});
 
   @override
-  _AnnouncementsState createState() => _AnnouncementsState();
+  _HomeworksState createState() => _HomeworksState();
 }
 
-class _AnnouncementsState extends State<Announcements> {
+class _HomeworksState extends State<Homeworks> {
   @override
   Widget build(BuildContext context) {
     final user = context.watch<User>();
@@ -37,9 +40,7 @@ class _AnnouncementsState extends State<Announcements> {
             UserData user = snapshot.data;
             // grouping different streams into a list to then merge them.
             // to get school and group(s) announcements
-            List<Stream> streams = [
-              DatabaseService(uid: user.school.uid).school
-            ];
+            List<Stream> streams = [];
             if (user.type == UserType.student) {
               streams.add(DatabaseService(uid: user.school.uid)
                   .group(user.school.group.uid));
@@ -57,28 +58,36 @@ class _AnnouncementsState extends State<Announcements> {
                 stream: CombineLatestStream.list(streams),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    //print(snapshot.data.length);
-                    List<Announcement> announcements = [];
+                    List<Homework> homeworks = [];
                     snapshot.data.forEach((e) {
-                      announcements.addAll(e.announcements);
+                      homeworks.addAll(e.homeworks);
                     });
 
                     /* 
-                          Sorting the announcements by comparing their time of creation 
+                      Sorting the homeworks by comparing their due time 
                   */
-                    announcements
-                        .sort((a, b) => b.createdAt.compareTo(a.createdAt));
+                    homeworks.sort((a, b) => b.due.compareTo(a.due));
+
+                    // filtering homeworks
+                    homeworks.removeWhere((homework) => homework.due
+                                    .difference(DateTime.now())
+                                    .inDays >
+                                1 ||
+                            // if teacher, dont show other teachers given homeworks
+                            user.type == UserType.teacher
+                        ? homework.author != user.uid
+                        : false);
 
                     return ListView.builder(
-                        itemCount: announcements.length,
+                        itemCount: homeworks.length,
                         itemBuilder: (context, index) {
                           /* 
-                          Transforming our data to a an Announcement 
+                          Transforming our data to a a Homework 
                         */
-                          Announcement announcement = announcements[index];
+                          Homework homework = homeworks[index];
 
                           // Rendering part
-                          return Announce(announcement: announcement);
+                          return HomeworkComp(homework: homework);
                         });
                   } else {
                     return Center(child: CircularProgressIndicator.adaptive());
@@ -91,7 +100,7 @@ class _AnnouncementsState extends State<Announcements> {
                       onPressed: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => NewAnnounce())))
+                              builder: (context) => NewHomework())))
                   : null,
             );
           } else {
