@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:myschool/components/new_announce.dart';
+import 'package:myschool/components/new_homework.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/pages/settings.dart';
 import 'package:myschool/shared/constants.dart';
@@ -106,14 +107,24 @@ class _DrawerCompState extends State<DrawerComp> {
           if (widget.userData.type == UserType.teacher)
             ListTile(
               leading: Text('Publier une annonce'),
-              trailing: Icon(Icons.announcement),
+              trailing: Icon(Icons.announcement_outlined),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => NewAnnounce()));
               },
             ),
-          Divider(),
+          if (widget.userData.type == UserType.teacher)
+            ListTile(
+              leading: Text('Envoyer un devoir'),
+              trailing: Icon(Icons.calculate_outlined),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => NewHomework()));
+              },
+            ),
+          if (widget.userData.type == UserType.teacher) Divider(),
           ListTile(
             leading: Text('Paramètres'),
             trailing: Icon(Icons.settings),

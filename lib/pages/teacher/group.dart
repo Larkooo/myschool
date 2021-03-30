@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:myschool/components/new_announce.dart';
+import 'package:myschool/components/new_homework.dart';
 import 'package:myschool/shared/constants.dart';
 import 'package:myschool/shared/local_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -205,6 +206,17 @@ class _GroupPageState extends State<GroupPage> {
                                     builder: (context) =>
                                         NewAnnounce(group: widget.group))),
                             child: Text('Publier une annonce'),
+                            style: ButtonStyle(),
+                          )),
+                      Container(
+                          width: MediaQuery.of(context).size.width / 1.2,
+                          child: ElevatedButton(
+                            onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        NewHomework(group: widget.group))),
+                            child: Text('Envoyer un devoir'),
                             style: ButtonStyle(),
                           )),
                       SizedBox(

@@ -42,7 +42,7 @@ class _HomeState extends State<HomeSkeleton> {
   int _selectedIndex = 0;
 
   static Map<UserType, List<Widget>> _widgetOptions = {
-    UserType.student: [Home(), Announcements(), Calendar()],
+    UserType.student: [Home(), Announcements(), Homeworks(), Calendar()],
     UserType.teacher: [HomeTeacher(), Announcements(), Homeworks(), Groups()]
   };
 
@@ -89,6 +89,11 @@ class _HomeState extends State<HomeSkeleton> {
                             label: "Annonces"),
                         BottomNavigationBarItem(
                             icon: Icon(Platform.isIOS
+                                ? CupertinoIcons.plus_slash_minus
+                                : Icons.calculate),
+                            label: "Devoirs"),
+                        BottomNavigationBarItem(
+                            icon: Icon(Platform.isIOS
                                 ? CupertinoIcons.calendar
                                 : Icons.calendar_today),
                             label: "Calendrier")
@@ -120,7 +125,7 @@ class _HomeState extends State<HomeSkeleton> {
                         BottomNavigationBarItem(
                             icon: Icon(Platform.isIOS
                                 ? CupertinoIcons.plus_slash_minus
-                                : Icons.home),
+                                : Icons.work),
                             label: "Devoirs"),
                         BottomNavigationBarItem(
                             icon: Icon(Platform.isIOS
