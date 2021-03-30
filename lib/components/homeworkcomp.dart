@@ -118,7 +118,7 @@ class HomeworkComp extends StatelessWidget {
                           context, "Non", () => Navigator.pop(context)),
                       adaptiveDialogTextButton(context, "Oui", () async {
                         await DatabaseService()
-                            .deleteAnnounce(homework.raw, homework.reference);
+                            .deleteHomework(homework.raw, homework.reference);
                         Navigator.pop(context);
                       })
                     ]),
@@ -186,7 +186,7 @@ class HomeworkComp extends StatelessWidget {
                             adaptiveDialogTextButton(
                                 context, "Non", () => Navigator.pop(context)),
                             adaptiveDialogTextButton(context, "Oui", () async {
-                              await DatabaseService().deleteAnnounce(
+                              await DatabaseService().deleteHomework(
                                   homework.raw, homework.reference);
                               Navigator.pop(context);
                             })
