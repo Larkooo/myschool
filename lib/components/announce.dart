@@ -91,7 +91,9 @@ class Announce extends StatelessWidget {
                     child: Tooltip(
                         key: _toolTipKey,
                         message: announcement.scope == Scope.group
-                            ? announcement.reference.id
+                            ? announcement.uid != -1
+                                ? announcement.reference.id
+                                : "Foyer"
                             : "École",
                         child: InkWell(
                             onTap: () {

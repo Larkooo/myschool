@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:badges/badges.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:myschool/components/new_announce.dart';
 import 'package:myschool/components/new_homework.dart';
+import 'package:myschool/shared/cachemanager.dart';
 import 'package:myschool/shared/constants.dart';
 import 'package:myschool/shared/local_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,10 +13,11 @@ import 'package:image_crop_new/image_crop_new.dart';
 import 'package:image_picker/image_picker.dart';
 
 class GroupPage extends StatefulWidget {
-  final String group;
+  final String groupUid;
+  final String schoolUid;
   final String alias;
   final File image;
-  GroupPage({this.group, this.alias, this.image});
+  GroupPage({this.groupUid, this.schoolUid, this.alias, this.image});
 
   @override
   _GroupPageState createState() => _GroupPageState();
@@ -41,8 +44,8 @@ class _GroupPageState extends State<GroupPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title:
-              Text(groupAlias != null ? groupAlias : 'Groupe ' + widget.group)),
+          title: Text(
+              groupAlias != null ? groupAlias : 'Groupe ' + widget.groupUid)),
       body:
           /*FutureBuilder(
         future: Firebase,
@@ -58,8 +61,8 @@ class _GroupPageState extends State<GroupPage> {
                 if (image != null) {
                   adaptiveDialog(
                     context: context,
-                    title: Text(
-                        "Êtes vous sur de vouloir choisir cette photo de profil ?"),
+                    title:
+                        Text("Êtes vous sur de vouloir choisir cette image?"),
                     content: Container(
                         height: MediaQuery.of(context).size.height / 2.4,
                         width: MediaQuery.of(context).size.width / 1.5,
@@ -97,7 +100,8 @@ class _GroupPageState extends State<GroupPage> {
                                     ],
                                   ));
                         }
-                        LocalStorage.setGroupImage(widget.group, croppedImage);
+                        LocalStorage.setGroupImage(
+                            widget.groupUid, croppedImage);
                         setState(() {
                           groupImage = croppedImage;
                         });
@@ -127,7 +131,7 @@ class _GroupPageState extends State<GroupPage> {
                           child: Image.file(groupImage))
                       : Center(
                           child: Text(
-                          widget.group,
+                          widget.groupUid,
                           style: TextStyle(fontSize: 20),
                         )),
                 ),
@@ -137,7 +141,7 @@ class _GroupPageState extends State<GroupPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                groupAlias != null ? groupAlias : 'Groupe ' + widget.group,
+                groupAlias != null ? groupAlias : 'Groupe ' + widget.groupUid,
                 style: TextStyle(fontSize: 20),
               ),
               IconButton(
@@ -159,7 +163,7 @@ class _GroupPageState extends State<GroupPage> {
                                     if (_groupAliasController.text.length < 1)
                                       return;
                                     await LocalStorage.setGroupAlias(
-                                        widget.group,
+                                        widget.groupUid,
                                         _groupAliasController.text);
                                     setState(() {
                                       groupAlias = _groupAliasController.text;
@@ -175,7 +179,7 @@ class _GroupPageState extends State<GroupPage> {
                               maxLength: 50,
                               onSubmitted: (value) async {
                                 await LocalStorage.setGroupAlias(
-                                    widget.group, value);
+                                    widget.groupUid, value);
                               },
                             )));
                   },
@@ -204,7 +208,7 @@ class _GroupPageState extends State<GroupPage> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        NewAnnounce(group: widget.group))),
+                                        NewAnnounce(group: widget.groupUid))),
                             child: Text('Publier une annonce'),
                             style: ButtonStyle(),
                           )),
@@ -215,7 +219,7 @@ class _GroupPageState extends State<GroupPage> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        NewHomework(group: widget.group))),
+                                        NewHomework(group: widget.groupUid))),
                             child: Text('Envoyer un devoir'),
                             style: ButtonStyle(),
                           )),
@@ -239,6 +243,55 @@ class _GroupPageState extends State<GroupPage> {
                         'Informations',
                         style: TextStyle(fontSize: 20, color: Colors.white70),
                       ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.group),
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width / 40,
+                            ),
+                            CacheManagerMemory.groupData[widget.groupUid]
+                                        [GroupAttribute.StudentsCount] !=
+                                    null
+                                ? Text(
+                                    'Élèves : ' +
+                                        CacheManagerMemory
+                                                .groupData[widget.groupUid]
+                                            [GroupAttribute.StudentsCount],
+                                    style: TextStyle(fontSize: 15))
+                                : FutureBuilder(
+                                    future: FirebaseFirestore.instance
+                                        .collection('users')
+                                        .where('school',
+                                            isEqualTo: FirebaseFirestore
+                                                .instance
+                                                .collection('schools')
+                                                .doc(widget.schoolUid)
+                                                .collection('groups')
+                                                .doc(widget.groupUid))
+                                        .get(),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.hasData) {
+                                        CacheManagerMemory
+                                                    .groupData[widget.groupUid]
+                                                [GroupAttribute.StudentsCount] =
+                                            snapshot.data.documents.length
+                                                .toString();
+                                        return Text(
+                                          'Élèves : ' +
+                                              snapshot.data.documents.length
+                                                  .toString(),
+                                          style: TextStyle(fontSize: 18),
+                                        );
+                                      } else {
+                                        return CircularProgressIndicator
+                                            .adaptive();
+                                      }
+                                    })
+                          ]),
                       SizedBox(
                         height: 5,
                       ),

@@ -72,7 +72,8 @@ class _HomeworksState extends State<Homeworks> {
                     homeworks.removeWhere((homework) => homework.due
                                     .difference(DateTime.now())
                                     .inDays >
-                                1 ||
+                                // hide homework after 14 days
+                                14 ||
                             // if teacher, dont show other teachers given homeworks
                             user.type == UserType.teacher
                         ? homework.author != user.uid

@@ -138,8 +138,21 @@ class _DrawerCompState extends State<DrawerComp> {
             leading: Text('Déconnexion'),
             trailing: Icon(Icons.logout),
             onTap: () {
-              FirebaseAuth.instance.signOut();
-              Alert(message: "Déconnecté").show();
+              adaptiveDialog(
+                  context: context,
+                  title: Text('Voulez-vous vraiment vous déconnecter?'),
+                  actions: [
+                    adaptiveDialogTextButton(
+                        context, 'Non', () => Navigator.pop(context)),
+                    adaptiveDialogTextButton(context, 'Oui', () {
+                      FirebaseAuth.instance.signOut().then((_) {
+                        Navigator.pop(context);
+                        Alert(message: "Déconnecté").show();
+                      },
+                          onError: (err) =>
+                              Alert(message: 'Une erreur est survenue').show());
+                    }),
+                  ]);
             },
           ),
         ],

@@ -52,12 +52,12 @@ class Groups extends StatelessWidget {
                                       element.toString()[0] == level)
                                   .map((e) {
                                 Widget groupCard() {
-                                  String groupAlias = CacheManagerMemory
-                                          .groupPreferences[e.toString()]
-                                      [GroupAttribute.Alias];
-                                  File groupImage = CacheManagerMemory
-                                          .groupPreferences[e.toString()]
-                                      [GroupAttribute.Image];
+                                  String groupAlias =
+                                      CacheManagerMemory.groupData[e.toString()]
+                                          [GroupAttribute.Alias];
+                                  File groupImage =
+                                      CacheManagerMemory.groupData[e.toString()]
+                                          [GroupAttribute.Image];
                                   return Material(
                                     borderRadius: BorderRadius.circular(5),
                                     color: Colors.grey[800],
@@ -67,9 +67,12 @@ class Groups extends StatelessWidget {
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) => GroupPage(
-                                                    group: e.toString(),
-                                                    alias: groupAlias,
-                                                    image: groupImage))),
+                                                      groupUid: e.toString(),
+                                                      alias: groupAlias,
+                                                      image: groupImage,
+                                                      schoolUid:
+                                                          userData.school.uid,
+                                                    ))),
                                         child: Ink(
                                           height: MediaQuery.of(context)
                                                   .size
@@ -128,7 +131,7 @@ class Groups extends StatelessWidget {
                                         String groupAlias = snapshot.data[0];
                                         File groupImage = snapshot.data[1];
                                         CacheManagerMemory
-                                            .groupPreferences[e.toString()] = {
+                                            .groupData[e.toString()] = {
                                           GroupAttribute.Alias: groupAlias,
                                           GroupAttribute.Image: groupImage
                                         };
@@ -144,11 +147,14 @@ class Groups extends StatelessWidget {
                                                   MaterialPageRoute(
                                                       builder: (context) =>
                                                           GroupPage(
-                                                              group:
+                                                              groupUid:
                                                                   e.toString(),
                                                               alias: groupAlias,
-                                                              image:
-                                                                  groupImage))),
+                                                              image: groupImage,
+                                                              schoolUid:
+                                                                  userData
+                                                                      .school
+                                                                      .uid))),
                                               child: Ink(
                                                 height: MediaQuery.of(context)
                                                         .size
@@ -204,10 +210,10 @@ class Groups extends StatelessWidget {
                                                 .adaptive());
                                       }
                                     });
-                                Widget card = CacheManagerMemory
-                                        .groupPreferences.isNotEmpty
-                                    ? groupCard()
-                                    : groupCardFuture;
+                                Widget card =
+                                    CacheManagerMemory.groupData.isNotEmpty
+                                        ? groupCard()
+                                        : groupCardFuture;
                                 return Platform.isIOS
                                     ? CupertinoContextMenu(actions: [
                                         CupertinoContextMenuAction(

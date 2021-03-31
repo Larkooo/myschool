@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:alert/alert.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -34,20 +35,23 @@ class Settings extends StatefulWidget {
 class _SettingsState extends State<Settings> {
   final picker = ImagePicker();
 
-  String _mozaikAccountText = "Lier votre compte Mozaik";
+  //String _mozaikAccountText = "Lier votre compte Mozaik";
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    SharedPreferences.getInstance().then((prefs) {
-      if (prefs.getString('access_token') != null) {
-        setState(() {
-          _mozaikAccountText = "Compte Mozaik lié";
-        });
-      }
-    });
+    //SharedPreferences.getInstance().then((prefs) {
+    //  if (prefs.getString('access_token') != null) {
+    //    setState(() {
+    //      _mozaikAccountText = "Compte Mozaik lié";
+    //    });
+    //  }
+    //});
   }
+
+  TextEditingController _newEmail = TextEditingController();
+  bool _newEmailValid = false;
 
   final imgCropKey = GlobalKey<CropState>();
 
@@ -90,7 +94,8 @@ class _SettingsState extends State<Settings> {
                           leading: Icon(Icons.email),
                           title: 'Courriel',
                           subtitle: user.email,
-                          onPressed: (BuildContext context) {
+                          onPressed:
+                              /*(BuildContext context) {
                             adaptiveDialog(
                                 context: context,
                                 title: Text(
@@ -99,15 +104,52 @@ class _SettingsState extends State<Settings> {
                                   adaptiveDialogTextButton(context, "Non",
                                       () => Navigator.pop(context)),
                                   adaptiveDialogTextButton(context, "Oui", () {
-                                    //user.updateEmail('ds');
-                                    Alert(
-                                            message:
-                                                "Un courriel pour modifier votre adresse courriel vous a été envoyé")
-                                        .show();
                                     Navigator.pop(context);
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                              title: Text(
+                                                  "Entrez votre nouvelle adresse email"),
+                                              content: TextField(
+                                                decoration: InputDecoration(
+                                                    errorText: _newEmailValid
+                                                        ? null
+                                                        : "Adresse email invalide"),
+                                                onChanged: (value) {
+                                                  if (value.isEmpty)
+                                                    setState(() {
+                                                      _newEmailValid = false;
+                                                    });
+
+                                                  bool v =
+                                                      EmailValidator.validate(
+                                                          value);
+                                                  if (!v) {
+                                                    setState(() {
+                                                      _newEmailValid = false;
+                                                    });
+                                                  }
+                                                  setState(() {
+                                                    _newEmailValid = true;
+                                                  });
+                                                  print(_newEmailValid);
+                                                },
+                                                controller: _newEmail,
+                                              ),
+                                              actions: [
+                                                TextButton(
+                                                    onPressed: () {
+                                                      if (_newEmailValid)
+                                                        user.updateEmail(
+                                                            _newEmail.text);
+                                                    },
+                                                    child: Text('Ok'))
+                                              ],
+                                            ));
                                   }),
                                 ]);
-                          },
+                          },*/
+                              null,
                         ),
                         SettingsTile(
                             leading: Icon(Icons.security),
@@ -259,18 +301,18 @@ class _SettingsState extends State<Settings> {
                     SettingsSection(
                       title: "Compte",
                       tiles: [
-                        SettingsTile(
-                          leading: Icon(Icons.account_tree),
-                          title: _mozaikAccountText,
-                          onPressed:
-                              /*_mozaikAccountText.contains("Lier")
-                              ? */
-                              (context) => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => MozaikLogin()))
-                          /*: null*/,
-                        ),
+                        //SettingsTile(
+                        //  leading: Icon(Icons.account_tree),
+                        //  title: _mozaikAccountText,
+                        //  onPressed:
+                        //      /*_mozaikAccountText.contains("Lier")
+                        //      ? */
+                        //      (context) => Navigator.push(
+                        //          context,
+                        //          MaterialPageRoute(
+                        //              builder: (context) => MozaikLogin()))
+                        //  /*: null*/,
+                        //),
                         SettingsTile(
                           leading: Icon(Icons.delete_forever),
                           title: "Supprimer votre compte",

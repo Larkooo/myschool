@@ -9,7 +9,7 @@ import 'package:myschool/shared/cachemanager.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:dart_date/dart_date.dart';
 
-enum GroupAttribute { Alias, Image }
+enum GroupAttribute { Alias, Image, StudentsCount }
 enum AnnounceCategory { Essay, Homework, Important, Message }
 enum Scope { school, group }
 enum UserType { student, teacher }

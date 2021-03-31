@@ -50,7 +50,7 @@ class FirebaseAuthService {
   static Future<dynamic> signIn(String email, String password) async {
     try {
       UserCredential result = await _auth.signInWithEmailAndPassword(
-          email: email, password: password);
+          email: email.trim(), password: password);
 
       return result.user;
     } on FirebaseAuthException catch (e) {
@@ -77,7 +77,7 @@ class FirebaseAuthService {
       }
       Map<String, dynamic> codeData = codeSnapshot.data();
       UserCredential result = await _auth.createUserWithEmailAndPassword(
-          email: email, password: password);
+          email: email.trim(), password: password);
       await DatabaseService(uid: code).incrementCodeUsage();
 
       // Data

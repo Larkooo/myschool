@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:alert/alert.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -70,22 +72,25 @@ class _ChangePasswordState extends State<ChangePassword> {
           SizedBox(
             height: 16,
           ),
-          mainBlueLoadingBtn(context, _btnController, "Confirmer", () async {
+          mainBlueLoadingBtn(context, _btnController, "Confirmer", () {
             if (_formKey.currentState.validate()) {
               _btnController.start();
-              AuthCredential credential = EmailAuthProvider.credential(
-                  email: user.email, password: _actualPassword.text);
-              try {
-                await FirebaseAuth.instance.currentUser
-                    .reauthenticateWithCredential(credential);
-                await user.updatePassword(_newPassword.text);
+              user.updatePassword(_newPassword.text).then((_) {
                 _btnController.success();
                 Alert(message: "Mot de passe modifié").show();
-              } catch (e) {
-                print(e);
-                _btnController.stop();
-                Alert(message: "Mot de passe incorrect").show();
-              }
+              }, onError: (err) {
+                if (err.code == "requires-recent-login") {
+                  Alert(
+                          message:
+                              "Pour changer votre mot de passe, vous devez vous être connecté récemment. Déconnectez et reconnectez vous.")
+                      .show();
+                  _btnController.error();
+                  //user.reauthenticateWithCredential(EmailAuthProvider.credential(email: email, password: password));
+                } else {
+                  Alert(message: "Mot de passe trop fragile").show();
+                  _btnController.stop();
+                }
+              });
             }
           })
         ],

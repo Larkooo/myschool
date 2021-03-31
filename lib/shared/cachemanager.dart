@@ -9,5 +9,5 @@ class CacheManagerMemory {
   static Map<DateTime, dynamic> courses = {};
   static File schoolTimetableFile;
   static List remoteSchoolDays = [];
-  static Map<String, Map<GroupAttribute, dynamic>> groupPreferences = {};
+  static Map<String, Map<GroupAttribute, dynamic>> groupData = {};
 }
