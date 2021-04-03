@@ -93,6 +93,28 @@ class HomeworkComp extends StatelessWidget {
                             homework.subject,
                             style: TextStyle(fontSize: 10),
                           ))))),
+              SizedBox(
+                width: 5,
+              ),
+              if (homework.uid != -1)
+                Container(
+                    width: MediaQuery.of(context).size.width / 8,
+                    height: MediaQuery.of(context).size.height / 35,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[700],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Material(
+                        borderRadius: BorderRadius.circular(10),
+                        child: InkWell(
+                            onTap: () {},
+                            borderRadius: BorderRadius.circular(10),
+                            child: Center(
+                                child: Text(
+                              // group
+                              homework.reference.id,
+                              style: TextStyle(fontSize: 10),
+                            ))))),
             ],
           ),
         ]),

@@ -51,6 +51,10 @@ class _NewAnnounceState extends State<NewAnnounce> {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     UserData user = snapshot.data;
+
+                    if (widget.group == null)
+                      widget.group = user.groups[0].toString();
+
                     return Form(
                       key: _formKey,
                       child: Center(
@@ -168,8 +172,7 @@ class _NewAnnounceState extends State<NewAnnounce> {
                                             value: e.toString(),
                                           ))
                                       .toList(),
-                                  value:
-                                      widget.group ?? user.groups[0].toString(),
+                                  value: widget.group,
                                   onChanged: (value) {
                                     setState(() {
                                       widget.group = value;

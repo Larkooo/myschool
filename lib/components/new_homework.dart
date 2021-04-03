@@ -192,7 +192,7 @@ class _NewHomeworkState extends State<NewHomework> {
                               child: adaptiveCalendarPicker(
                                 due,
                                 DateTime.now(),
-                                DateTime.now().add(Duration(days: 30)),
+                                DateTime.now().add(Duration(days: 90)),
                                 Platform.isAndroid
                                     ? (date) {
                                         showTimePicker(
