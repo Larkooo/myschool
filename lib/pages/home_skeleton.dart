@@ -81,7 +81,7 @@ class _HomeState extends State<HomeSkeleton> {
               // subscribe to group topic
               if (!subscribed) {
                 _messaging.subscribeToTopic(
-                    userData.school.uid + '?' + userData.school.group.uid);
+                    userData.school.uid + '-' + userData.school.group.uid);
                 subscribed = true;
               }
 

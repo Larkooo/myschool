@@ -138,7 +138,7 @@ class DatabaseService {
               'notificationTitle':
                   '${user.firstName} a posté une nouvelle annonce!',
               'notificationBody': title,
-              'topic': user.school.uid + '?' + scope.toString(),
+              'topic': user.school.uid + '-' + scope.toString(),
               'type': 'announce'
             });
       }
@@ -174,7 +174,7 @@ class DatabaseService {
             'notificationTitle':
                 '${user.firstName} a posté un nouveau devoir en $subject!',
             'notificationBody': title,
-            'topic': user.school.uid + '?' + group,
+            'topic': user.school.uid + '-' + group,
             'type': 'homework'
           });
       return true;
