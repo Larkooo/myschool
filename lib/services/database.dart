@@ -9,6 +9,7 @@ import 'package:myschool/models/group.dart';
 import 'package:myschool/models/homework.dart';
 import 'package:myschool/models/school.dart';
 import 'package:myschool/models/user.dart';
+import 'package:myschool/services/messaging.dart';
 import 'package:myschool/shared/constants.dart';
 import 'package:http/http.dart' as http;
 
@@ -99,19 +100,11 @@ class DatabaseService {
             }
           ])
         });
-        await http.post(
-            'https://us-central1-cool-framing-281906.cloudfunctions.net/send_notification_topic',
-            headers: {
-              'Authorization':
-                  await FirebaseAuth.instance.currentUser.getIdToken()
-            },
-            body: {
-              'notificationTitle':
-                  '${user.firstName} a posté une nouvelle annonce!',
-              'notificationBody': title,
-              'topic': user.school.uid,
-              'type': 'announce'
-            });
+        await MessagingService.sendMessageToTopic(
+            '${user.firstName} a posté(e) une nouvelle annonce!',
+            title,
+            user.school.uid,
+            'announce');
       } else {
         await _schoolsCollection
             .doc(uid)
@@ -128,19 +121,11 @@ class DatabaseService {
             }
           ])
         });
-        await http.post(
-            'https://us-central1-cool-framing-281906.cloudfunctions.net/send_notification_topic',
-            headers: {
-              'Authorization':
-                  await FirebaseAuth.instance.currentUser.getIdToken()
-            },
-            body: {
-              'notificationTitle':
-                  '${user.firstName} a posté une nouvelle annonce!',
-              'notificationBody': title,
-              'topic': user.school.uid + '-' + scope.toString(),
-              'type': 'announce'
-            });
+        await MessagingService.sendMessageToTopic(
+            '${user.firstName} a posté(e) une nouvelle annonce!',
+            title,
+            user.school.uid + '-' + scope.toString(),
+            'announce');
       }
       return true;
     } catch (_) {
@@ -164,19 +149,11 @@ class DatabaseService {
           }
         ])
       });
-      await http.post(
-          'https://us-central1-cool-framing-281906.cloudfunctions.net/send_notification_topic',
-          headers: {
-            'Authorization':
-                await FirebaseAuth.instance.currentUser.getIdToken()
-          },
-          body: {
-            'notificationTitle':
-                '${user.firstName} a posté un nouveau devoir en $subject!',
-            'notificationBody': title,
-            'topic': user.school.uid + '-' + group,
-            'type': 'homework'
-          });
+      await MessagingService.sendMessageToTopic(
+          '${user.firstName} a posté(e) un nouveau devoir en $subject!',
+          title,
+          user.school.uid + '-' + group,
+          'homework');
       return true;
     } catch (_) {
       print(_);
