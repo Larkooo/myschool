@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:alert/alert.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:myschool/components/drawer.dart';
@@ -58,6 +59,9 @@ class _HomeState extends State<HomeSkeleton> {
   bool drawerStartedAnimation = false;
   bool drawerExpanded = false;
 
+  FirebaseMessaging _messaging = FirebaseMessaging();
+  bool subscribed = false;
+
   @override
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User>();
@@ -66,76 +70,93 @@ class _HomeState extends State<HomeSkeleton> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             userData = snapshot.data;
-            // Student pages
-            return userData.type == UserType.student
-                ? Scaffold(
-                    appBar: AppBar(),
-                    drawer: DrawerComp(
-                      userData: userData,
-                    ),
-                    body: _widgetOptions[UserType.student]
-                        .elementAt(_selectedIndex),
-                    bottomNavigationBar: adaptiveBottomNavBar(
-                      items: <BottomNavigationBarItem>[
-                        BottomNavigationBarItem(
-                            icon: Icon(Platform.isIOS
-                                ? CupertinoIcons.home
-                                : Icons.home),
-                            label: "Accueil"),
-                        BottomNavigationBarItem(
-                            icon: Icon(Platform.isIOS
-                                ? CupertinoIcons.news
-                                : Icons.announcement),
-                            label: "Annonces"),
-                        BottomNavigationBarItem(
-                            icon: Icon(Platform.isIOS
-                                ? CupertinoIcons.plus_slash_minus
-                                : Icons.calculate),
-                            label: "Devoirs"),
-                        BottomNavigationBarItem(
-                            icon: Icon(Platform.isIOS
-                                ? CupertinoIcons.calendar
-                                : Icons.calendar_today),
-                            label: "Calendrier")
-                      ],
-                      currentIndex: _selectedIndex,
-                      onTap: _onItemTapped,
-                    ),
-                  )
-                : // Teacher
-                Scaffold(
-                    appBar: AppBar(),
-                    drawer: DrawerComp(
-                      userData: userData,
-                    ),
-                    body: _widgetOptions[UserType.teacher]
-                        .elementAt(_selectedIndex),
-                    bottomNavigationBar: adaptiveBottomNavBar(
-                      items: <BottomNavigationBarItem>[
-                        BottomNavigationBarItem(
-                            icon: Icon(Platform.isIOS
-                                ? CupertinoIcons.home
-                                : Icons.home),
-                            label: "Accueil"),
-                        BottomNavigationBarItem(
-                            icon: Icon(Platform.isIOS
-                                ? CupertinoIcons.news
-                                : Icons.announcement),
-                            label: "Annonces"),
-                        BottomNavigationBarItem(
-                            icon: Icon(Platform.isIOS
-                                ? CupertinoIcons.plus_slash_minus
-                                : Icons.work),
-                            label: "Devoirs"),
-                        BottomNavigationBarItem(
-                            icon: Icon(Platform.isIOS
-                                ? CupertinoIcons.group
-                                : Icons.group),
-                            label: "Groupes"),
-                      ],
-                      currentIndex: _selectedIndex,
-                      onTap: _onItemTapped,
-                    ));
+
+            // subscribe to school topic
+            if (!subscribed) _messaging.subscribeToTopic(userData.school.uid);
+
+            if (userData.type == UserType.student) {
+              // Student
+
+              // subscribe to group topic
+              if (!subscribed) {
+                _messaging.subscribeToTopic(
+                    userData.school.uid + '?' + userData.school.group.uid);
+                subscribed = true;
+              }
+
+              return Scaffold(
+                appBar: AppBar(),
+                drawer: DrawerComp(
+                  userData: userData,
+                ),
+                body:
+                    _widgetOptions[UserType.student].elementAt(_selectedIndex),
+                bottomNavigationBar: adaptiveBottomNavBar(
+                  items: <BottomNavigationBarItem>[
+                    BottomNavigationBarItem(
+                        icon: Icon(
+                            Platform.isIOS ? CupertinoIcons.home : Icons.home),
+                        label: "Accueil"),
+                    BottomNavigationBarItem(
+                        icon: Icon(Platform.isIOS
+                            ? CupertinoIcons.news
+                            : Icons.announcement),
+                        label: "Annonces"),
+                    BottomNavigationBarItem(
+                        icon: Icon(Platform.isIOS
+                            ? CupertinoIcons.plus_slash_minus
+                            : Icons.calculate),
+                        label: "Devoirs"),
+                    BottomNavigationBarItem(
+                        icon: Icon(Platform.isIOS
+                            ? CupertinoIcons.calendar
+                            : Icons.calendar_today),
+                        label: "Calendrier")
+                  ],
+                  currentIndex: _selectedIndex,
+                  onTap: _onItemTapped,
+                ),
+              );
+            } else {
+              // Teacher
+
+              // topic
+              if (!subscribed) subscribed = true;
+
+              return Scaffold(
+                  appBar: AppBar(),
+                  drawer: DrawerComp(
+                    userData: userData,
+                  ),
+                  body: _widgetOptions[UserType.teacher]
+                      .elementAt(_selectedIndex),
+                  bottomNavigationBar: adaptiveBottomNavBar(
+                    items: <BottomNavigationBarItem>[
+                      BottomNavigationBarItem(
+                          icon: Icon(Platform.isIOS
+                              ? CupertinoIcons.home
+                              : Icons.home),
+                          label: "Accueil"),
+                      BottomNavigationBarItem(
+                          icon: Icon(Platform.isIOS
+                              ? CupertinoIcons.news
+                              : Icons.announcement),
+                          label: "Annonces"),
+                      BottomNavigationBarItem(
+                          icon: Icon(Platform.isIOS
+                              ? CupertinoIcons.plus_slash_minus
+                              : Icons.work),
+                          label: "Devoirs"),
+                      BottomNavigationBarItem(
+                          icon: Icon(Platform.isIOS
+                              ? CupertinoIcons.group
+                              : Icons.group),
+                          label: "Groupes"),
+                    ],
+                    currentIndex: _selectedIndex,
+                    onTap: _onItemTapped,
+                  ));
+            }
           } else {
             return Center(child: CircularProgressIndicator.adaptive());
           }

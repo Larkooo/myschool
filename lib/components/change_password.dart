@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:alert/alert.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
