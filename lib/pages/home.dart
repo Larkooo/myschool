@@ -38,7 +38,7 @@ class _HomeState extends State<Home> {
             UserData userData = snapshot.data;
             return Center(
                 child: Column(children: [
-              Container(
+              /* Container(
                 width: MediaQuery.of(context).size.width,
                 height: 30,
                 child: Center(
@@ -87,7 +87,7 @@ class _HomeState extends State<Home> {
                             })
                         : Text(dayIsHome())),
                 color: Colors.blue,
-              ),
+              ), */
               SizedBox(
                 height: 10,
               ),

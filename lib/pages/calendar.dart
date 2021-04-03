@@ -59,7 +59,7 @@ class _CalendarState extends State<Calendar> {
             return Column(children: [
               /* 
                   
-                  */
+                  
               if (CacheManagerMemory.remoteSchoolDays.isNotEmpty)
                 Container(
                     width: MediaQuery.of(context).size.width,
@@ -70,6 +70,7 @@ class _CalendarState extends State<Calendar> {
                     child: Center(
                       child: Text(dayIsHome()),
                     )),
+                    */
               TableCalendar(
                 initialSelectedDay: _selectedDay,
                 startDay: _startDay,

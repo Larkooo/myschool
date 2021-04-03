@@ -211,10 +211,11 @@ class Groups extends StatelessWidget {
                                                 .adaptive());
                                       }
                                     });
-                                Widget card =
-                                    CacheManagerMemory.groupData.isNotEmpty
-                                        ? groupCard()
-                                        : groupCardFuture;
+                                Widget card = CacheManagerMemory
+                                            .groupData[e.toString()] !=
+                                        null
+                                    ? groupCard()
+                                    : groupCardFuture;
                                 return Platform.isIOS
                                     ? CupertinoContextMenu(actions: [
                                         CupertinoContextMenuAction(
