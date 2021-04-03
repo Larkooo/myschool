@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:myschool/components/drawer.dart';
 import 'package:myschool/models/homework.dart';
 import 'package:myschool/models/user.dart';
@@ -23,24 +24,17 @@ import '../pages/teacher/groups.dart';
 
 class HomeSkeleton extends StatefulWidget {
   final UserData user;
-  HomeSkeleton({this.user});
+  final Type initialPage;
+  HomeSkeleton({this.user, this.initialPage});
 
   @override
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<HomeSkeleton> {
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    //showSlideDialog(context: context, child: Text("Testing welcome message"));
-  }
+  int _selectedIndex = 0;
 
   static UserData userData;
-
-  // Student
-  int _selectedIndex = 0;
 
   static Map<UserType, List<Widget>> _widgetOptions = {
     UserType.student: [Home(), Announcements(), Homeworks(), Calendar()],
@@ -61,6 +55,13 @@ class _HomeState extends State<HomeSkeleton> {
 
   FirebaseMessaging _messaging = FirebaseMessaging();
   bool subscribed = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    //showSlideDialog(context: context, child: Text("Testing welcome message"));
+  }
 
   @override
   Widget build(BuildContext context) {

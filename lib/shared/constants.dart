@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:myschool/models/user.dart';
+import 'package:myschool/pages/announcements.dart';
+import 'package:myschool/pages/homeworks.dart';
 import 'package:myschool/shared/cachemanager.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:dart_date/dart_date.dart';
@@ -25,6 +27,11 @@ enum AuthCode {
   passwordResetCodeInvalid,
   accountDisabled
 }
+
+final Map<String, Type> pageType = {
+  "announce": Announcements,
+  "homework": Homeworks
+};
 
 const Map<int, UserType> userTypeDefinitions = {
   0: UserType.student,

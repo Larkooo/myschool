@@ -8,6 +8,7 @@ import 'package:myschool/pages/login.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/pages/home_skeleton.dart';
 import 'package:myschool/services/firebase_auth_service.dart';
+import 'package:myschool/shared/constants.dart';
 import 'package:provider/provider.dart';
 
 class Welcome extends StatelessWidget {
@@ -67,9 +68,30 @@ class _MessageHandlerState extends State<MessageHandler> {
       _saveDeviceToken();
     }
     _messaging.configure(
-      onMessage: (message) {},
-      onResume: (message) {},
-      onLaunch: (message) {},
+      onMessage: (message) {
+        final snackbar = SnackBar(
+            content: Text(message['notification']['title']),
+            action: SnackBarAction(
+              label: 'Fermer',
+              onPressed: () =>
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar(),
+            ));
+        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+        return;
+      },
+      onResume: (message) {
+        //Navigator.pushReplacement(
+        //    context,
+        //    MaterialPageRoute(
+        //        builder: (context) => HomeSkeleton(
+        //              initialPage: pageType[message['data']['type']],
+        //            )));
+        return;
+      },
+      onLaunch: (message) {
+        print(message);
+        return;
+      },
     );
   }
 
