@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:myschool/components/new_announce.dart';
+import 'package:myschool/components/new_homework.dart';
 import 'package:myschool/pages/teacher/group.dart';
 import 'package:myschool/shared/cachemanager.dart';
 import 'package:myschool/shared/constants.dart';
@@ -229,6 +230,24 @@ class Groups extends StatelessWidget {
                                                 MaterialPageRoute(
                                                     builder: (context) =>
                                                         NewAnnounce(
+                                                            group:
+                                                                e.toString())));
+                                          },
+                                        ),
+                                        CupertinoContextMenuAction(
+                                          child: Text(
+                                            'Envoyer un devoir',
+                                            style: TextStyle(fontSize: 15),
+                                          ),
+                                          trailingIcon:
+                                              CupertinoIcons.plus_slash_minus,
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        NewHomework(
                                                             group:
                                                                 e.toString())));
                                           },

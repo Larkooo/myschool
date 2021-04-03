@@ -89,17 +89,12 @@ class Announce extends StatelessWidget {
                 child: Material(
                     borderRadius: BorderRadius.circular(10),
                     child: Tooltip(
-                        key: _toolTipKey,
                         message: announcement.scope == Scope.group
                             ? announcement.uid != -1
                                 ? announcement.reference.id
                                 : "Foyer"
                             : "École",
                         child: InkWell(
-                            onTap: () {
-                              final dynamic tooltip = _toolTipKey.currentState;
-                              tooltip.ensureTooltipVisible();
-                            },
                             borderRadius: BorderRadius.circular(10),
                             child: Center(
                                 child: Text(

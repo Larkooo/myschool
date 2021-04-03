@@ -22,8 +22,6 @@ class HomeworkComp extends StatelessWidget {
 
   HomeworkComp({this.homework});
 
-  GlobalKey _toolTipKey = GlobalKey();
-
   UserData author;
 
   @override

@@ -28,7 +28,7 @@ class _NewHomeworkState extends State<NewHomework> {
   TextEditingController _homeworkTitle = TextEditingController();
   TextEditingController _homeworkDescription = TextEditingController();
   TextEditingController _homeworkSubject = TextEditingController();
-  DateTime due = DateTime.now();
+  DateTime due = DateTime.now().add(Duration(days: 1));
 
   final RoundedLoadingButtonController _btnController =
       new RoundedLoadingButtonController();
@@ -190,7 +190,7 @@ class _NewHomeworkState extends State<NewHomework> {
                               height: MediaQuery.of(context).size.height / 3,
                               width: MediaQuery.of(context).size.height / 2.5,
                               child: adaptiveCalendarPicker(
-                                DateTime.now(),
+                                due,
                                 DateTime.now(),
                                 DateTime.now().add(Duration(days: 30)),
                                 Platform.isAndroid
