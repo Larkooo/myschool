@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:alert/alert.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +13,6 @@ import 'package:myschool/services/database.dart';
 import 'package:myschool/services/firebase_auth_service.dart';
 import 'package:myschool/services/messaging.dart';
 import 'package:myschool/shared/constants.dart';
-import 'package:network_logger/network_logger.dart';
 //import 'components/login.dart';
 import 'package:provider/provider.dart';
 import 'package:device_info/device_info.dart';
@@ -24,7 +22,12 @@ void main() async {
   Intl.defaultLocale = 'fr';
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  String hwid = await FirebaseMessaging().getToken();
+  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    alert: true, // Required to display a heads up notification
+    badge: true,
+    sound: true,
+  );
+  String hwid = await FirebaseMessaging.instance.getToken();
   if (await DatabaseService(uid: hwid).HWIDBanned()) {
     Alert(
             message:

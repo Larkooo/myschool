@@ -28,8 +28,8 @@ class MessageHandler extends StatefulWidget {
 }
 
 class _MessageHandlerState extends State<MessageHandler> {
-  final FirebaseFirestore _database = FirebaseFirestore.instance;
-  final FirebaseMessaging _messaging = FirebaseMessaging();
+  static final FirebaseFirestore _database = FirebaseFirestore.instance;
+  static final FirebaseMessaging _messaging = FirebaseMessaging.instance;
   static final FirebaseAuth _auth = FirebaseAuth.instance;
 
   _saveDeviceToken() async {
@@ -60,39 +60,26 @@ class _MessageHandlerState extends State<MessageHandler> {
     // TODO: implement initState
     super.initState();
     if (Platform.isIOS) {
-      _messaging.onIosSettingsRegistered.listen((event) {
-        _saveDeviceToken();
+      _messaging.requestPermission().then((value) async {
+        if (value.authorizationStatus == AuthorizationStatus.authorized)
+          _saveDeviceToken();
       });
-      _messaging.requestNotificationPermissions(IosNotificationSettings());
     } else {
       _saveDeviceToken();
     }
-    _messaging.configure(
-      onMessage: (message) {
+    FirebaseMessaging.onMessage.listen((message) {
+      print('yes');
+      if (message.notification != null) {
         final snackbar = SnackBar(
-            content: Text(message['notification']['title']),
+            content: Text(message.notification.title),
             action: SnackBarAction(
               label: 'Fermer',
               onPressed: () =>
                   ScaffoldMessenger.of(context).hideCurrentSnackBar(),
             ));
         ScaffoldMessenger.of(context).showSnackBar(snackbar);
-        return;
-      },
-      onResume: (message) {
-        //Navigator.pushReplacement(
-        //    context,
-        //    MaterialPageRoute(
-        //        builder: (context) => HomeSkeleton(
-        //              initialPage: pageType[message['data']['type']],
-        //            )));
-        return;
-      },
-      onLaunch: (message) {
-        print(message);
-        return;
-      },
-    );
+      }
+    });
   }
 
   @override

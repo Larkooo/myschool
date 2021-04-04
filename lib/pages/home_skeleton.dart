@@ -53,7 +53,7 @@ class _HomeState extends State<HomeSkeleton> {
   bool drawerStartedAnimation = false;
   bool drawerExpanded = false;
 
-  FirebaseMessaging _messaging = FirebaseMessaging();
+  FirebaseMessaging _messaging = FirebaseMessaging.instance;
   bool subscribed = false;
 
   @override
