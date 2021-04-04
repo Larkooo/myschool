@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,8 +9,11 @@ import 'package:intl/intl.dart';
 import 'package:myschool/models/announcement.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/components/announce_page.dart';
+import 'package:myschool/pages/teacher/group.dart';
 import 'package:myschool/services/database.dart';
+import 'package:myschool/shared/cachemanager.dart';
 import 'package:myschool/shared/constants.dart';
+import 'package:myschool/shared/local_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:dart_date/dart_date.dart';
@@ -21,10 +25,6 @@ class Announce extends StatelessWidget {
 
   Announce({this.announcement});
 
-  GlobalKey _toolTipKey = GlobalKey();
-
-  UserData author;
-
   @override
   Widget build(BuildContext context) {
     final user = context.watch<User>();
@@ -33,27 +33,32 @@ class Announce extends StatelessWidget {
         child: Column(mainAxisSize: MainAxisSize.min, children: [
       ListTile(
         onTap: () => showSlideDialog(
-            context: context,
-            child: AnnouncePage(announcement: announcement, author: author)),
+            context: context, child: AnnouncePage(announcement: announcement)),
         title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(
             children: [
-              FutureBuilder(
-                  future: FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(announcement.author)
-                      .get(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      author =
-                          DatabaseService().userDataFromSnapshot(snapshot.data);
-                      return userLeadingHorizontal(author, 1);
-                    } else {
-                      return CircularProgressIndicator(
-                        strokeWidth: 2,
-                      );
-                    }
-                  }),
+              CacheManagerMemory.cachedUsers[announcement.author] == null
+                  ? FutureBuilder(
+                      future: FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(announcement.author)
+                          .get(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          UserData author = DatabaseService()
+                              .userDataFromSnapshot(snapshot.data);
+                          // cache the user by its id
+                          CacheManagerMemory.cachedUsers[announcement.author] =
+                              author;
+                          return userLeadingHorizontal(author, 1);
+                        } else {
+                          return CircularProgressIndicator(
+                            strokeWidth: 2,
+                          );
+                        }
+                      })
+                  : userLeadingHorizontal(
+                      CacheManagerMemory.cachedUsers[announcement.author], 1),
               SizedBox(
                 width: 5,
               ),
@@ -95,12 +100,15 @@ class Announce extends StatelessWidget {
                                 : "Foyer"
                             : "École",
                         child: InkWell(
+                            onTap: () {},
                             borderRadius: BorderRadius.circular(10),
                             child: Center(
                                 child: Text(
-                              announcement.scope == Scope.school
-                                  ? "École"
-                                  : "Foyer",
+                              announcement.scope == Scope.group
+                                  ? announcement.uid != -1
+                                      ? announcement.reference.id
+                                      : "Foyer"
+                                  : "École",
                               style: TextStyle(fontSize: 10),
                             ))))),
               )
@@ -119,19 +127,18 @@ class Announce extends StatelessWidget {
               Spacer(),
               IconButton(
                 icon: Icon(Icons.delete, color: Colors.grey),
-                onPressed: () => adaptiveDialog(
-                    context: context,
-                    content:
-                        Text("Voulez vous vraiment supprimer cette annonce?"),
-                    actions: [
-                      adaptiveDialogTextButton(
-                          context, "Non", () => Navigator.pop(context)),
-                      adaptiveDialogTextButton(context, "Oui", () async {
-                        await DatabaseService().deleteAnnounce(
-                            announcement.raw, announcement.reference);
-                        Navigator.pop(context);
-                      })
-                    ]),
+                onPressed: () => showOkCancelAlertDialog(
+                        context: context,
+                        okLabel: 'Oui',
+                        cancelLabel: 'Non',
+                        title: 'Suppression',
+                        message:
+                            'Voulez vous vraiment supprimer cette annonce?')
+                    .then((value) async {
+                  if (value == OkCancelResult.ok)
+                    await DatabaseService().deleteAnnounce(
+                        announcement.raw, announcement.reference);
+                }),
               )
             ])
         ]),
@@ -160,13 +167,6 @@ class Announce extends StatelessWidget {
                   onPressed: () {
                     FlutterClipboard.copy(announcement.content).then((_) {
                       Navigator.pop(context);
-                      adaptiveDialog(
-                          context: context,
-                          content: Text("Contenu de l'annonce copié."),
-                          actions: [
-                            adaptiveDialogTextButton(
-                                context, "Ok", () => Navigator.pop(context))
-                          ]);
                     });
                   },
                 ),
@@ -180,19 +180,18 @@ class Announce extends StatelessWidget {
                         )),
                     onPressed: () {
                       Navigator.pop(context);
-                      adaptiveDialog(
-                          context: context,
-                          content: Text(
-                              "Voulez vous vraiment supprimer cette annonce?"),
-                          actions: [
-                            adaptiveDialogTextButton(
-                                context, "Non", () => Navigator.pop(context)),
-                            adaptiveDialogTextButton(context, "Oui", () async {
-                              await DatabaseService().deleteAnnounce(
-                                  announcement.raw, announcement.reference);
-                              Navigator.pop(context);
-                            })
-                          ]);
+                      showOkCancelAlertDialog(
+                              context: context,
+                              okLabel: 'Oui',
+                              cancelLabel: 'Non',
+                              title: 'Suppression',
+                              message:
+                                  'Voulez vous vraiment supprimer cette annonce?')
+                          .then((value) async {
+                        if (value == OkCancelResult.ok)
+                          await DatabaseService().deleteAnnounce(
+                              announcement.raw, announcement.reference);
+                      });
                     },
                   ),
               ], child: announcementCard)

@@ -1,4 +1,7 @@
 import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:myschool/models/user.dart';
 
 import 'constants.dart';
 
@@ -10,4 +13,6 @@ class CacheManagerMemory {
   static File schoolTimetableFile;
   static List remoteSchoolDays = [];
   static Map<String, Map<GroupAttribute, dynamic>> groupData = {};
+  static Map<String, UserData> cachedUsers = {};
+  //static Map<String, Uint8List> images = {};
 }

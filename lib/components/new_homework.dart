@@ -17,8 +17,9 @@ import 'homeworkcomp.dart';
 
 // ignore: must_be_immutable
 class NewHomework extends StatefulWidget {
+  final UserData user;
   String group;
-  NewHomework({this.group});
+  NewHomework({this.group, this.user});
 
   @override
   _NewHomeworkState createState() => _NewHomeworkState();

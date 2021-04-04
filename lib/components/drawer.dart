@@ -1,3 +1,4 @@
+import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:alert/alert.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,8 +10,8 @@ import 'package:myschool/pages/settings.dart';
 import 'package:myschool/shared/constants.dart';
 
 class DrawerComp extends StatefulWidget {
-  final UserData userData;
-  DrawerComp({this.userData});
+  final UserData user;
+  DrawerComp({this.user});
 
   @override
   _DrawerCompState createState() => _DrawerCompState();
@@ -61,11 +62,10 @@ class _DrawerCompState extends State<DrawerComp> {
                                         width: 50,
                                         height: 50,
                                         color: Colors.grey[800],
-                                        child: widget.userData.avatarUrl != null
+                                        child: widget.user.avatarUrl != null
                                             // Caching the image so we dont have to request it everytime the app is reloaded
                                             ? CachedNetworkImage(
-                                                imageUrl:
-                                                    widget.userData.avatarUrl,
+                                                imageUrl: widget.user.avatarUrl,
                                                 progressIndicatorBuilder: (context,
                                                         url,
                                                         downloadProgress) =>
@@ -88,7 +88,7 @@ class _DrawerCompState extends State<DrawerComp> {
                                   width: MediaQuery.of(context).size.width / 35,
                                 ),
                                 Text(
-                                  'Bonjour, ${widget.userData.firstName}',
+                                  'Bonjour, ${widget.user.firstName}',
                                   style: TextStyle(
                                     fontSize: 20.0,
                                   ),
@@ -104,17 +104,21 @@ class _DrawerCompState extends State<DrawerComp> {
                                 (drawerExpanded && drawerStartedAnimation))
                               Text("meow"),
                           ]))))),
-          if (widget.userData.type == UserType.teacher)
+          if (widget.user.type == UserType.teacher)
             ListTile(
               leading: Text('Publier une annonce'),
               trailing: Icon(Icons.announcement_outlined),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => NewAnnounce()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => NewAnnounce(
+                              user: widget.user,
+                            )));
               },
             ),
-          if (widget.userData.type == UserType.teacher)
+          if (widget.user.type == UserType.teacher)
             ListTile(
               leading: Text('Envoyer un devoir'),
               trailing: Icon(Icons.calculate_outlined),
@@ -124,35 +128,30 @@ class _DrawerCompState extends State<DrawerComp> {
                     MaterialPageRoute(builder: (context) => NewHomework()));
               },
             ),
-          if (widget.userData.type == UserType.teacher) Divider(),
+          if (widget.user.type == UserType.teacher) Divider(),
           ListTile(
             leading: Text('Paramètres'),
             trailing: Icon(Icons.settings),
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => Settings()));
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => Settings(user: widget.user)));
             },
           ),
           ListTile(
             leading: Text('Déconnexion'),
             trailing: Icon(Icons.logout),
             onTap: () {
-              adaptiveDialog(
-                  context: context,
-                  title: Text('Voulez-vous vraiment vous déconnecter?'),
-                  actions: [
-                    adaptiveDialogTextButton(
-                        context, 'Non', () => Navigator.pop(context)),
-                    adaptiveDialogTextButton(context, 'Oui', () {
-                      FirebaseAuth.instance.signOut().then((_) {
-                        Navigator.pop(context);
-                        Alert(message: "Déconnecté").show();
-                      },
-                          onError: (err) =>
-                              Alert(message: 'Une erreur est survenue').show());
-                    }),
-                  ]);
+              showOkCancelAlertDialog(
+                      context: context,
+                      okLabel: 'Oui',
+                      cancelLabel: 'Non',
+                      title: 'Voulez vous vraiment vous déconnecter?')
+                  .then((value) {
+                if (value == OkCancelResult.ok) FirebaseAuth.instance.signOut();
+              });
             },
           ),
         ],

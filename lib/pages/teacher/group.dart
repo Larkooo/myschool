@@ -5,27 +5,28 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:myschool/components/new_announce.dart';
 import 'package:myschool/components/new_homework.dart';
+import 'package:myschool/models/user.dart';
 import 'package:myschool/shared/cachemanager.dart';
 import 'package:myschool/shared/constants.dart';
 import 'package:myschool/shared/local_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_crop_new/image_crop_new.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:adaptive_dialog/adaptive_dialog.dart';
 
 class GroupPage extends StatefulWidget {
   final String groupUid;
   final String schoolUid;
   final String alias;
   final File image;
-  GroupPage({this.groupUid, this.schoolUid, this.alias, this.image});
+  final UserData user;
+  GroupPage({this.groupUid, this.schoolUid, this.alias, this.image, this.user});
 
   @override
   _GroupPageState createState() => _GroupPageState();
 }
 
 class _GroupPageState extends State<GroupPage> {
-  TextEditingController _groupAliasController = TextEditingController();
-
   String groupAlias;
   File groupImage;
 
@@ -100,11 +101,13 @@ class _GroupPageState extends State<GroupPage> {
                                     ],
                                   ));
                         }
-                        LocalStorage.setGroupImage(
+                        bool imageSet = await LocalStorage.setGroupImage(
                             widget.groupUid, croppedImage);
-                        setState(() {
-                          groupImage = croppedImage;
-                        });
+                        if (imageSet)
+                          setState(() {
+                            groupImage = croppedImage;
+                          });
+
                         Navigator.pop(context);
                       }),
                     ],
@@ -147,41 +150,20 @@ class _GroupPageState extends State<GroupPage> {
               IconButton(
                   icon: Icon(Icons.edit),
                   onPressed: () {
-                    showDialog(
+                    showTextInputDialog(
+                        title: 'Alias',
                         context: context,
-                        builder: (context) => AlertDialog(
-                            title: Text('Alias'),
-                            actions: [
-                              TextButton(
-                                  onPressed: () async {
-                                    _groupAliasController.clear();
-                                    Navigator.pop(context);
-                                  },
-                                  child: Text('Annuler')),
-                              TextButton(
-                                  onPressed: () async {
-                                    if (_groupAliasController.text.length < 1)
-                                      return;
-                                    await LocalStorage.setGroupAlias(
-                                        widget.groupUid,
-                                        _groupAliasController.text);
-                                    setState(() {
-                                      groupAlias = _groupAliasController.text;
-                                    });
-                                    Navigator.pop(context);
-                                  },
-                                  child: Text('Ok')),
-                            ],
-                            content: TextField(
-                              decoration: InputDecoration(
-                                  hintText: 'Mon groupe favoris!'),
-                              controller: _groupAliasController,
-                              maxLength: 50,
-                              onSubmitted: (value) async {
-                                await LocalStorage.setGroupAlias(
-                                    widget.groupUid, value);
-                              },
-                            )));
+                        cancelLabel: 'Annuler',
+                        textFields: [
+                          DialogTextField(hintText: 'Mon groupe favoris!')
+                        ]).then((inputs) async {
+                      bool aliasSet = await LocalStorage.setGroupAlias(
+                          widget.groupUid, inputs.first);
+                      if (aliasSet)
+                        setState(() {
+                          groupAlias = inputs.first;
+                        });
+                    });
                   },
                   iconSize: 20),
             ],
@@ -207,8 +189,9 @@ class _GroupPageState extends State<GroupPage> {
                             onPressed: () => Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) =>
-                                        NewAnnounce(group: widget.groupUid))),
+                                    builder: (context) => NewAnnounce(
+                                        group: widget.groupUid,
+                                        user: widget.user))),
                             child: Text('Publier une annonce'),
                             style: ButtonStyle(),
                           )),
@@ -218,8 +201,9 @@ class _GroupPageState extends State<GroupPage> {
                             onPressed: () => Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) =>
-                                        NewHomework(group: widget.groupUid))),
+                                    builder: (context) => NewHomework(
+                                        group: widget.groupUid,
+                                        user: widget.user))),
                             child: Text('Envoyer un devoir'),
                             style: ButtonStyle(),
                           )),
@@ -254,13 +238,15 @@ class _GroupPageState extends State<GroupPage> {
                               width: MediaQuery.of(context).size.width / 40,
                             ),
                             CacheManagerMemory.groupData[widget.groupUid]
-                                        [GroupAttribute.StudentsCount] !=
+                                        [GroupAttribute.Students] !=
                                     null
                                 ? Text(
                                     'Élèves : ' +
                                         CacheManagerMemory
-                                                .groupData[widget.groupUid]
-                                            [GroupAttribute.StudentsCount],
+                                            .groupData[widget.groupUid]
+                                                [GroupAttribute.Students]
+                                            .length
+                                            .toString(),
                                     style: TextStyle(fontSize: 15))
                                 : FutureBuilder(
                                     future: FirebaseFirestore.instance
@@ -277,14 +263,14 @@ class _GroupPageState extends State<GroupPage> {
                                       if (snapshot.hasData) {
                                         CacheManagerMemory
                                                     .groupData[widget.groupUid]
-                                                [GroupAttribute.StudentsCount] =
-                                            snapshot.data.documents.length
-                                                .toString();
+                                                [GroupAttribute.Students] =
+                                            snapshot.data.documents;
+
                                         return Text(
                                           'Élèves : ' +
                                               snapshot.data.documents.length
                                                   .toString(),
-                                          style: TextStyle(fontSize: 18),
+                                          style: TextStyle(fontSize: 15),
                                         );
                                       } else {
                                         return CircularProgressIndicator

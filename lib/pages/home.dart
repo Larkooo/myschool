@@ -18,8 +18,8 @@ import 'package:slide_popup_dialog/slide_popup_dialog.dart';
 import 'package:myschool/shared/cachemanager.dart';
 
 class Home extends StatefulWidget {
-  //final UserData user;
-  //Home({this.user});
+  final UserData user;
+  Home({this.user});
 
   @override
   _HomeState createState() => _HomeState();
@@ -157,19 +157,32 @@ class _HomeState extends State<Home> {
                                                 1.3,
                                         child: Card(
                                           child: ListTile(
-                                              title: Text(CacheManagerMemory.nextCourse[
-                                                      'description'] +
+                                              onTap: () => showSlideDialog(
+                                                  context: context,
+                                                  child: coursePage(
+                                                      context,
+                                                      userData,
+                                                      CacheManagerMemory.nextCourse[
+                                                          'codeActivite'],
+                                                      CacheManagerMemory.nextCourse[
+                                                          'description'],
+                                                      DateTime.parse(CacheManagerMemory.nextCourse['dateDebut'] +
+                                                          "T" +
+                                                          CacheManagerMemory.nextCourse[
+                                                              'heureDebut']),
+                                                      CacheManagerMemory.nextCourse[
+                                                          'intervenants'],
+                                                      CacheManagerMemory.nextCourse[
+                                                          'heureFin'],
+                                                      CacheManagerMemory.nextCourse[
+                                                          'locaux'])),
+                                              title: Text(CacheManagerMemory.nextCourse['description'] +
                                                   " (${CacheManagerMemory.nextCourse['locaux'][0]})"),
-                                              subtitle: Text(CacheManagerMemory
-                                                          .nextCourse['intervenants']
-                                                      [0]['nom'] +
+                                              subtitle: Text(CacheManagerMemory.nextCourse['intervenants'][0]['nom'] +
                                                   " " +
-                                                  CacheManagerMemory
-                                                          .nextCourse['intervenants']
-                                                      [0]['prenom'] +
+                                                  CacheManagerMemory.nextCourse['intervenants'][0]['prenom'] +
                                                   " - " +
-                                                  timeCountdownFormat(
-                                                      (DateTime.parse(CacheManagerMemory.nextCourse['dateDebut'] + "T" + CacheManagerMemory.nextCourse['heureDebut'])), _now))),
+                                                  timeCountdownFormat((DateTime.parse(CacheManagerMemory.nextCourse['dateDebut'] + "T" + CacheManagerMemory.nextCourse['heureDebut'])), _now))),
                                         )),
                                   ],
                                 );
@@ -213,22 +226,28 @@ class _HomeState extends State<Home> {
                             )),
                       ],
                     ),
-              SizedBox(
-                height: 20,
-              ),
-              Text(
-                "Dernière annonce école",
-                style: TextStyle(fontSize: 18, color: Colors.grey[400]),
-              ),
               StreamBuilder(
                   stream: DatabaseService(uid: userData.school.uid).school,
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       School school = snapshot.data;
-                      return Container(
-                          width: MediaQuery.of(context).size.width / 1.3,
-                          child: Announce(
-                              announcement: school.announcements.last));
+                      if (school.announcements.length > 0)
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: 20,
+                            ),
+                            Text(
+                              "Dernière annonce école",
+                              style: TextStyle(
+                                  fontSize: 18, color: Colors.grey[400]),
+                            ),
+                            Container(
+                                width: MediaQuery.of(context).size.width / 1.3,
+                                child: Announce(
+                                    announcement: school.announcements.last)),
+                          ],
+                        );
                     } else {
                       return CircularProgressIndicator.adaptive();
                     }

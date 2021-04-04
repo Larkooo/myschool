@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/pages/announcements.dart';
 import 'package:myschool/pages/homeworks.dart';
@@ -11,7 +12,7 @@ import 'package:myschool/shared/cachemanager.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:dart_date/dart_date.dart';
 
-enum GroupAttribute { Alias, Image, StudentsCount }
+enum GroupAttribute { Alias, Image, Students }
 enum AnnounceCategory { Essay, Homework, Important, Message }
 enum Scope { school, group }
 enum UserType { student, teacher }
@@ -49,6 +50,123 @@ Future getImage(ImagePicker picker) async {
   }
 }
 
+Column coursePage(
+        BuildContext context,
+        UserData user,
+        String id,
+        String description,
+        DateTime time,
+        List intervenants,
+        String endHour,
+        List rooms) =>
+    Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SizedBox(height: 5),
+        Text(
+          description,
+          style: TextStyle(fontSize: 18),
+        ),
+        Text(
+          DateFormat.Hm().format(time),
+          style: TextStyle(fontSize: 13, color: Colors.grey[500]),
+        ),
+        SizedBox(
+          height: 25,
+        ),
+        Text(
+          "Groupe",
+          style: TextStyle(fontSize: 16),
+        ),
+        Text(
+          user.school.group.uid,
+          style: TextStyle(color: Colors.grey[500]),
+        ),
+        SizedBox(
+          height: 20,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Column(children: [
+              Text(
+                "Heure de début",
+                style: TextStyle(fontSize: 15),
+              ),
+              Text(
+                DateFormat.Hm().format(time),
+                style: TextStyle(fontSize: 13, color: Colors.grey[500]),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                "Intervenant",
+                style: TextStyle(fontSize: 15),
+              ),
+              Text(
+                intervenants[0]['nom'] + " " + intervenants[0]['prenom'],
+                style: TextStyle(fontSize: 13, color: Colors.grey[500]),
+              )
+            ]),
+            Column(children: [
+              Text(
+                "Heure de fin",
+                style: TextStyle(fontSize: 15),
+              ),
+              Text(
+                endHour,
+                style: TextStyle(fontSize: 13, color: Colors.grey[500]),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                "Local",
+                style: TextStyle(fontSize: 15),
+              ),
+              Text(
+                rooms[0],
+                style: TextStyle(fontSize: 13, color: Colors.grey[500]),
+              )
+            ]),
+          ],
+        ),
+        SizedBox(
+          height: 30,
+        ),
+        Text(
+          "Prochain cours",
+          style: TextStyle(fontSize: 18),
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        Container(
+            width: MediaQuery.of(context).size.width / 1.3,
+            child: Card(
+              child: ListTile(
+                  title: Text(description + " (${rooms[0]})"),
+                  subtitle: Text(intervenants[0]['nom'] +
+                      " " +
+                      intervenants[0]['prenom'] +
+                      " - " +
+                      DateFormat.MEd().format(
+                          getNextCourse(time, id, CacheManagerMemory.courses)
+                              .key))),
+            )),
+      ],
+    );
+
+Container noAvatar(double size) => Container(
+    width: 20 * size,
+    height: 20 * size,
+    color: Colors.grey[900],
+    child: Icon(
+      Icons.person,
+      size: 10 * size,
+    ));
+
 Row userLeadingHorizontal(UserData user, double size) => Row(
       children: [
         ClipRRect(
@@ -56,22 +174,16 @@ Row userLeadingHorizontal(UserData user, double size) => Row(
             child: user.avatarUrl != null
                 ? CachedNetworkImage(
                     imageUrl: user.avatarUrl,
-                    progressIndicatorBuilder:
-                        (context, url, downloadProgress) =>
-                            CircularProgressIndicator.adaptive(
-                                value: downloadProgress.progress),
+                    //progressIndicatorBuilder:
+                    //    (context, url, downloadProgress) =>
+                    //        CircularProgressIndicator.adaptive(
+                    //            value: downloadProgress.progress),
                     errorWidget: (context, url, error) => Icon(Icons.error),
+                    placeholder: (context, url) => noAvatar(20),
                     height: 20 * size,
                     width: 20 * size,
                   )
-                : Container(
-                    width: 20 * size,
-                    height: 20 * size,
-                    color: Colors.grey[900],
-                    child: Icon(
-                      Icons.person,
-                      size: 10 * size,
-                    ))),
+                : noAvatar(size)),
         SizedBox(
           width: 5,
         ),
@@ -86,22 +198,12 @@ Column userLeadingVertical(UserData user, double size) => Column(
             child: user.avatarUrl != null
                 ? CachedNetworkImage(
                     imageUrl: user.avatarUrl,
-                    progressIndicatorBuilder:
-                        (context, url, downloadProgress) =>
-                            CircularProgressIndicator.adaptive(
-                                value: downloadProgress.progress),
+                    placeholder: (context, url) => noAvatar(20),
                     errorWidget: (context, url, error) => Icon(Icons.error),
                     height: 20 * size,
                     width: 20 * size,
                   )
-                : Container(
-                    width: 20 * size,
-                    height: 20 * size,
-                    color: Colors.grey[900],
-                    child: Icon(
-                      Icons.person,
-                      size: 10 * size,
-                    ))),
+                : noAvatar(size)),
         SizedBox(
           width: 5,
         ),

@@ -22,8 +22,8 @@ import '../services/database.dart';
 import '../models/school.dart';
 
 class Homeworks extends StatefulWidget {
-  //final UserData user;
-  //Announcements({this.user});
+  final UserData user;
+  Homeworks({this.user});
 
   @override
   _HomeworksState createState() => _HomeworksState();
@@ -32,81 +32,72 @@ class Homeworks extends StatefulWidget {
 class _HomeworksState extends State<Homeworks> {
   @override
   Widget build(BuildContext context) {
-    final user = context.watch<User>();
-    return StreamBuilder(
-        stream: DatabaseService(uid: user.uid).user,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            UserData user = snapshot.data;
-            // grouping different streams into a list to then merge them.
-            // to get school and group(s) announcements
-            List<Stream> streams = [];
-            if (user.type == UserType.student) {
-              streams.add(DatabaseService(uid: user.school.uid)
-                  .group(user.school.group.uid));
-            } else {
-              user.groups.forEach((group) {
-                streams.add(DatabaseService(uid: user.school.uid)
-                    .group(group.toString()));
-              });
-            }
-            return Scaffold(
-              body: StreamBuilder(
-                /* 
+    // grouping different streams into a list to then merge them.
+    // to get school and group(s) homeworks
+    List<Stream> streams = [];
+    if (widget.user.type == UserType.student) {
+      streams.add(DatabaseService(uid: widget.user.school.uid)
+          .group(widget.user.school.group.uid));
+    } else {
+      widget.user.groups.forEach((group) {
+        streams.add(DatabaseService(uid: widget.user.school.uid)
+            .group(group.toString()));
+      });
+    }
+    return Scaffold(
+      body: StreamBuilder(
+        /* 
                   Merging the streams, the group(s) announcements and school ones
                   */
-                stream: CombineLatestStream.list(streams),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    List<Homework> homeworks = [];
-                    snapshot.data.forEach((e) {
-                      homeworks.addAll(e.homeworks);
-                    });
+        stream: CombineLatestStream.list(streams),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            List<Homework> homeworks = [];
+            snapshot.data.forEach((e) {
+              homeworks.addAll(e.homeworks);
+            });
 
-                    /* 
+            /* 
                       Sorting the homeworks by comparing their due time 
                   */
-                    homeworks.sort((a, b) => b.due.compareTo(a.due));
+            homeworks.sort((a, b) => b.due.compareTo(a.due));
 
-                    // filtering homeworks
-                    homeworks.removeWhere((homework) => homework.due
-                                    .difference(DateTime.now())
-                                    .inDays >
-                                // hide homework after 14 days
-                                14 ||
-                            // if teacher, dont show other teachers given homeworks
-                            user.type == UserType.teacher
-                        ? homework.author != user.uid
-                        : false);
+            // filtering homeworks
+            homeworks.removeWhere(
+                (homework) => homework.due.difference(DateTime.now()).inDays >
+                            // hide homework after 14 days
+                            14 ||
+                        // if teacher, dont show other teachers given homeworks
+                        widget.user.type == UserType.teacher
+                    ? homework.author != widget.user.uid
+                    : false);
 
-                    return ListView.builder(
-                        itemCount: homeworks.length,
-                        itemBuilder: (context, index) {
-                          /* 
+            return ListView.builder(
+                itemCount: homeworks.length,
+                itemBuilder: (context, index) {
+                  /* 
                           Transforming our data to a a Homework 
                         */
-                          Homework homework = homeworks[index];
+                  Homework homework = homeworks[index];
 
-                          // Rendering part
-                          return HomeworkComp(homework: homework);
-                        });
-                  } else {
-                    return Center(child: CircularProgressIndicator.adaptive());
-                  }
-                },
-              ),
-              floatingActionButton: user.type == UserType.teacher
-                  ? IconButton(
-                      icon: Icon(Icons.add),
-                      onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => NewHomework())))
-                  : null,
-            );
+                  // Rendering part
+                  return HomeworkComp(homework: homework);
+                });
           } else {
             return Center(child: CircularProgressIndicator.adaptive());
           }
-        });
+        },
+      ),
+      floatingActionButton: widget.user.type == UserType.teacher
+          ? FloatingActionButton(
+              backgroundColor: Colors.grey[700].withOpacity(0.4),
+              tooltip: 'Poster un devoir',
+              child: Icon(Icons.add),
+              onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => NewHomework(user: widget.user))))
+          : null,
+    );
   }
 }

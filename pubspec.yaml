@@ -53,6 +53,7 @@ dependencies:
   clipboard: 
   badges: 
   device_info: 
+  adaptive_dialog:
   #home_widget:
  # firebase_auth_oauth: ^0.2.3
 

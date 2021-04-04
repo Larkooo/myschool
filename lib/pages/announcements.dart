@@ -19,8 +19,8 @@ import '../services/database.dart';
 import '../models/school.dart';
 
 class Announcements extends StatefulWidget {
-  //final UserData user;
-  //Announcements({this.user});
+  final UserData user;
+  Announcements({this.user});
 
   @override
   _AnnouncementsState createState() => _AnnouncementsState();
@@ -29,74 +29,65 @@ class Announcements extends StatefulWidget {
 class _AnnouncementsState extends State<Announcements> {
   @override
   Widget build(BuildContext context) {
-    final user = context.watch<User>();
-    return StreamBuilder(
-        stream: DatabaseService(uid: user.uid).user,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            UserData user = snapshot.data;
-            // grouping different streams into a list to then merge them.
-            // to get school and group(s) announcements
-            List<Stream> streams = [
-              DatabaseService(uid: user.school.uid).school
-            ];
-            if (user.type == UserType.student) {
-              streams.add(DatabaseService(uid: user.school.uid)
-                  .group(user.school.group.uid));
-            } else {
-              user.groups.forEach((group) {
-                streams.add(DatabaseService(uid: user.school.uid)
-                    .group(group.toString()));
-              });
-            }
-            return Scaffold(
-              body: StreamBuilder(
-                /* 
+    // grouping different streams into a list to then merge them.
+    // to get school and group(s) announcements
+    List<Stream> streams = [
+      DatabaseService(uid: widget.user.school.uid).school
+    ];
+    if (widget.user.type == UserType.student) {
+      streams.add(DatabaseService(uid: widget.user.school.uid)
+          .group(widget.user.school.group.uid));
+    } else {
+      widget.user.groups.forEach((group) {
+        streams.add(DatabaseService(uid: widget.user.school.uid)
+            .group(group.toString()));
+      });
+    }
+    return Scaffold(
+      body: StreamBuilder(
+        /* 
                   Merging the streams, the group(s) announcements and school ones
                   */
-                stream: CombineLatestStream.list(streams),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    //print(snapshot.data.length);
-                    List<Announcement> announcements = [];
-                    snapshot.data.forEach((e) {
-                      announcements.addAll(e.announcements);
-                    });
+        stream: CombineLatestStream.list(streams),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            //print(snapshot.data.length);
+            List<Announcement> announcements = [];
+            snapshot.data.forEach((e) {
+              announcements.addAll(e.announcements);
+            });
 
-                    /* 
+            /* 
                           Sorting the announcements by comparing their time of creation 
                   */
-                    announcements
-                        .sort((a, b) => b.createdAt.compareTo(a.createdAt));
+            announcements.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-                    return ListView.builder(
-                        itemCount: announcements.length,
-                        itemBuilder: (context, index) {
-                          /* 
+            return ListView.builder(
+                itemCount: announcements.length,
+                itemBuilder: (context, index) {
+                  /* 
                           Transforming our data to a an Announcement 
                         */
-                          Announcement announcement = announcements[index];
+                  Announcement announcement = announcements[index];
 
-                          // Rendering part
-                          return Announce(announcement: announcement);
-                        });
-                  } else {
-                    return Center(child: CircularProgressIndicator.adaptive());
-                  }
-                },
-              ),
-              floatingActionButton: user.type == UserType.teacher
-                  ? IconButton(
-                      icon: Icon(Icons.add),
-                      onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => NewAnnounce())))
-                  : null,
-            );
+                  // Rendering part
+                  return Announce(announcement: announcement);
+                });
           } else {
             return Center(child: CircularProgressIndicator.adaptive());
           }
-        });
+        },
+      ),
+      floatingActionButton: widget.user.type == UserType.teacher
+          ? FloatingActionButton(
+              tooltip: 'Publier une annonce',
+              backgroundColor: Colors.grey[700].withOpacity(0.4),
+              child: Icon(Icons.add),
+              onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => NewAnnounce(user: widget.user))))
+          : null,
+    );
   }
 }

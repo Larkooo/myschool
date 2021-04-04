@@ -72,6 +72,21 @@ class _HomeState extends State<HomeSkeleton> {
           if (snapshot.hasData) {
             userData = snapshot.data;
 
+            _widgetOptions = {
+              UserType.student: [
+                Home(user: userData),
+                Announcements(user: userData),
+                Homeworks(user: userData),
+                Calendar(user: userData)
+              ],
+              UserType.teacher: [
+                HomeTeacher(user: userData),
+                Announcements(user: userData),
+                Homeworks(user: userData),
+                Groups(user: userData)
+              ]
+            };
+
             // subscribe to school topic
             if (!subscribed) _messaging.subscribeToTopic(userData.school.uid);
 
@@ -88,7 +103,7 @@ class _HomeState extends State<HomeSkeleton> {
               return Scaffold(
                 appBar: AppBar(),
                 drawer: DrawerComp(
-                  userData: userData,
+                  user: userData,
                 ),
                 body:
                     _widgetOptions[UserType.student].elementAt(_selectedIndex),
@@ -127,7 +142,7 @@ class _HomeState extends State<HomeSkeleton> {
               return Scaffold(
                   appBar: AppBar(),
                   drawer: DrawerComp(
-                    userData: userData,
+                    user: userData,
                   ),
                   body: _widgetOptions[UserType.teacher]
                       .elementAt(_selectedIndex),

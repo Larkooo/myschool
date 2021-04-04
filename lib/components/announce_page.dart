@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:myschool/models/user.dart';
+import 'package:myschool/shared/cachemanager.dart';
 import 'package:myschool/shared/constants.dart';
 import '../models/announcement.dart';
 import 'package:dart_date/dart_date.dart';
 
 class AnnouncePage extends StatelessWidget {
   final Announcement announcement;
-  final UserData author;
 
-  AnnouncePage({this.announcement, this.author});
+  AnnouncePage({this.announcement});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,8 @@ class AnnouncePage extends StatelessWidget {
         SizedBox(
           height: 2,
         ),
-        userLeadingVertical(author, 1.3),
+        userLeadingVertical(
+            CacheManagerMemory.cachedUsers[announcement.author], 1.3),
         SizedBox(
           height: 5,
         ),

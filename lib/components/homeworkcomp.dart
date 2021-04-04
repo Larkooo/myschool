@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,6 +11,7 @@ import 'package:myschool/models/homework.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/components/announce_page.dart';
 import 'package:myschool/services/database.dart';
+import 'package:myschool/shared/cachemanager.dart';
 import 'package:myschool/shared/constants.dart';
 import 'package:provider/provider.dart';
 import 'package:clipboard/clipboard.dart';
@@ -22,8 +24,6 @@ class HomeworkComp extends StatelessWidget {
 
   HomeworkComp({this.homework});
 
-  UserData author;
-
   @override
   Widget build(BuildContext context) {
     final user = context.watch<User>();
@@ -35,22 +35,28 @@ class HomeworkComp extends StatelessWidget {
         title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(
             children: [
-              FutureBuilder(
-                  future: FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(homework.author)
-                      .get(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      author =
-                          DatabaseService().userDataFromSnapshot(snapshot.data);
-                      return userLeadingHorizontal(author, 1);
-                    } else {
-                      return CircularProgressIndicator(
-                        strokeWidth: 2,
-                      );
-                    }
-                  }),
+              CacheManagerMemory.cachedUsers[homework.author] == null
+                  ? FutureBuilder(
+                      future: FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(homework.author)
+                          .get(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          UserData author = DatabaseService()
+                              .userDataFromSnapshot(snapshot.data);
+                          // cache the user by its id
+                          CacheManagerMemory.cachedUsers[homework.author] =
+                              author;
+                          return userLeadingHorizontal(author, 1);
+                        } else {
+                          return CircularProgressIndicator(
+                            strokeWidth: 2,
+                          );
+                        }
+                      })
+                  : userLeadingHorizontal(
+                      CacheManagerMemory.cachedUsers[homework.author], 1),
               SizedBox(
                 width: 5,
               ),
@@ -129,20 +135,19 @@ class HomeworkComp extends StatelessWidget {
             Row(children: [
               Spacer(),
               IconButton(
-                icon: Icon(Icons.delete, color: Colors.grey),
-                onPressed: () => adaptiveDialog(
-                    context: context,
-                    content: Text("Voulez vous vraiment annuler ce devoir?"),
-                    actions: [
-                      adaptiveDialogTextButton(
-                          context, "Non", () => Navigator.pop(context)),
-                      adaptiveDialogTextButton(context, "Oui", () async {
-                        await DatabaseService()
-                            .deleteHomework(homework.raw, homework.reference);
-                        Navigator.pop(context);
-                      })
-                    ]),
-              )
+                  icon: Icon(Icons.delete, color: Colors.grey),
+                  onPressed: () => showOkCancelAlertDialog(
+                              context: context,
+                              okLabel: 'Oui',
+                              cancelLabel: 'Non',
+                              title: 'Suppression',
+                              message:
+                                  'Voulez vous vraiment annuler ce devoir?')
+                          .then((value) async {
+                        if (value == OkCancelResult.ok)
+                          await DatabaseService()
+                              .deleteHomework(homework.raw, homework.reference);
+                      }))
             ]),
           Text(
             'À remettre le ' + homework.due.format('d MMMM H:m', 'fr_FR'),
