@@ -132,63 +132,6 @@ class _SettingsState extends State<Settings> {
                       });
                     }),
                 SettingsTile(
-                    leading: Icon(Icons.security),
-                    title: 'Modifier votre mot de passe',
-                    onPressed: (context) => showTextInputDialog(
-                            context: context,
-                            title: 'Modifier votre mot de passe',
-                            okLabel: 'Confirmer',
-                            cancelLabel: 'Annuler',
-                            textFields: [
-                              DialogTextField(
-                                hintText: 'Mot de passe actuel',
-                                obscureText: true,
-                                validator: (value) {
-                                  if (value.isEmpty)
-                                    return 'Ce champs est obligatoire.';
-                                  if (value.length < 6)
-                                    return 'Mot de passe trop court.';
-                                  return null;
-                                },
-                              ),
-                              DialogTextField(
-                                  hintText: 'Nouveau mot de passe',
-                                  obscureText: true,
-                                  validator: (value) {
-                                    if (value.isEmpty)
-                                      return 'Ce champs est obligatoire.';
-                                    if (value.length < 6)
-                                      return 'Mot de passe trop court.';
-                                    return null;
-                                  })
-                            ]).then((inputs) {
-                          String currentPassword = inputs[0];
-                          String newPassword = inputs[1];
-                          if (currentPassword != newPassword) {
-                            user
-                                .reauthenticateWithCredential(
-                                    EmailAuthProvider.credential(
-                                        email: user.email,
-                                        password: currentPassword))
-                                .then((value) {
-                              user.updatePassword(newPassword).then((_) {
-                                Alert(message: "Mot de passe modifié").show();
-                              }, onError: (err) {
-                                if (err.code == 'weak-password')
-                                  Alert(message: "Mot de passe trop fragile")
-                                      .show();
-                              });
-                            }, onError: (err) {
-                              Alert(message: "Mot de passe invalide").show();
-                            });
-                          } else {
-                            Alert(message: "Choisissez un autre mot de passe")
-                                .show();
-                          }
-                        })
-                    //subtitle: user.email,
-                    ),
-                SettingsTile(
                   leading: Icon(Icons.image_search),
                   title: "Choisir une photo de profil",
                   onPressed: (context) async {
@@ -312,6 +255,69 @@ class _SettingsState extends State<Settings> {
                         );
                       }
                     })),
+            CustomSection(
+                child: SizedBox(
+              height: 10,
+            )),
+            SettingsSection(title: "Sécurité", tiles: [
+              SettingsTile(
+                  leading: Icon(Icons.security),
+                  title: 'Modifier votre mot de passe',
+                  onPressed: (context) => showTextInputDialog(
+                          context: context,
+                          title: 'Modifier votre mot de passe',
+                          okLabel: 'Confirmer',
+                          cancelLabel: 'Annuler',
+                          textFields: [
+                            DialogTextField(
+                              hintText: 'Mot de passe actuel',
+                              obscureText: true,
+                              validator: (value) {
+                                if (value.isEmpty)
+                                  return 'Ce champs est obligatoire.';
+                                if (value.length < 6)
+                                  return 'Mot de passe trop court.';
+                                return null;
+                              },
+                            ),
+                            DialogTextField(
+                                hintText: 'Nouveau mot de passe',
+                                obscureText: true,
+                                validator: (value) {
+                                  if (value.isEmpty)
+                                    return 'Ce champs est obligatoire.';
+                                  if (value.length < 6)
+                                    return 'Mot de passe trop court.';
+                                  return null;
+                                })
+                          ]).then((inputs) {
+                        String currentPassword = inputs[0];
+                        String newPassword = inputs[1];
+                        if (currentPassword != newPassword) {
+                          user
+                              .reauthenticateWithCredential(
+                                  EmailAuthProvider.credential(
+                                      email: user.email,
+                                      password: currentPassword))
+                              .then((value) {
+                            user.updatePassword(newPassword).then((_) {
+                              Alert(message: "Mot de passe modifié").show();
+                            }, onError: (err) {
+                              if (err.code == 'weak-password')
+                                Alert(message: "Mot de passe trop fragile")
+                                    .show();
+                            });
+                          }, onError: (err) {
+                            Alert(message: "Mot de passe invalide").show();
+                          });
+                        } else {
+                          Alert(message: "Choisissez un autre mot de passe")
+                              .show();
+                        }
+                      })
+                  //subtitle: user.email,
+                  )
+            ]),
             CustomSection(
                 child: SizedBox(
               height: 10,

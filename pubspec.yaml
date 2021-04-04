@@ -52,6 +52,7 @@ dependencies:
   badges: ^1.2.0
   device_info: ^2.0.0
   adaptive_dialog:
+  flutter_local_notifications: ^5.0.0
   #home_widget:
  # firebase_auth_oauth: ^0.2.3
 

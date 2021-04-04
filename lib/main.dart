@@ -45,6 +45,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamProvider<User>.value(
+      initialData: null,
       value: FirebaseAuthService.user,
       child: MaterialApp(
         title: 'MonEcole',
