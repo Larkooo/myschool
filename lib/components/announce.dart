@@ -45,11 +45,17 @@ class Announce extends StatelessWidget {
                           .get(),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
-                          UserData author = DatabaseService()
-                              .userDataFromSnapshot(snapshot.data);
+                          UserData author;
+                          if (snapshot.data.exists) {
+                            author = DatabaseService()
+                                .userDataFromSnapshot(snapshot.data);
+                          } else {
+                            author = UserData(uid: "-1");
+                          }
                           // cache the user by its id
                           CacheManagerMemory.cachedUsers[announcement.author] =
                               author;
+
                           return userLeadingHorizontal(author, 1);
                         } else {
                           return CircularProgressIndicator(

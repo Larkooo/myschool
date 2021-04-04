@@ -171,7 +171,7 @@ Row userLeadingHorizontal(UserData user, double size) => Row(
       children: [
         ClipRRect(
             borderRadius: BorderRadius.circular(30),
-            child: user.avatarUrl != null
+            child: user.avatarUrl != null && user.uid != "-1"
                 ? CachedNetworkImage(
                     imageUrl: user.avatarUrl,
                     //progressIndicatorBuilder:
@@ -187,7 +187,8 @@ Row userLeadingHorizontal(UserData user, double size) => Row(
         SizedBox(
           width: 5,
         ),
-        Text(user.firstName, style: TextStyle(fontSize: 18 * size)),
+        Text(user.uid != "-1" ? user.firstName : "Deleted User",
+            style: TextStyle(fontSize: 18 * size)),
       ],
     );
 
@@ -195,7 +196,7 @@ Column userLeadingVertical(UserData user, double size) => Column(
       children: [
         ClipRRect(
             borderRadius: BorderRadius.circular(30),
-            child: user.avatarUrl != null
+            child: user.avatarUrl != null && user.uid != "-1"
                 ? CachedNetworkImage(
                     imageUrl: user.avatarUrl,
                     placeholder: (context, url) => noAvatar(20),
@@ -207,7 +208,8 @@ Column userLeadingVertical(UserData user, double size) => Column(
         SizedBox(
           width: 5,
         ),
-        Text(user.firstName, style: TextStyle(fontSize: 18 * size)),
+        Text(user.uid != "-1" ? user.firstName : "Deleted User",
+            style: TextStyle(fontSize: 15 * size)),
       ],
     );
 
