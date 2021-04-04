@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="66c39eb0-e573-4035-92d2-4b58dc8e9b52" name="Default Changelist" comment="" />
+    <list default="true" id="66c39eb0-e573-4035-92d2-4b58dc8e9b52" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.flutter-plugins" beforeDir="false" afterPath="$PROJECT_DIR$/.flutter-plugins" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -35,10 +37,10 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state x="-128" y="158" width="1200" height="739" key="AVDManager" timestamp="1617420315995">
+    <state x="-128" y="158" width="1200" height="739" key="AVDManager" timestamp="1617491158167">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state x="-128" y="158" width="1200" height="739" key="AVDManager/0.0.1920.1050@0.0.1920.1050" timestamp="1617420315995" />
+    <state x="-128" y="158" width="1200" height="739" key="AVDManager/0.0.1920.1050@0.0.1920.1050" timestamp="1617491158167" />
     <state x="-144" y="605" width="1200" height="849" key="com.android.tools.idea.avdmanager.AvdListDialog" timestamp="1613610116708">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
