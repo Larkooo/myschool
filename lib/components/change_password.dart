@@ -72,23 +72,28 @@ class _ChangePasswordState extends State<ChangePassword> {
           ),
           mainBlueLoadingBtn(context, _btnController, "Confirmer", () {
             if (_formKey.currentState.validate()) {
-              _btnController.start();
-              user.updatePassword(_newPassword.text).then((_) {
-                _btnController.success();
-                Alert(message: "Mot de passe modifié").show();
-              }, onError: (err) {
-                if (err.code == "requires-recent-login") {
-                  Alert(
-                          message:
-                              "Pour changer votre mot de passe, vous devez vous être connecté récemment. Déconnectez et reconnectez vous.")
-                      .show();
-                  _btnController.error();
-                  //user.reauthenticateWithCredential(EmailAuthProvider.credential(email: email, password: password));
-                } else {
-                  Alert(message: "Mot de passe trop fragile").show();
+              if (_actualPassword.text != _newPassword.text) {
+                _btnController.start();
+                user
+                    .reauthenticateWithCredential(EmailAuthProvider.credential(
+                        email: user.email, password: _actualPassword.text))
+                    .then((value) {
+                  user.updatePassword(_newPassword.text).then((_) {
+                    _btnController.success();
+                    Alert(message: "Mot de passe modifié").show();
+                  }, onError: (err) {
+                    if (err.code == 'weak-password')
+                      Alert(message: "Mot de passe trop fragile").show();
+                    _btnController.stop();
+                  });
+                }, onError: (err) {
+                  Alert(message: "Mot de passe invalide").show();
                   _btnController.stop();
-                }
-              });
+                });
+              } else {
+                _btnController.stop();
+                Alert(message: "Choisissez un autre mot de passe").show();
+              }
             }
           })
         ],

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:alert/alert.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
@@ -83,66 +84,54 @@ class _SettingsState extends State<Settings> {
                   subtitle: widget.user.lastName,
                 ),
                 SettingsTile(
-                  leading: Icon(Icons.email),
-                  title: 'Courriel',
-                  subtitle: user.email,
-                  onPressed:
-                      /*(BuildContext context) {
-                            adaptiveDialog(
-                                context: context,
-                                title: Text(
-                                    "Voulez vous modifier votre adresse email"),
-                                actions: [
-                                  adaptiveDialogTextButton(context, "Non",
-                                      () => Navigator.pop(context)),
-                                  adaptiveDialogTextButton(context, "Oui", () {
-                                    Navigator.pop(context);
-                                    showDialog(
-                                        context: context,
-                                        builder: (context) => AlertDialog(
-                                              title: Text(
-                                                  "Entrez votre nouvelle adresse email"),
-                                              content: TextField(
-                                                decoration: InputDecoration(
-                                                    errorText: _newEmailValid
-                                                        ? null
-                                                        : "Adresse email invalide"),
-                                                onChanged: (value) {
-                                                  if (value.isEmpty)
-                                                    setState(() {
-                                                      _newEmailValid = false;
-                                                    });
-
-                                                  bool v =
-                                                      EmailValidator.validate(
-                                                          value);
-                                                  if (!v) {
-                                                    setState(() {
-                                                      _newEmailValid = false;
-                                                    });
-                                                  }
-                                                  setState(() {
-                                                    _newEmailValid = true;
-                                                  });
-                                                  print(_newEmailValid);
-                                                },
-                                                controller: _newEmail,
-                                              ),
-                                              actions: [
-                                                TextButton(
-                                                    onPressed: () {
-                                                      if (_newEmailValid)
-                                                        user.updateEmail(
-                                                            _newEmail.text);
-                                                    },
-                                                    child: Text('Ok'))
-                                              ],
-                                            ));
-                                  }),
-                                ]);
-                          },*/
-                      null,
-                ),
+                    leading: Icon(Icons.email),
+                    title: 'Courriel',
+                    subtitle: user.email,
+                    onPressed: (context) {
+                      showTextInputDialog(
+                          context: context,
+                          title: 'Modifier votre courriel',
+                          okLabel: 'Confirmer',
+                          cancelLabel: 'Annuler',
+                          textFields: [
+                            DialogTextField(
+                              hintText: 'Mot de passe',
+                              obscureText: true,
+                              validator: (value) {
+                                if (value.isEmpty)
+                                  return 'Ce champs est obligatoire.';
+                                return null;
+                              },
+                            ),
+                            DialogTextField(
+                              hintText: 'example@domain.com',
+                              validator: (value) {
+                                value = value.trim();
+                                if (value.isEmpty)
+                                  return 'Ce champs est obligatoire.';
+                                bool v = EmailValidator.validate(value);
+                                if (!v) {
+                                  return "Adresse courriel invalide.";
+                                }
+                                return null;
+                              },
+                            )
+                          ]).then((inputs) {
+                        String currentPassword = inputs[0];
+                        String email = inputs[1].trim();
+                        FirebaseAuth.instance.currentUser
+                            .reauthenticateWithCredential(
+                                EmailAuthProvider.credential(
+                                    email: user.email,
+                                    password: currentPassword))
+                            .then((_) {
+                          user.updateEmail(email).catchError(
+                              (err) => Alert(message: "Email invalide").show);
+                        }, onError: (err) {
+                          Alert(message: "Mot de passe invalide").show();
+                        });
+                      });
+                    }),
                 SettingsTile(
                     leading: Icon(Icons.security),
                     title: 'Modifier votre mot de passe',
