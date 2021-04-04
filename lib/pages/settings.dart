@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:image_crop_new/image_crop_new.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:myschool/components/change_password.dart';
 import 'package:myschool/components/mozaik_login.dart';
 import 'package:myschool/components/reset_password.dart';
 import 'package:myschool/models/mozaik.dart';
@@ -135,8 +134,58 @@ class _SettingsState extends State<Settings> {
                 SettingsTile(
                     leading: Icon(Icons.security),
                     title: 'Modifier votre mot de passe',
-                    onPressed: (BuildContext context) => showSlideDialog(
-                        context: context, child: ChangePassword())
+                    onPressed: (context) => showTextInputDialog(
+                            context: context,
+                            title: 'Modifier votre mot de passe',
+                            okLabel: 'Confirmer',
+                            cancelLabel: 'Annuler',
+                            textFields: [
+                              DialogTextField(
+                                hintText: 'Mot de passe actuel',
+                                obscureText: true,
+                                validator: (value) {
+                                  if (value.isEmpty)
+                                    return 'Ce champs est obligatoire.';
+                                  if (value.length < 6)
+                                    return 'Mot de passe trop court.';
+                                  return null;
+                                },
+                              ),
+                              DialogTextField(
+                                  hintText: 'Nouveau mot de passe',
+                                  obscureText: true,
+                                  validator: (value) {
+                                    if (value.isEmpty)
+                                      return 'Ce champs est obligatoire.';
+                                    if (value.length < 6)
+                                      return 'Mot de passe trop court.';
+                                    return null;
+                                  })
+                            ]).then((inputs) {
+                          String currentPassword = inputs[0];
+                          String newPassword = inputs[1];
+                          if (currentPassword != newPassword) {
+                            user
+                                .reauthenticateWithCredential(
+                                    EmailAuthProvider.credential(
+                                        email: user.email,
+                                        password: currentPassword))
+                                .then((value) {
+                              user.updatePassword(newPassword).then((_) {
+                                Alert(message: "Mot de passe modifié").show();
+                              }, onError: (err) {
+                                if (err.code == 'weak-password')
+                                  Alert(message: "Mot de passe trop fragile")
+                                      .show();
+                              });
+                            }, onError: (err) {
+                              Alert(message: "Mot de passe invalide").show();
+                            });
+                          } else {
+                            Alert(message: "Choisissez un autre mot de passe")
+                                .show();
+                          }
+                        })
                     //subtitle: user.email,
                     ),
                 SettingsTile(
@@ -287,37 +336,43 @@ class _SettingsState extends State<Settings> {
                   title: "Supprimer votre compte",
                   subtitle: "Cette action est irréversible!",
                   onPressed: (context) {
-                    adaptiveDialog(
+                    showTextInputDialog(
                         context: context,
-                        content: Text(
-                            "Voulez vous vraiment supprimer votre compte?"),
-                        actions: [
-                          adaptiveDialogTextButton(
-                              context, "Non", () => Navigator.pop(context)),
-                          adaptiveDialogTextButton(
-                            context,
-                            "Oui",
-                            () async {
-                              bool deleted =
-                                  await FirebaseAuthService.deleteUser(user);
-                              Navigator.pop(context);
-                              if (!deleted) {
-                                adaptiveDialog(
-                                  context: context,
-                                  content: Text(
-                                      "Cette action est sensible et requiert que vous vous ré-authentifier, Déconnectez et reconnectez vous pour procéder."),
-                                  actions: [
-                                    adaptiveDialogTextButton(
-                                      context,
-                                      "Ok",
-                                      () => Navigator.pop(context),
-                                    )
-                                  ],
-                                );
-                              }
-                            },
-                          )
-                        ]);
+                        title: 'Compte',
+                        message: 'Voulez vous vraiment supprimer votre compte?',
+                        okLabel: 'Oui',
+                        cancelLabel: 'Non',
+                        textFields: [
+                          DialogTextField(
+                              hintText: 'Mot de passe',
+                              obscureText: true,
+                              validator: (value) {
+                                if (value.isEmpty)
+                                  return 'Ce champs est obligatoire.';
+                                if (value.length < 6)
+                                  return 'Mot de passe trop court.';
+                                return null;
+                              })
+                        ]).then((inputs) {
+                      String currentPassword = inputs[0];
+                      user
+                          .reauthenticateWithCredential(
+                              EmailAuthProvider.credential(
+                                  email: user.email, password: currentPassword))
+                          .then((_) => FirebaseAuthService.deleteUser(user)
+                                  .then((value) {
+                                value
+                                    ? Alert(message: 'Compte supprimé').show()
+                                    : Alert(message: 'Erreur');
+                              }))
+                          .onError((error, stackTrace) =>
+                              Alert(message: 'Erreur').show());
+                      FirebaseAuthService.deleteUser(user).then((value) {
+                        value
+                            ? Alert(message: 'Compte supprimé').show()
+                            : Alert(message: 'Erreur');
+                      });
+                    });
                   },
                 )
               ],
