@@ -82,6 +82,7 @@ class _LoginState extends State<Login> {
                       child: TextFormField(
                         controller: _emailController,
                         validator: (value) {
+                          value = value.trim();
                           if (value.isEmpty)
                             return 'Ce champs est obligatoire.';
                           bool v = EmailValidator.validate(value);
@@ -129,7 +130,8 @@ class _LoginState extends State<Login> {
                     if (_formKey.currentState.validate()) {
                       _btnController.start();
                       dynamic loginStatus = await FirebaseAuthService.signIn(
-                          _emailController.text, _passwordController.text);
+                          _emailController.text.trim(),
+                          _passwordController.text);
                       if (loginStatus is User) {
                         Alert(message: "Connecté").show();
                         _btnController.success();

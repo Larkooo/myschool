@@ -185,31 +185,42 @@ class _GroupPageState extends State<GroupPage> {
                       ),
                       Container(
                           width: MediaQuery.of(context).size.width / 1.2,
-                          child: ElevatedButton(
-                            onPressed: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => NewAnnounce(
-                                        group: widget.groupUid,
-                                        user: widget.user))),
-                            child: Text('Publier une annonce'),
-                            style: ButtonStyle(),
-                          )),
-                      Container(
-                          width: MediaQuery.of(context).size.width / 1.2,
-                          child: ElevatedButton(
-                            onPressed: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => NewHomework(
-                                        group: widget.groupUid,
-                                        user: widget.user))),
-                            child: Text('Envoyer un devoir'),
-                            style: ButtonStyle(),
-                          )),
-                      SizedBox(
-                        height: 5,
-                      ),
+                          decoration: BoxDecoration(
+                              color: Colors.grey[900],
+                              borderRadius: BorderRadius.circular(5)),
+                          margin: EdgeInsets.all(10),
+                          child: Column(children: [
+                            SizedBox(
+                              height: 5,
+                            ),
+                            Container(
+                                width: MediaQuery.of(context).size.width / 1.5,
+                                child: ElevatedButton(
+                                  onPressed: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => NewAnnounce(
+                                              group: widget.groupUid,
+                                              user: widget.user))),
+                                  child: Text('Publier une annonce'),
+                                  style: ButtonStyle(),
+                                )),
+                            Container(
+                                width: MediaQuery.of(context).size.width / 1.5,
+                                child: ElevatedButton(
+                                  onPressed: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => NewHomework(
+                                              group: widget.groupUid,
+                                              user: widget.user))),
+                                  child: Text('Envoyer un devoir'),
+                                  style: ButtonStyle(),
+                                )),
+                            SizedBox(
+                              height: 5,
+                            )
+                          ])),
                     ],
                   ))),
           SizedBox(height: MediaQuery.of(context).size.height / 40),
@@ -227,60 +238,83 @@ class _GroupPageState extends State<GroupPage> {
                         'Informations',
                         style: TextStyle(fontSize: 20, color: Colors.white70),
                       ),
-                      SizedBox(
-                        height: 5,
-                      ),
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                      Container(
+                        width: MediaQuery.of(context).size.width / 1.2,
+                        decoration: BoxDecoration(
+                            color: Colors.grey[900],
+                            borderRadius: BorderRadius.circular(5)),
+                        margin: EdgeInsets.all(10),
+                        child: Column(
                           children: [
-                            Icon(Icons.group),
                             SizedBox(
-                              width: MediaQuery.of(context).size.width / 40,
+                              height: 5,
                             ),
-                            CacheManagerMemory.groupData[widget.groupUid]
-                                        [GroupAttribute.Students] !=
-                                    null
-                                ? Text(
-                                    'Élèves : ' +
-                                        CacheManagerMemory
-                                            .groupData[widget.groupUid]
-                                                [GroupAttribute.Students]
-                                            .length
-                                            .toString(),
-                                    style: TextStyle(fontSize: 15))
-                                : FutureBuilder(
-                                    future: FirebaseFirestore.instance
-                                        .collection('users')
-                                        .where('school',
-                                            isEqualTo: FirebaseFirestore
-                                                .instance
-                                                .collection('schools')
-                                                .doc(widget.schoolUid)
-                                                .collection('groups')
-                                                .doc(widget.groupUid))
-                                        .get(),
-                                    builder: (context, snapshot) {
-                                      if (snapshot.hasData) {
-                                        CacheManagerMemory
-                                                    .groupData[widget.groupUid]
-                                                [GroupAttribute.Students] =
-                                            snapshot.data.documents;
-
-                                        return Text(
+                            Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.group),
+                                  SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width / 40,
+                                  ),
+                                  CacheManagerMemory.groupData[widget.groupUid]
+                                              [GroupAttribute.Students] !=
+                                          null
+                                      ? Text(
                                           'Élèves : ' +
-                                              snapshot.data.documents.length
+                                              CacheManagerMemory
+                                                  .groupData[widget.groupUid]
+                                                      [GroupAttribute.Students]
+                                                  .length
                                                   .toString(),
-                                          style: TextStyle(fontSize: 15),
-                                        );
-                                      } else {
-                                        return CircularProgressIndicator
-                                            .adaptive();
-                                      }
-                                    })
-                          ]),
+                                          style: TextStyle(fontSize: 15))
+                                      : FutureBuilder(
+                                          future: FirebaseFirestore.instance
+                                              .collection('users')
+                                              .where('school',
+                                                  isEqualTo: FirebaseFirestore
+                                                      .instance
+                                                      .collection('schools')
+                                                      .doc(widget.schoolUid)
+                                                      .collection('groups')
+                                                      .doc(widget.groupUid))
+                                              .get(),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.hasData) {
+                                              CacheManagerMemory.groupData[
+                                                          widget.groupUid][
+                                                      GroupAttribute.Students] =
+                                                  snapshot.data.documents;
+
+                                              return Text(
+                                                'Élèves : ' +
+                                                    snapshot
+                                                        .data.documents.length
+                                                        .toString(),
+                                                style: TextStyle(fontSize: 15),
+                                              );
+                                            } else {
+                                              return CircularProgressIndicator
+                                                  .adaptive();
+                                            }
+                                          })
+                                ]),
+                            Container(
+                                width: MediaQuery.of(context).size.width / 1.5,
+                                child: ElevatedButton(
+                                  onPressed: () {},
+                                  child: Text('Liste des élèves'),
+                                  style: ButtonStyle(),
+                                )),
+                            SizedBox(
+                              height: 5,
+                            ),
+                          ],
+                        ),
+                      ),
                       SizedBox(
                         height: 5,
-                      ),
+                      )
                     ],
                   ))),
         ],
