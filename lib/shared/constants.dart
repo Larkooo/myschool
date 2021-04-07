@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:alert/alert.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'package:myschool/pages/homeworks.dart';
 import 'package:myschool/shared/cachemanager.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:dart_date/dart_date.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 enum GroupAttribute { Alias, Image, Students }
 enum AnnounceCategory { Essay, Homework, Important, Message }
@@ -28,6 +30,13 @@ enum AuthCode {
   passwordResetCodeInvalid,
   accountDisabled
 }
+
+const String surveyURL = 'https://forms.gle/kc9eBHqVJLnDwFrS9';
+const String bugReportURL = 'https://forms.gle/1gaeqdCgbr8wbrCn6';
+
+void launchURL(String url) async => await canLaunch(url)
+    ? await launch(url)
+    : Alert(message: 'Could not launch URL').show();
 
 final Map<String, Type> pageType = {
   "announce": Announcements,

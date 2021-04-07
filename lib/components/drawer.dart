@@ -1,6 +1,7 @@
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:alert/alert.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:myschool/components/new_announce.dart';
@@ -102,7 +103,51 @@ class _DrawerCompState extends State<DrawerComp> {
                             // Basically making sure the text is "removed" before the drawer is closed
                             if (drawerExpanded &&
                                 (drawerExpanded && drawerStartedAnimation))
-                              Text("meow"),
+                              //Column(
+                              //  children: [
+                              Center(
+                                  child: Column(children: [
+                                SizedBox(
+                                    height: MediaQuery.of(context).size.height /
+                                        200),
+                                Text(widget.user.lastName +
+                                    ' ' +
+                                    widget.user.firstName),
+                                Text(widget.user.type == UserType.student
+                                    ? 'Élève'
+                                    : 'Enseignant')
+                              ]))
+                            /*StreamBuilder(
+                                stream: Connectivity().onConnectivityChanged,
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    ConnectivityResult state = snapshot.data;
+                                    if (state != ConnectivityResult.none)
+                                      return Text.rich(TextSpan(children: [
+                                        WidgetSpan(
+                                            child: Icon(state ==
+                                                    ConnectivityResult.mobile
+                                                ? Icons.network_cell
+                                                : Icons.wifi)),
+                                        TextSpan(text: 'Connecté')
+                                      ]));
+                                    return Text.rich(TextSpan(children: [
+                                      WidgetSpan(child: Icon(Icons.wifi_off)),
+                                      TextSpan(text: 'Déconnecté')
+                                    ]));
+                                  } else {
+                                    return Text.rich(TextSpan(children: [
+                                      WidgetSpan(child: Icon(Icons.wifi_off)),
+                                      TextSpan(text: 'bop')
+                                    ]));
+                                  }
+                                },
+                              )*/
+                            //if (widget.user.type == UserType.student)
+                            //  Text('Groupe : ' +
+                            //      widget.user.school.group.uid),
+                            //],
+                            //),
                           ]))))),
           if (widget.user.type == UserType.teacher)
             ListTile(
@@ -129,6 +174,11 @@ class _DrawerCompState extends State<DrawerComp> {
               },
             ),
           if (widget.user.type == UserType.teacher) Divider(),
+          ListTile(
+              leading: Text('Signaler un bug'),
+              trailing: Icon(Icons.bug_report),
+              onTap: () => launchURL(bugReportURL)),
+          Divider(),
           ListTile(
             leading: Text('Paramètres'),
             trailing: Icon(Icons.settings),
