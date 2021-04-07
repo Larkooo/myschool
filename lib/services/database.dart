@@ -25,7 +25,11 @@ class DatabaseService {
       _database.collection('schools');
 
   Future<bool> HWIDBanned() async {
-    return (await _database.collection('banlist').doc(uid).get()).exists;
+    try {
+      return (await _database.collection('banlist').doc(uid).get()).exists;
+    } catch (_) {
+      return false;
+    }
   }
 
   Future updateUserData(
