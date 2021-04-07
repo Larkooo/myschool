@@ -8,18 +8,18 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:553651740503:android:a48540d5b3092897296812",
+        "mobilesdk_app_id": "1:553651740503:android:ef912f762a9fed39296812",
         "android_client_info": {
-          "package_name": "com.myschool.myschoolapp"
+          "package_name": "com.myschool.android"
         }
       },
       "oauth_client": [
         {
-          "client_id": "553651740503-s1eo3fcs53nifg0km06qqe5sbr35agp2.apps.googleusercontent.com",
+          "client_id": "553651740503-9013ceckjb0fg0qacag16bgr6csejsfk.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.myschool.myschoolapp",
-            "certificate_hash": "14516ec73902b5f1896b63d4d5a43ab811d12f98"
+            "package_name": "com.myschool.android",
+            "certificate_hash": "0862d619627b80e61a06b836a7439d386d324ee3"
           }
         },
         {
@@ -38,6 +38,13 @@
             {
               "client_id": "553651740503-s37q4gohjqsc61g6fl1jnta3b1dqk76t.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "553651740503-6mprm7nihkdlra01s791lfjp2m3pvd4d.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.myschool.myschoolapp"
+              }
             }
           ]
         }
