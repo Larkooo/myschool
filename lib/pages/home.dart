@@ -233,6 +233,7 @@ class _HomeState extends State<Home> {
             if (snapshot.hasData) {
               School school = snapshot.data;
               if (school.announcements.length > 0)
+              {
                 return Column(
                   children: [
                     SizedBox(
@@ -248,6 +249,7 @@ class _HomeState extends State<Home> {
                             Announce(announcement: school.announcements.last)),
                   ],
                 );
+              }
             } else {
               return CircularProgressIndicator.adaptive();
             }
