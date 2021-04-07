@@ -5,7 +5,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:myschool/components/new_announce.dart';
 import 'package:myschool/components/new_homework.dart';
+import 'package:myschool/components/student_list.dart';
 import 'package:myschool/models/user.dart';
+import 'package:myschool/services/database.dart';
 import 'package:myschool/shared/cachemanager.dart';
 import 'package:myschool/shared/constants.dart';
 import 'package:myschool/shared/local_storage.dart';
@@ -177,6 +179,8 @@ class _GroupPageState extends State<GroupPage> {
                   width: MediaQuery.of(context).size.width / 1.1,
                   child: Card(
                       color: Colors.grey[800],
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10))),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -192,7 +196,7 @@ class _GroupPageState extends State<GroupPage> {
                               width: MediaQuery.of(context).size.width / 1.2,
                               decoration: BoxDecoration(
                                   color: Colors.grey[900],
-                                  borderRadius: BorderRadius.circular(5)),
+                                  borderRadius: BorderRadius.circular(10)),
                               margin: EdgeInsets.all(10),
                               child: Column(children: [
                                 SizedBox(
@@ -235,6 +239,8 @@ class _GroupPageState extends State<GroupPage> {
                   width: MediaQuery.of(context).size.width / 1.1,
                   child: Card(
                       color: Colors.grey[800],
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10))),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -250,7 +256,7 @@ class _GroupPageState extends State<GroupPage> {
                             width: MediaQuery.of(context).size.width / 1.2,
                             decoration: BoxDecoration(
                                 color: Colors.grey[900],
-                                borderRadius: BorderRadius.circular(5)),
+                                borderRadius: BorderRadius.circular(10)),
                             margin: EdgeInsets.all(10),
                             child: Column(
                               children: [
@@ -293,10 +299,13 @@ class _GroupPageState extends State<GroupPage> {
                                               builder: (context, snapshot) {
                                                 if (snapshot.hasData) {
                                                   CacheManagerMemory.groupData[
-                                                              widget.groupUid][
-                                                          GroupAttribute
-                                                              .Students] =
-                                                      snapshot.data.docs;
+                                                          widget.groupUid][
+                                                      GroupAttribute
+                                                          .Students] = (snapshot
+                                                      .data.docs
+                                                      .map((doc) => DatabaseService()
+                                                          .userDataFromSnapshot(
+                                                              doc))).toList();
 
                                                   return Text(
                                                     'Élèves : ' +
@@ -315,7 +324,16 @@ class _GroupPageState extends State<GroupPage> {
                                     width:
                                         MediaQuery.of(context).size.width / 1.5,
                                     child: ElevatedButton(
-                                      onPressed: () {},
+                                      onPressed: () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => StudentList(
+                                                    students: CacheManagerMemory
+                                                                .groupData[
+                                                            widget.groupUid][
+                                                        GroupAttribute
+                                                            .Students],
+                                                  ))),
                                       child: Text('Liste des élèves'),
                                       style: ButtonStyle(),
                                     )),
