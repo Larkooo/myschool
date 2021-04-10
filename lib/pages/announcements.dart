@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:async/async.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -48,20 +50,23 @@ class _AnnouncementsState extends State<Announcements> {
       });
     }
     return Scaffold(
-      appBar: AppBar(
-        title: CupertinoSlidingSegmentedControl(
-            groupValue: scope,
-            children: {
-              Scope.school: Text('École'),
-              Scope.none: Text('Tous'),
-              Scope.group: Text('Groupe')
-            },
-            onValueChanged: (v) {
-              setState(() {
-                scope = v;
-              });
-            }),
-      ),
+      // only for ios for now
+      appBar: Platform.isIOS
+          ? AppBar(
+              title: CupertinoSlidingSegmentedControl(
+                  groupValue: scope,
+                  children: {
+                    Scope.school: Text('École'),
+                    Scope.none: Text('Tous'),
+                    Scope.group: Text('Groupe')
+                  },
+                  onValueChanged: (v) {
+                    setState(() {
+                      scope = v;
+                    });
+                  }),
+            )
+          : null,
       body: StreamBuilder(
         /* 
                   Merging the streams, the group(s) announcements and school ones
