@@ -4,6 +4,7 @@ import 'package:alert/alert.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -49,7 +50,16 @@ class MyApp extends StatelessWidget {
       value: FirebaseAuthService.user,
       child: MaterialApp(
         title: 'MonEcole',
-        theme: ThemeData.dark(),
+        darkTheme: ThemeData.dark().copyWith(
+          cupertinoOverrideTheme: const CupertinoThemeData(
+            textTheme: CupertinoTextThemeData(), // This is required
+          ),
+        ),
+        theme: ThemeData.dark().copyWith(
+          cupertinoOverrideTheme: const CupertinoThemeData(
+            textTheme: CupertinoTextThemeData(), // This is required
+          ),
+        ),
         home: Welcome(),
       ),
     );

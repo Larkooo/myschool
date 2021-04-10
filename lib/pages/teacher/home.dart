@@ -46,6 +46,7 @@ class _HomeTeacherState extends State<HomeTeacher> {
                   ],
                 );
               }
+              return Container();
             } else {
               return CircularProgressIndicator.adaptive();
             }
