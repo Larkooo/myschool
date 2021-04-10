@@ -50,6 +50,7 @@ class _CalendarState extends State<Calendar> {
     // Since home page uses the same variable as calendar to know if we're at home, we need to
     // reset it to today for home page to get the correct info
     CacheManagerMemory.dayIsHome = _todayAtHome;
+    CacheManagerMemory.dayCourses.clear();
     super.dispose();
   }
 
