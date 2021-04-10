@@ -115,9 +115,17 @@ class _CalendarState extends State<Calendar> {
                   if (Mozaik.payload == null && timetableEncoded == null)
                     return;
 
+                  showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context) =>
+                          Center(child: CircularProgressIndicator()));
+
                   dynamic timetable = timetableEncoded == null
                       ? await MozaikService.getMozaikTimetable()
                       : jsonDecode(timetableEncoded);
+
+                  Navigator.pop(context);
 
                   prefs.setString('mozaikTimetable', jsonEncode(timetable));
                   CacheManagerMemory.rawMozaikTimetable = timetable;
@@ -232,10 +240,6 @@ class _CalendarState extends State<Calendar> {
                     });*/
           },
           calendarController: _calendarController,
-          availableCalendarFormats: {
-            CalendarFormat.week: 'Mois',
-            CalendarFormat.month: 'Semaine'
-          },
         ),
         /* 
                   lazy to describe everything here, this is just the frontend part of the courses list
