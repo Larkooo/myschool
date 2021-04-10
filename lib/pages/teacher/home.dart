@@ -51,10 +51,6 @@ class _HomeTeacherState extends State<HomeTeacher> {
               return CircularProgressIndicator.adaptive();
             }
           }),
-      TextButton(
-          onPressed: () => Navigator.push(
-              context, MaterialPageRoute(builder: (context) => MozaikLogin())),
-          child: Text('debug'))
     ]));
   }
 }
