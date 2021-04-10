@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
@@ -41,10 +42,45 @@ class _MozaikLoginState extends State<MozaikLogin> {
           initialOptions: InAppWebViewGroupOptions(
             crossPlatform: InAppWebViewOptions(javaScriptEnabled: true),
           ),
+          onWebViewCreated: Platform.isIOS
+              // ios workaround
+              ? (controller) async {
+                  Future.doWhile(() async {
+                    await Future.delayed(Duration(seconds: 1));
+                    print('bop');
+                    try {
+                      Map<String, dynamic> tokens = await controller
+                          .webStorage.localStorage
+                          .getItem(key: 'jeton_mozaikportail_activedirectory');
+
+                      Mozaik.idToken = tokens['id_token'];
+                      Mozaik.payload = Jwt.parseJwt(Mozaik.idToken);
+
+                      SharedPreferences prefs =
+                          await SharedPreferences.getInstance();
+                      prefs.setString(
+                          'mozaikUserData', jsonEncode(Mozaik.payload));
+                      // user logged in at least one time
+                      prefs.setBool('mozaikLoyal', true);
+                      if (Mozaik.idToken.isNotEmpty) Navigator.pop(context);
+
+                      return Mozaik.idToken.isEmpty;
+                    } catch (err) {
+                      if (err is MissingPluginException) return false;
+                      return true;
+                    }
+                  });
+                }
+              : null,
           onLoadStart: (controller, url) async {
             String urlString = url.toString();
-            if (urlString.contains('#id_token')) {
+            if (urlString.contains('#id_token') && Platform.isAndroid) {
               url = Uri.parse(urlString.replaceFirst('#', '?'));
+
+              if (url.queryParameters['id_token'].length < 2) {
+                Mozaik.idToken = null;
+                return null;
+              }
 
               Mozaik.idToken = url.queryParameters['id_token'];
               Mozaik.payload = Jwt.parseJwt(Mozaik.idToken);
