@@ -150,7 +150,7 @@ class HomeworkComp extends StatelessWidget {
                       }))
             ]),
           Text(
-            'À remettre le ' + homework.due.format('d MMMM H:m', 'fr_FR'),
+            'À remettre le ' + homework.due.format('d MMMM HH:mm', 'fr_FR'),
             style: TextStyle(
                 fontSize: 13,
                 color: homework.due.compareTo(DateTime.now()) < 0
