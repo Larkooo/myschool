@@ -5,15 +5,20 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:intl/intl.dart';
+import 'package:myschool/models/mozaik.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/services/database.dart';
 import 'package:myschool/services/firebase_storage.dart';
+import 'package:myschool/services/mozaik_service.dart';
 import 'package:myschool/shared/constants.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:slide_popup_dialog/slide_popup_dialog.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:myschool/shared/cachemanager.dart';
+
+import '../components/mozaik_login.dart';
 
 class Calendar extends StatefulWidget {
   final UserData user;
@@ -50,8 +55,9 @@ class _CalendarState extends State<Calendar> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      /* 
+    return Column(
+      children: [
+        /* 
                   
                   
               if (CacheManagerMemory.remoteSchoolDays.isNotEmpty)
@@ -65,29 +71,44 @@ class _CalendarState extends State<Calendar> {
                       child: Text(dayIsHome()),
                     )),
                     */
-      TableCalendar(
-        initialSelectedDay: _selectedDay,
-        startDay: _startDay,
-        endDay: _endDay,
-        onCalendarCreated: (first, last, format) async {
-          /* 
+        TableCalendar(
+          initialSelectedDay: _selectedDay,
+          startDay: _startDay,
+          endDay: _endDay,
+          onCalendarCreated: (first, last, format) async {
+            /* 
                     If CacheManagerMemory.courses has a length of 0 => get the download URL of our timetable
                     download it,
                     cache it,
                     and decode it as JSON to assign it to our static variable
 
                   */
-          if (CacheManagerMemory.courses.isEmpty) {
-            final schoolTimetableURL = await StorageService(
-                    ref:
-                        "/schools/${widget.user.school.uid}/groups/${widget.user.school.group.uid}/timetable.json")
-                .getDownloadURL();
+            if (CacheManagerMemory.courses.isEmpty) {
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              String timetableEncoded = prefs.getString('mozaikTimetable');
+              bool mozaikLoyal = prefs.getBool('mozaikLoyal') ?? false;
 
-            if (schoolTimetableURL != null) {
-              final schoolTimetableFile =
-                  await DefaultCacheManager().getSingleFile(schoolTimetableURL);
+              while (Mozaik.payload == null && timetableEncoded == null) {
+                await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Opacity(
+                              opacity: mozaikLoyal ? 0 : 1,
+                              child: MozaikLogin(),
+                            )));
+              }
+
+              dynamic timetable = timetableEncoded == null
+                  ? await MozaikService.getMozaikTimetable()
+                  : jsonDecode(timetableEncoded);
+
+              prefs.setString('mozaikTimetable', jsonEncode(timetable));
+              CacheManagerMemory.rawMozaikTimetable = timetable;
+
               CacheManagerMemory.courses = Map.fromIterable(
-                  jsonDecode(await schoolTimetableFile.readAsString()),
+                  timetableEncoded == null
+                      ? await MozaikService.getMozaikTimetable()
+                      : jsonDecode(timetableEncoded),
                   key: (e) =>
                       DateTime.parse(e['dateDebut'] + 'T' + e['heureDebut']),
                   value: (e) => {
@@ -97,15 +118,15 @@ class _CalendarState extends State<Calendar> {
                         "heureFin": e['heureFin'],
                         "codeActivite": e['codeActivite']
                       });
+
               // Setting the startday and the endday of the calendar (so the startday/endday of school in this case)
               setState(() {
                 _startDay = CacheManagerMemory.courses.entries.first.key;
                 _endDay = CacheManagerMemory.courses.entries.last.key;
               });
             }
-          }
 
-          /*
+            /*
                   /* 
                     Basically, its the same thing than the timetable, repeating every steps
                   */
@@ -123,22 +144,22 @@ class _CalendarState extends State<Calendar> {
                     }
                   } */
 
-          // Using future.delayed to resolve the setState error happening on build
-          Future.delayed(Duration.zero, () {
-            /* 
+            // Using future.delayed to resolve the setState error happening on build
+            Future.delayed(Duration.zero, () {
+              /* 
                     Checking the date of each of our events to then assign them to CacheManagerMemory.dayCourses
                     CacheManagerMemory.courses has to be not empty.
                   */
-            if (CacheManagerMemory.courses.isNotEmpty)
-              CacheManagerMemory.courses.forEach((day, data) {
-                if (day.isSameDay(_selectedDay)) {
-                  setState(() {
-                    CacheManagerMemory.dayCourses[day] = data;
-                  });
-                }
-              });
+              if (CacheManagerMemory.courses.isNotEmpty)
+                CacheManagerMemory.courses.forEach((day, data) {
+                  if (day.isSameDay(_selectedDay)) {
+                    setState(() {
+                      CacheManagerMemory.dayCourses[day] = data;
+                    });
+                  }
+                });
 
-            /*
+              /*
                     /* 
                       Same thing. We're just checking if we're home or at school here.
                   */
@@ -158,24 +179,24 @@ class _CalendarState extends State<Calendar> {
                         }
                       });
                       */
-          });
-        },
-        /* 
+            });
+          },
+          /* 
                   If a day is selected, redo all the calculations that have been done at the creation of the page ^
                   */
-        onDaySelected: (day, events, holidays) {
-          setState(() {
-            _selectedDay = day;
-            CacheManagerMemory.dayCourses.clear();
-          });
-          CacheManagerMemory.courses.forEach((day, desc) {
-            if (day.isSameDay(_selectedDay)) {
-              setState(() {
-                CacheManagerMemory.dayCourses[day] = desc;
-              });
-            }
-          });
-          /*
+          onDaySelected: (day, events, holidays) {
+            setState(() {
+              _selectedDay = day;
+              CacheManagerMemory.dayCourses.clear();
+            });
+            CacheManagerMemory.courses.forEach((day, desc) {
+              if (day.isSameDay(_selectedDay)) {
+                setState(() {
+                  CacheManagerMemory.dayCourses[day] = desc;
+                });
+              }
+            });
+            /*
                   if (CacheManagerMemory.remoteSchoolDays.isNotEmpty)
                     CacheManagerMemory.remoteSchoolDays.forEach((element) {
                       DateTime remoteDay = DateTime.parse(element['date']);
@@ -190,42 +211,43 @@ class _CalendarState extends State<Calendar> {
                         });
                       }
                     });*/
-        },
-        calendarController: _calendarController,
-        availableCalendarFormats: {
-          CalendarFormat.week: 'Mois',
-          CalendarFormat.month: 'Semaine'
-        },
-      ),
-      /* 
+          },
+          calendarController: _calendarController,
+          availableCalendarFormats: {
+            CalendarFormat.week: 'Mois',
+            CalendarFormat.month: 'Semaine'
+          },
+        ),
+        /* 
                   lazy to describe everything here, this is just the frontend part of the courses list
                   */
-      Expanded(
-          child: ListView(
-              children: CacheManagerMemory.dayCourses.entries
-                  .map((e) => Card(
-                        child: ListTile(
-                          onTap: () => showSlideDialog(
-                              context: context,
-                              child: coursePage(
-                                  context,
-                                  widget.user,
-                                  e.value['codeActivite'],
-                                  e.value['description'],
-                                  e.key,
-                                  e.value['intervenants'],
-                                  e.value['heureFin'],
-                                  e.value['locaux'])),
-                          title: Text(e.value['description'] +
-                              " (${e.value['locaux'][0]})"),
-                          subtitle: Text(e.value['intervenants'][0]['nom'] +
-                              " " +
-                              e.value['intervenants'][0]['prenom'] +
-                              " - " +
-                              DateFormat.Hm().format(e.key)),
-                        ),
-                      ))
-                  .toList()))
-    ]);
+        Expanded(
+            child: ListView(
+                children: CacheManagerMemory.dayCourses.entries
+                    .map((e) => Card(
+                          child: ListTile(
+                            onTap: () => showSlideDialog(
+                                context: context,
+                                child: coursePage(
+                                    context,
+                                    widget.user,
+                                    e.value['codeActivite'],
+                                    e.value['description'],
+                                    e.key,
+                                    e.value['intervenants'],
+                                    e.value['heureFin'],
+                                    e.value['locaux'])),
+                            title: Text(e.value['description'] +
+                                " (${e.value['locaux'][0]})"),
+                            subtitle: Text(e.value['intervenants'][0]['nom'] +
+                                " " +
+                                e.value['intervenants'][0]['prenom'] +
+                                " - " +
+                                DateFormat.Hm().format(e.key)),
+                          ),
+                        ))
+                    .toList()))
+      ],
+    );
   }
 }

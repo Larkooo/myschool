@@ -1,5 +1,4 @@
 import 'package:adaptive_dialog/adaptive_dialog.dart';
-import 'package:alert/alert.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -152,7 +151,7 @@ class _DrawerCompState extends State<DrawerComp> {
           if (widget.user.type == UserType.teacher)
             ListTile(
               leading: Text('Publier une annonce'),
-              trailing: Icon(Icons.announcement_outlined),
+              trailing: Icon(Icons.announcement),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
@@ -166,7 +165,7 @@ class _DrawerCompState extends State<DrawerComp> {
           if (widget.user.type == UserType.teacher)
             ListTile(
               leading: Text('Envoyer un devoir'),
-              trailing: Icon(Icons.calculate_outlined),
+              trailing: Icon(Icons.calculate),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(context,
@@ -174,6 +173,10 @@ class _DrawerCompState extends State<DrawerComp> {
               },
             ),
           if (widget.user.type == UserType.teacher) Divider(),
+          ListTile(
+              leading: Text('Donner votre avis'),
+              trailing: Icon(Icons.analytics),
+              onTap: () => launchURL(surveyURL)),
           ListTile(
               leading: Text('Signaler un bug'),
               trailing: Icon(Icons.bug_report),

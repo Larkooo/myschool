@@ -14,6 +14,7 @@ import 'package:myschool/services/firebase_storage.dart';
 import 'package:myschool/shared/constants.dart';
 import 'package:provider/provider.dart';
 import 'package:dart_date/dart_date.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:slide_popup_dialog/slide_popup_dialog.dart';
 import 'package:myschool/shared/cachemanager.dart';
 
@@ -27,6 +28,19 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   DateTime _now = DateTime.now();
+
+  SharedPreferences _prefs;
+
+  Future initializeSharedPrefs() async {
+    _prefs = await SharedPreferences.getInstance();
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    //initializeSharedPrefs();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,155 +99,94 @@ class _HomeState extends State<Home> {
       SizedBox(
         height: 10,
       ),
-      CacheManagerMemory.schoolTimetableFile == null ||
-              (DateTime.parse(CacheManagerMemory.nextCourse['dateDebut'] +
-                      "T" +
-                      CacheManagerMemory.nextCourse['heureDebut'])) <=
-                  _now
-          ? FutureBuilder(
-              future: StorageService(
-                      ref:
-                          "/schools/${widget.user.school.uid}/groups/${widget.user.school.group.uid}/timetable.json")
-                  .getDownloadURL(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return FutureBuilder(
-                    future: DefaultCacheManager().getSingleFile(snapshot.data),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        CacheManagerMemory.schoolTimetableFile = snapshot.data;
+      FutureBuilder(
+          future: SharedPreferences.getInstance(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              SharedPreferences prefs = snapshot.data;
+              if (prefs.getString('mozaikTimetable') == null)
+                return Container();
 
-                        CacheManagerMemory.courses = Map.fromIterable(
-                            jsonDecode(CacheManagerMemory.schoolTimetableFile
-                                .readAsStringSync()),
-                            key: (e) => DateTime.parse(
-                                e['dateDebut'] + 'T' + e['heureDebut']),
-                            value: (e) => {
-                                  "description": e['description'],
-                                  "locaux": e['locaux'],
-                                  "intervenants": e['intervenants'],
-                                  "heureFin": e['heureFin'],
-                                  "codeActivite": e['codeActivite']
-                                });
+              List decodedTimetable =
+                  jsonDecode(prefs.getString('mozaikTimetable'));
 
-                        CacheManagerMemory.courses.forEach((day, data) {
-                          if (day.isSameDay(_now)) {
-                            CacheManagerMemory.dayCourses[day] = data;
-                          }
-                        });
+              CacheManagerMemory.courses = Map.fromIterable(decodedTimetable,
+                  key: (e) =>
+                      DateTime.parse(e['dateDebut'] + 'T' + e['heureDebut']),
+                  value: (e) => {
+                        "description": e['description'],
+                        "locaux": e['locaux'],
+                        "intervenants": e['intervenants'],
+                        "heureFin": e['heureFin'],
+                        "codeActivite": e['codeActivite']
+                      });
 
-                        for (final e in (jsonDecode(CacheManagerMemory
-                            .schoolTimetableFile
-                            .readAsStringSync()))) {
-                          DateTime courseStart = DateTime.parse(
-                              e['dateDebut'] + "T" + e['heureDebut']);
-                          if (courseStart > _now) {
-                            CacheManagerMemory.nextCourse = e;
-                            break;
-                          }
-                        }
-
-                        return Column(
-                          children: [
-                            Text(
-                              "Prochain cours",
-                              style: TextStyle(
-                                  fontSize: 18, color: Colors.grey[400]),
-                            ),
-                            Container(
-                                width: MediaQuery.of(context).size.width / 1.3,
-                                child: Card(
-                                  child: ListTile(
-                                      onTap: () => showSlideDialog(
-                                          context: context,
-                                          child: coursePage(
-                                              context,
-                                              widget.user,
-                                              CacheManagerMemory
-                                                  .nextCourse['codeActivite'],
-                                              CacheManagerMemory
-                                                  .nextCourse['description'],
-                                              DateTime.parse(CacheManagerMemory
-                                                      .nextCourse['dateDebut'] +
-                                                  "T" +
-                                                  CacheManagerMemory.nextCourse[
-                                                      'heureDebut']),
-                                              CacheManagerMemory
-                                                  .nextCourse['intervenants'],
-                                              CacheManagerMemory
-                                                  .nextCourse['heureFin'],
-                                              CacheManagerMemory
-                                                  .nextCourse['locaux'])),
-                                      title: Text(CacheManagerMemory.nextCourse['description'] +
-                                          " (${CacheManagerMemory.nextCourse['locaux'][0]})"),
-                                      subtitle: Text(CacheManagerMemory
-                                                  .nextCourse['intervenants'][0]
-                                              ['nom'] +
-                                          " " +
-                                          CacheManagerMemory.nextCourse['intervenants']
-                                              [0]['prenom'] +
-                                          " - " +
-                                          timeCountdownFormat((DateTime.parse(CacheManagerMemory.nextCourse['dateDebut'] + "T" + CacheManagerMemory.nextCourse['heureDebut'])), _now))),
-                                )),
-                          ],
-                        );
-                      } else {
-                        return Center(
-                            child: CircularProgressIndicator.adaptive());
-                      }
-                    },
-                  );
-                } else {
-                  return Center(child: CircularProgressIndicator.adaptive());
+              CacheManagerMemory.courses.forEach((day, data) {
+                if (day.isSameDay(_now)) {
+                  CacheManagerMemory.dayCourses[day] = data;
                 }
-              },
-            )
-          : Column(
-              children: [
-                Text(
-                  "Prochain cours",
-                  style: TextStyle(fontSize: 18, color: Colors.grey[400]),
-                ),
-                Container(
-                    width: MediaQuery.of(context).size.width / 1.3,
-                    child: Card(
-                      child: ListTile(
-                          onTap: () => showSlideDialog(
-                              context: context,
-                              child: coursePage(
-                                  context,
-                                  widget.user,
-                                  CacheManagerMemory.nextCourse['codeActivite'],
-                                  CacheManagerMemory.nextCourse['description'],
-                                  DateTime.parse(CacheManagerMemory
-                                          .nextCourse['dateDebut'] +
-                                      "T" +
-                                      CacheManagerMemory
-                                          .nextCourse['heureDebut']),
-                                  CacheManagerMemory.nextCourse['intervenants'],
-                                  CacheManagerMemory.nextCourse['heureFin'],
-                                  CacheManagerMemory.nextCourse['locaux'])),
-                          title: Text(CacheManagerMemory.nextCourse['description'] +
-                              " (${CacheManagerMemory.nextCourse['locaux'][0]})"),
-                          subtitle: Text(CacheManagerMemory
-                                  .nextCourse['intervenants'][0]['nom'] +
-                              " " +
-                              CacheManagerMemory.nextCourse['intervenants'][0]
-                                  ['prenom'] +
-                              " - " +
-                              timeCountdownFormat(
-                                  (DateTime.parse(CacheManagerMemory.nextCourse['dateDebut'] + "T" + CacheManagerMemory.nextCourse['heureDebut'])),
-                                  _now))),
-                    )),
-              ],
-            ),
+              });
+
+              for (final e in decodedTimetable) {
+                DateTime courseStart =
+                    DateTime.parse(e['dateDebut'] + "T" + e['heureDebut']);
+                if (courseStart > _now) {
+                  CacheManagerMemory.nextCourse = e;
+                  break;
+                }
+              }
+
+              return Column(
+                children: [
+                  Text(
+                    "Prochain cours",
+                    style: TextStyle(fontSize: 18, color: Colors.grey[400]),
+                  ),
+                  Container(
+                      width: MediaQuery.of(context).size.width / 1.3,
+                      child: Card(
+                        child: ListTile(
+                            onTap: () => showSlideDialog(
+                                context: context,
+                                child: coursePage(
+                                    context,
+                                    widget.user,
+                                    CacheManagerMemory
+                                        .nextCourse['codeActivite'],
+                                    CacheManagerMemory
+                                        .nextCourse['description'],
+                                    DateTime.parse(CacheManagerMemory
+                                            .nextCourse['dateDebut'] +
+                                        "T" +
+                                        CacheManagerMemory
+                                            .nextCourse['heureDebut']),
+                                    CacheManagerMemory
+                                        .nextCourse['intervenants'],
+                                    CacheManagerMemory.nextCourse['heureFin'],
+                                    CacheManagerMemory.nextCourse['locaux'])),
+                            title: Text(CacheManagerMemory.nextCourse['description'] +
+                                " (${CacheManagerMemory.nextCourse['locaux'][0]})"),
+                            subtitle: Text(CacheManagerMemory
+                                    .nextCourse['intervenants'][0]['nom'] +
+                                " " +
+                                CacheManagerMemory.nextCourse['intervenants'][0]
+                                    ['prenom'] +
+                                " - " +
+                                timeCountdownFormat(
+                                    (DateTime.parse(CacheManagerMemory.nextCourse['dateDebut'] + "T" + CacheManagerMemory.nextCourse['heureDebut'])), _now))),
+                      )),
+                ],
+              );
+            } else {
+              return Container();
+            }
+          }),
       StreamBuilder(
           stream: DatabaseService(uid: widget.user.school.uid).school,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               School school = snapshot.data;
-              if (school.announcements.length > 0)
-              {
+              if (school.announcements.length > 0) {
                 return Column(
                   children: [
                     SizedBox(

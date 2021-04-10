@@ -4,6 +4,8 @@ import 'package:myschool/models/school.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/services/database.dart';
 
+import '../../components/mozaik_login.dart';
+
 class HomeTeacher extends StatefulWidget {
   final UserData user;
   HomeTeacher({this.user});
@@ -47,7 +49,11 @@ class _HomeTeacherState extends State<HomeTeacher> {
             } else {
               return CircularProgressIndicator.adaptive();
             }
-          })
+          }),
+      TextButton(
+          onPressed: () => Navigator.push(
+              context, MaterialPageRoute(builder: (context) => MozaikLogin())),
+          child: Text('debug'))
     ]));
   }
 }

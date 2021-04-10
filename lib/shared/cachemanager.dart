@@ -7,10 +7,10 @@ import 'constants.dart';
 
 class CacheManagerMemory {
   static bool dayIsHome;
-  static Map<String, dynamic> nextCourse;
+  static Map<String, dynamic> nextCourse = {};
   static Map<DateTime, dynamic> dayCourses = {};
   static Map<DateTime, dynamic> courses = {};
-  static File schoolTimetableFile;
+  static List rawMozaikTimetable = [];
   static List remoteSchoolDays = [];
   static Map<String, Map<GroupAttribute, dynamic>> groupData = {};
   static Map<String, UserData> cachedUsers = {};
