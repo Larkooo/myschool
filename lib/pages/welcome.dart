@@ -61,8 +61,10 @@ class _MessageHandlerState extends State<MessageHandler> {
     super.initState();
     if (Platform.isIOS) {
       _messaging.requestPermission().then((value) async {
-        if (value.authorizationStatus == AuthorizationStatus.authorized)
+        if (value.authorizationStatus == AuthorizationStatus.authorized ||
+            value.authorizationStatus == AuthorizationStatus.provisional) {
           _saveDeviceToken();
+        }
       });
     } else {
       _saveDeviceToken();
