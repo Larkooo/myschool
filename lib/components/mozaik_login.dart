@@ -39,8 +39,7 @@ class _MozaikLoginState extends State<MozaikLogin> {
         body: InAppWebView(
           initialUrlRequest: URLRequest(url: Uri.parse(_loginUrl)),
           initialOptions: InAppWebViewGroupOptions(
-            crossPlatform: InAppWebViewOptions(
-                javaScriptEnabled: true, useShouldInterceptFetchRequest: true),
+            crossPlatform: InAppWebViewOptions(javaScriptEnabled: true),
           ),
           onLoadStart: (controller, url) async {
             String urlString = url.toString();

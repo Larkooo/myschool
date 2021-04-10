@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:intl/intl.dart';
 import 'package:myschool/models/mozaik.dart';
@@ -85,45 +87,61 @@ class _CalendarState extends State<Calendar> {
 
                   */
             if (CacheManagerMemory.courses.isEmpty) {
-              SharedPreferences prefs = await SharedPreferences.getInstance();
-              String timetableEncoded = prefs.getString('mozaikTimetable');
-              bool mozaikLoyal = prefs.getBool('mozaikLoyal') ?? false;
+              SchedulerBinding.instance.addPostFrameCallback((_) async {
+                OkCancelResult result = await showConfirmationDialog(
+                    context: context,
+                    title: 'Calendrier',
+                    message:
+                        'Pour importer tous vos cours sur le calendrier MonÉcole, vous devez vous connecter à votre compte Mozaik',
+                    cancelLabel: 'Annuler',
+                    actions: [
+                      AlertDialogAction(
+                          key: OkCancelResult.ok, label: 'Continuer'),
+                    ]);
+                if (result == OkCancelResult.ok) {
+                  SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  String timetableEncoded = prefs.getString('mozaikTimetable');
+                  bool mozaikLoyal = prefs.getBool('mozaikLoyal') ?? false;
 
-              while (Mozaik.payload == null && timetableEncoded == null) {
-                await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Opacity(
-                              opacity: mozaikLoyal ? 0 : 1,
-                              child: MozaikLogin(),
-                            )));
-              }
+                  await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Opacity(
+                                opacity: mozaikLoyal ? 0 : 1,
+                                child: MozaikLogin(),
+                              )));
 
-              dynamic timetable = timetableEncoded == null
-                  ? await MozaikService.getMozaikTimetable()
-                  : jsonDecode(timetableEncoded);
+                  if (Mozaik.payload == null && timetableEncoded == null)
+                    return;
 
-              prefs.setString('mozaikTimetable', jsonEncode(timetable));
-              CacheManagerMemory.rawMozaikTimetable = timetable;
-
-              CacheManagerMemory.courses = Map.fromIterable(
-                  timetableEncoded == null
+                  dynamic timetable = timetableEncoded == null
                       ? await MozaikService.getMozaikTimetable()
-                      : jsonDecode(timetableEncoded),
-                  key: (e) =>
-                      DateTime.parse(e['dateDebut'] + 'T' + e['heureDebut']),
-                  value: (e) => {
-                        "description": e['description'],
-                        "locaux": e['locaux'],
-                        "intervenants": e['intervenants'],
-                        "heureFin": e['heureFin'],
-                        "codeActivite": e['codeActivite']
-                      });
+                      : jsonDecode(timetableEncoded);
 
-              // Setting the startday and the endday of the calendar (so the startday/endday of school in this case)
-              setState(() {
-                _startDay = CacheManagerMemory.courses.entries.first.key;
-                _endDay = CacheManagerMemory.courses.entries.last.key;
+                  prefs.setString('mozaikTimetable', jsonEncode(timetable));
+                  CacheManagerMemory.rawMozaikTimetable = timetable;
+
+                  CacheManagerMemory.courses = Map.fromIterable(
+                      timetableEncoded == null
+                          ? await MozaikService.getMozaikTimetable()
+                          : jsonDecode(timetableEncoded),
+                      key: (e) => DateTime.parse(
+                          e['dateDebut'] + 'T' + e['heureDebut']),
+                      value: (e) => {
+                            "description": e['description'],
+                            "locaux": e['locaux'],
+                            "intervenants": e['intervenants'],
+                            "heureFin": e['heureFin'],
+                            "codeActivite": e['codeActivite']
+                          });
+
+                  // Setting the startday and the endday of the calendar (so the startday/endday of school in this case)
+                  setState(() {
+                    _startDay = CacheManagerMemory.courses.entries.first.key;
+                    _endDay = CacheManagerMemory.courses.entries.last.key;
+                  });
+                }
               });
             }
 

@@ -203,6 +203,7 @@ class _HomeState extends State<Home> {
                   ],
                 );
               }
+              return Container();
             } else {
               return CircularProgressIndicator.adaptive();
             }
