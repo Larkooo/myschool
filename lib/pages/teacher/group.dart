@@ -274,14 +274,14 @@ class _GroupPageState extends State<GroupPage> {
                                       ),
                                       CacheManagerMemory.groupData[
                                                       widget.groupUid]
-                                                  [GroupAttribute.Students] !=
+                                                  [GroupAttribute.students] !=
                                               null
                                           ? Text(
                                               'Élèves : ' +
                                                   CacheManagerMemory
                                                       .groupData[widget.groupUid]
                                                           [GroupAttribute
-                                                              .Students]
+                                                              .students]
                                                       .length
                                                       .toString(),
                                               style: TextStyle(fontSize: 15))
@@ -301,7 +301,7 @@ class _GroupPageState extends State<GroupPage> {
                                                   CacheManagerMemory.groupData[
                                                           widget.groupUid][
                                                       GroupAttribute
-                                                          .Students] = (snapshot
+                                                          .students] = (snapshot
                                                       .data.docs
                                                       .map((doc) => DatabaseService()
                                                           .userDataFromSnapshot(
@@ -332,7 +332,7 @@ class _GroupPageState extends State<GroupPage> {
                                                                 .groupData[
                                                             widget.groupUid][
                                                         GroupAttribute
-                                                            .Students],
+                                                            .students],
                                                   ))),
                                       child: Text('Liste des élèves'),
                                       style: ButtonStyle(),

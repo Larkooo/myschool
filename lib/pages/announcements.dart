@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:async/async.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:intl/intl.dart';
@@ -27,23 +30,43 @@ class Announcements extends StatefulWidget {
 }
 
 class _AnnouncementsState extends State<Announcements> {
+  Scope scope = Scope.none;
+
   @override
   Widget build(BuildContext context) {
     // grouping different streams into a list to then merge them.
     // to get school and group(s) announcements
-    List<Stream> streams = [
-      DatabaseService(uid: widget.user.school.uid).school
-    ];
+    List<Stream> streams = [];
+    if (scope == Scope.school || scope == Scope.none)
+      streams.add(DatabaseService(uid: widget.user.school.uid).school);
     if (widget.user.type == UserType.student) {
-      streams.add(DatabaseService(uid: widget.user.school.uid)
-          .group(widget.user.school.group.uid));
-    } else {
+      if (scope == Scope.group || scope == Scope.none)
+        streams.add(DatabaseService(uid: widget.user.school.uid)
+            .group(widget.user.school.group.uid));
+    } else if (scope == Scope.group || scope == Scope.none) {
       widget.user.groups.forEach((group) {
         streams.add(DatabaseService(uid: widget.user.school.uid)
             .group(group.toString()));
       });
     }
     return Scaffold(
+      // only for ios for now
+      appBar: Platform.isIOS
+          ? AppBar(
+              title: CupertinoSlidingSegmentedControl(
+                  groupValue: scope,
+                  children: {
+                    Scope.school: Text('École'),
+                    Scope.none: Text('Tous'),
+                    Scope.group: Text('Groupe')
+                  },
+                  onValueChanged: (v) {
+                    setState(() {
+                      scope = v;
+                    });
+                  }),
+            )
+          : null,
       body: StreamBuilder(
         /* 
                   Merging the streams, the group(s) announcements and school ones
