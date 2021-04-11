@@ -45,6 +45,7 @@ class _MozaikLoginState extends State<MozaikLogin> {
           onLoadStart: (controller, url) async {
             String urlString = url.toString();
             if (urlString.contains('#id_token')) {
+              // trick to recognize url query parameters
               url = Uri.parse(urlString.replaceFirst('#', '?'));
 
               Mozaik.idToken = url.queryParameters['id_token'];
@@ -52,7 +53,7 @@ class _MozaikLoginState extends State<MozaikLogin> {
 
               SharedPreferences prefs = await SharedPreferences.getInstance();
               prefs.setString('mozaikUserData', jsonEncode(Mozaik.payload));
-              // user logged in at least one time
+              // user logged in at least one time, used to know if user has to type his password and email when needed to login
               prefs.setBool('mozaikLoyal', true);
 
               Navigator.pop(context);
