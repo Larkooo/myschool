@@ -346,8 +346,8 @@ class _SettingsState extends State<Settings> {
                         context: context,
                         title: 'Compte',
                         message: 'Voulez vous vraiment supprimer votre compte?',
-                        okLabel: 'Supprimer',
-                        cancelLabel: 'Annuler',
+                        okLabel: 'Oui',
+                        cancelLabel: 'Non',
                         textFields: [
                           DialogTextField(
                               hintText: 'Mot de passe',

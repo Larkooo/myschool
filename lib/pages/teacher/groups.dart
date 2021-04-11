@@ -49,9 +49,9 @@ class Groups extends StatelessWidget {
                       .map((e) {
                     Widget groupCard() {
                       String groupAlias = CacheManagerMemory
-                          .groupData[e.toString()][GroupAttribute.alias];
+                          .groupData[e.toString()][GroupAttribute.Alias];
                       File groupImage = CacheManagerMemory
-                          .groupData[e.toString()][GroupAttribute.image];
+                          .groupData[e.toString()][GroupAttribute.Image];
                       return Material(
                         borderRadius: BorderRadius.circular(5),
                         color: Colors.grey[800],
@@ -113,8 +113,8 @@ class Groups extends StatelessWidget {
                             String groupAlias = snapshot.data[0];
                             File groupImage = snapshot.data[1];
                             CacheManagerMemory.groupData[e.toString()] = {
-                              GroupAttribute.alias: groupAlias,
-                              GroupAttribute.image: groupImage
+                              GroupAttribute.Alias: groupAlias,
+                              GroupAttribute.Image: groupImage
                             };
                             return Material(
                               borderRadius: BorderRadius.circular(5),

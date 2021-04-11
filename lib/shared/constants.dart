@@ -14,9 +14,9 @@ import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-enum GroupAttribute { alias, image, students }
-enum AnnounceCategory { essay, homework, important, message }
-enum Scope { school, group, none }
+enum GroupAttribute { Alias, Image, Students }
+enum AnnounceCategory { Essay, Homework, Important, Message }
+enum Scope { school, group }
 enum UserType { student, teacher }
 enum CodeType { student, staff }
 enum AuthCode {
