@@ -135,8 +135,8 @@ class Announce extends StatelessWidget {
                 icon: Icon(Icons.delete, color: Colors.grey),
                 onPressed: () => showOkCancelAlertDialog(
                         context: context,
-                        okLabel: 'Oui',
-                        cancelLabel: 'Non',
+                        okLabel: 'Supprimer',
+                        cancelLabel: 'Annuler',
                         title: 'Suppression',
                         message:
                             'Voulez vous vraiment supprimer cette annonce?')
@@ -188,8 +188,8 @@ class Announce extends StatelessWidget {
                       Navigator.pop(context);
                       showOkCancelAlertDialog(
                               context: context,
-                              okLabel: 'Oui',
-                              cancelLabel: 'Non',
+                              okLabel: 'Supprimer',
+                              cancelLabel: 'Annuler',
                               title: 'Suppression',
                               message:
                                   'Voulez vous vraiment supprimer cette annonce?')

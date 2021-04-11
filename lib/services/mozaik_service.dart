@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter_user_agent/flutter_user_agent.dart';
 import 'package:myschool/models/mozaik.dart';
 import 'package:http/http.dart' as http;
 import 'package:dart_date/dart_date.dart';

@@ -13,7 +13,7 @@ class LocalStorage {
   static Future<bool> setGroupAlias(String group, String alias) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     if (await prefs.setString('group${group}Alias', alias)) {
-      CacheManagerMemory.groupData[group][GroupAttribute.Alias] = alias;
+      CacheManagerMemory.groupData[group][GroupAttribute.alias] = alias;
       return true;
     } else {
       return false;
@@ -30,7 +30,7 @@ class LocalStorage {
   static Future<bool> setGroupImage(String group, File image) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     if (await prefs.setString('group${group}Image', image.path)) {
-      CacheManagerMemory.groupData[group][GroupAttribute.Image] = image;
+      CacheManagerMemory.groupData[group][GroupAttribute.image] = image;
       return true;
     } else {
       return false;
