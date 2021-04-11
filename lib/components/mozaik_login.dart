@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:myschool/models/mozaik.dart';
 import 'package:myschool/services/mozaik_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';

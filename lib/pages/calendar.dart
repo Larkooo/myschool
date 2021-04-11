@@ -88,15 +88,14 @@ class _CalendarState extends State<Calendar> {
                   */
             if (CacheManagerMemory.courses.isEmpty) {
               SchedulerBinding.instance.addPostFrameCallback((_) async {
-                OkCancelResult result = await showConfirmationDialog(
+                OkCancelResult result = await showModalActionSheet(
                     context: context,
                     title: 'Calendrier',
                     message:
                         'Pour importer tous vos cours sur le calendrier MonÉcole, vous devez vous connecter à votre compte Mozaik',
                     cancelLabel: 'Annuler',
                     actions: [
-                      AlertDialogAction(
-                          key: OkCancelResult.ok, label: 'Continuer'),
+                      SheetAction(key: OkCancelResult.ok, label: 'Continuer'),
                     ]);
                 if (result == OkCancelResult.ok) {
                   SharedPreferences prefs =

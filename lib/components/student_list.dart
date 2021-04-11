@@ -71,7 +71,7 @@ class _StudentListState extends State<StudentList> {
                                 //            value: downloadProgress.progress),
                                 errorWidget: (context, url, error) =>
                                     Icon(Icons.error),
-                                placeholder: (context, url) => noAvatar(20),
+                                placeholder: (context, url) => noAvatar(2),
                                 height: 20 * 2.0,
                                 width: 20 * 2.0,
                               )

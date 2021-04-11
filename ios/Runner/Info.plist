@@ -45,7 +45,11 @@
 	<string>MonEcole a besoin d&apos;accéder à l&apos;appareil photo afin d&apos;utiliser les différentes fonctionnalités de l'application.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>MonEcole a besoin d&apos;accéder à l&apos;appareil photo afin d&apos;utiliser les différentes fonctionnalités de l'application.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>MonEcole a besoin d&apos;accéder à votre calendrier afin d&apos;utiliser les différentes fonctionnalités de l'application.</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
+	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
 </dict>
 </plist>
