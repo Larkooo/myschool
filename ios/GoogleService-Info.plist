@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>553651740503-6mprm7nihkdlra01s791lfjp2m3pvd4d.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.553651740503-6mprm7nihkdlra01s791lfjp2m3pvd4d</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>553651740503-s1eo3fcs53nifg0km06qqe5sbr35agp2.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAPshLNWbRiYKy8Cs4SRilbmUo4kyQYjPA</string>
+	<key>GCM_SENDER_ID</key>
+	<string>553651740503</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.myschool.myschoolapp</string>
+	<key>PROJECT_ID</key>
+	<string>myschool-cf578</string>
+	<key>STORAGE_BUCKET</key>
+	<string>myschool-cf578.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:553651740503:ios:181552816245fcf9296812</string>
+	<key>DATABASE_URL</key>
+	<string>https://myschool-cf578.firebaseio.com</string>
+</dict>
+</plist>
