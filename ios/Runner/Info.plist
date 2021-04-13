@@ -22,8 +22,21 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCalendarsUsageDescription</key>
+	<string>MonEcole a besoin d'accéder à votre calendrier afin d'utiliser les différentes fonctionnalités de l'application.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>MonEcole a besoin d'accéder à l'appareil photo afin d'utiliser les différentes fonctionnalités de l'application.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>MonEcole a besoin d'accéder à l'appareil photo afin d'utiliser les différentes fonctionnalités de l'application.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -41,15 +54,7 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>MonEcole a besoin d&apos;accéder à l&apos;appareil photo afin d&apos;utiliser les différentes fonctionnalités de l'application.</string>
-	<key>NSCameraUsageDescription</key>
-	<string>MonEcole a besoin d&apos;accéder à l&apos;appareil photo afin d&apos;utiliser les différentes fonctionnalités de l'application.</string>
-	<key>NSCalendarsUsageDescription</key>
-	<string>MonEcole a besoin d&apos;accéder à votre calendrier afin d&apos;utiliser les différentes fonctionnalités de l'application.</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
-	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
 </dict>
 </plist>
