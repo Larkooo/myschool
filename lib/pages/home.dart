@@ -43,6 +43,13 @@ class _HomeState extends State<Home> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    CacheManagerMemory.dayCourses.clear();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Center(
         child: Column(children: [

@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:adaptive_dialog/adaptive_dialog.dart';
+import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:alert/alert.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
@@ -163,6 +165,24 @@ Column coursePage(
                       DateFormat.MEd().format(
                           getNextCourse(time, id, CacheManagerMemory.courses)
                               .key))),
+            )),
+        SizedBox(
+          height: 10,
+        ),
+        Container(
+            width: MediaQuery.of(context).size.width / 1.5,
+            child: ElevatedButton(
+              onPressed: () {
+                List<int> endHourSplit =
+                    endHour.split(':').map((e) => int.tryParse(e)).toList();
+                DateTime endTime = DateTime(time.year, time.month, time.day,
+                    endHourSplit[0], endHourSplit[1]);
+                final Event event = Event(
+                    title: description, startDate: time, endDate: endTime);
+                Add2Calendar.addEvent2Cal(event);
+              },
+              child: Text('Ajouter un rappel'),
+              style: ButtonStyle(),
             )),
       ],
     );

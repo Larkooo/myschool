@@ -103,6 +103,7 @@ class _SettingsState extends State<Settings> {
                               },
                             ),
                             DialogTextField(
+                              keyboardType: TextInputType.emailAddress,
                               hintText: 'example@domain.com',
                               validator: (value) {
                                 value = value.trim();

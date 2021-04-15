@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:adaptive_dialog/adaptive_dialog.dart';
+import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -78,6 +80,16 @@ class _CalendarState extends State<Calendar> {
           initialSelectedDay: _selectedDay,
           startDay: _startDay,
           endDay: _endDay,
+          events: CacheManagerMemory.courses.isEmpty
+              ? null
+              : CacheManagerMemory.courses
+                  .map((key, value) => MapEntry(key, [value])),
+          availableCalendarFormats: {
+            CalendarFormat.month: 'Mois',
+            CalendarFormat.twoWeeks: '2 semaines',
+            CalendarFormat.week: 'Semaine'
+          },
+          calendarStyle: CalendarStyle(markersColor: Colors.blue),
           onCalendarCreated: (first, last, format) async {
             /* 
                     If CacheManagerMemory.courses has a length of 0 => get the download URL of our timetable
@@ -129,22 +141,21 @@ class _CalendarState extends State<Calendar> {
                   prefs.setString('mozaikTimetable', jsonEncode(timetable));
                   CacheManagerMemory.rawMozaikTimetable = timetable;
 
-                  CacheManagerMemory.courses = Map.fromIterable(
-                      timetableEncoded == null
-                          ? await MozaikService.getMozaikTimetable()
-                          : jsonDecode(timetableEncoded),
-                      key: (e) => DateTime.parse(
-                          e['dateDebut'] + 'T' + e['heureDebut']),
-                      value: (e) => {
-                            "description": e['description'],
-                            "locaux": e['locaux'],
-                            "intervenants": e['intervenants'],
-                            "heureFin": e['heureFin'],
-                            "codeActivite": e['codeActivite']
-                          });
-
                   // Setting the startday and the endday of the calendar (so the startday/endday of school in this case)
-                  setState(() {
+                  setState(() async {
+                    CacheManagerMemory.courses = Map.fromIterable(
+                        timetableEncoded == null
+                            ? await MozaikService.getMozaikTimetable()
+                            : jsonDecode(timetableEncoded),
+                        key: (e) => DateTime.parse(
+                            e['dateDebut'] + 'T' + e['heureDebut']),
+                        value: (e) => {
+                              "description": e['description'],
+                              "locaux": e['locaux'],
+                              "intervenants": e['intervenants'],
+                              "heureFin": e['heureFin'],
+                              "codeActivite": e['codeActivite']
+                            });
                     _startDay = CacheManagerMemory.courses.entries.first.key;
                     _endDay = CacheManagerMemory.courses.entries.last.key;
                   });
@@ -246,28 +257,79 @@ class _CalendarState extends State<Calendar> {
         Expanded(
             child: ListView(
                 children: CacheManagerMemory.dayCourses.entries
-                    .map((e) => Card(
-                          child: ListTile(
-                            onTap: () => showSlideDialog(
-                                context: context,
-                                child: coursePage(
-                                    context,
-                                    widget.user,
-                                    e.value['codeActivite'],
-                                    e.value['description'],
-                                    e.key,
-                                    e.value['intervenants'],
-                                    e.value['heureFin'],
-                                    e.value['locaux'])),
-                            title: Text(e.value['description'] +
-                                " (${e.value['locaux'][0]})"),
-                            subtitle: Text(e.value['intervenants'][0]['nom'] +
-                                " " +
-                                e.value['intervenants'][0]['prenom'] +
-                                " - " +
-                                DateFormat.Hm().format(e.key)),
-                          ),
-                        ))
+                    .map((e) => Platform.isAndroid
+                        ? Card(
+                            child: ListTile(
+                              onTap: () => showSlideDialog(
+                                  context: context,
+                                  child: coursePage(
+                                      context,
+                                      widget.user,
+                                      e.value['codeActivite'],
+                                      e.value['description'],
+                                      e.key,
+                                      e.value['intervenants'],
+                                      e.value['heureFin'],
+                                      e.value['locaux'])),
+                              title: Text(e.value['description'] +
+                                  " (${e.value['locaux'][0]})"),
+                              subtitle: Text(e.value['intervenants'][0]['nom'] +
+                                  " " +
+                                  e.value['intervenants'][0]['prenom'] +
+                                  " - " +
+                                  DateFormat.Hm().format(e.key)),
+                            ),
+                          )
+                        : CupertinoContextMenu(
+                            actions: [
+                                CupertinoContextMenuAction(
+                                  trailingIcon: Icons.calendar_today,
+                                  isDefaultAction: true,
+                                  child: Text('Ajouter un rappel',
+                                      style: TextStyle(fontSize: 12)),
+                                  onPressed: () {
+                                    List<int> endHourSplit =
+                                        (e.value['heureFin'] as String)
+                                            .split(':')
+                                            .map((e) => int.tryParse(e))
+                                            .toList();
+                                    DateTime endTime = DateTime(
+                                        e.key.year,
+                                        e.key.month,
+                                        e.key.day,
+                                        endHourSplit[0],
+                                        endHourSplit[1]);
+                                    final Event event = Event(
+                                        title: e.value['description'],
+                                        startDate: e.key,
+                                        endDate: endTime);
+                                    Add2Calendar.addEvent2Cal(event);
+                                  },
+                                )
+                              ],
+                            child: Card(
+                              child: ListTile(
+                                onTap: () => showSlideDialog(
+                                    context: context,
+                                    child: coursePage(
+                                        context,
+                                        widget.user,
+                                        e.value['codeActivite'],
+                                        e.value['description'],
+                                        e.key,
+                                        e.value['intervenants'],
+                                        e.value['heureFin'],
+                                        e.value['locaux'])),
+                                title: Text(e.value['description'] +
+                                    " (${e.value['locaux'][0]})"),
+                                subtitle: Text(e.value['intervenants'][0]
+                                        ['nom'] +
+                                    " " +
+                                    e.value['intervenants'][0]['prenom'] +
+                                    " - " +
+                                    DateFormat.Hm().format(e.key)),
+                              ),
+                            )))
                     .toList()))
       ],
     );

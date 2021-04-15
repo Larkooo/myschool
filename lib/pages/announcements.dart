@@ -56,9 +56,9 @@ class _AnnouncementsState extends State<Announcements> {
               title: CupertinoSlidingSegmentedControl(
                   groupValue: scope,
                   children: {
-                    Scope.school: Text('École'),
-                    Scope.none: Text('Tous'),
-                    Scope.group: Text('Groupe')
+                    Scope.school: Text('École', style: TextStyle(fontSize: 12)),
+                    Scope.none: Text('Tous', style: TextStyle(fontSize: 12)),
+                    Scope.group: Text('Groupe', style: TextStyle(fontSize: 12))
                   },
                   onValueChanged: (v) {
                     setState(() {

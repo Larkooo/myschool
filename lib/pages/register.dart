@@ -88,6 +88,7 @@ class _RegisterState extends State<Register> {
                           width: MediaQuery.of(context).size.width / 2.621,
                           child: TextFormField(
                             controller: _firstNameController,
+                            keyboardType: TextInputType.name,
                             validator: (value) {
                               if (value.isEmpty)
                                 return 'Ce champs est obligatoire.';
@@ -105,6 +106,7 @@ class _RegisterState extends State<Register> {
                           width: MediaQuery.of(context).size.width / 2.621,
                           child: TextFormField(
                             controller: _lastNameController,
+                            keyboardType: TextInputType.name,
                             validator: (value) {
                               if (value.isEmpty)
                                 return 'Ce champs est obligatoire.';
@@ -124,10 +126,11 @@ class _RegisterState extends State<Register> {
                       width: MediaQuery.of(context).size.width / 1.3,
                       child: TextFormField(
                         controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
                         validator: (value) {
                           if (value.isEmpty)
                             return 'Ce champs est obligatoire.';
-                          bool v = EmailValidator.validate(value);
+                          bool v = EmailValidator.validate(value.trim());
                           if (!v) {
                             return "Adresse courriel invalide.";
                           }
@@ -218,11 +221,11 @@ class _RegisterState extends State<Register> {
                       _btnController.start();
                       dynamic registerStatus =
                           await FirebaseAuthService.register(
-                              _firstNameController.text,
-                              _lastNameController.text,
+                              _firstNameController.text.trim(),
+                              _lastNameController.text.trim(),
                               _emailController.text.trim(),
-                              _passwordController.text.trim(),
-                              _codeController.text.trim());
+                              _passwordController.text,
+                              _codeController.text.toLowerCase().trim());
                       print(registerStatus);
                       if (registerStatus is UserData) {
                         Alert(message: "Compte crée").show();

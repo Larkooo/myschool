@@ -58,7 +58,8 @@ dependencies:
   jwt_decode: ^0.3.1
   flutter_inappwebview: 
   flutter_platform_widgets: ^1.1.0
-  #add_2_calendar: ^2.0.1
+  vibration: ^1.7.3
+  add_2_calendar: ^2.0.1
   #home_widget:
  # firebase_auth_oauth: ^0.2.3
 

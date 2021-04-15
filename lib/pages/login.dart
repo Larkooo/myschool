@@ -81,6 +81,7 @@ class _LoginState extends State<Login> {
                       width: MediaQuery.of(context).size.width / 1.3,
                       child: TextFormField(
                         controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
                         validator: (value) {
                           value = value.trim();
                           if (value.isEmpty)

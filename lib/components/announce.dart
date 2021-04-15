@@ -19,6 +19,7 @@ import 'package:clipboard/clipboard.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:slide_popup_dialog/slide_popup_dialog.dart';
+import 'package:vibration/vibration.dart';
 
 class Announce extends StatelessWidget {
   final Announcement announcement;
@@ -163,6 +164,7 @@ class Announce extends StatelessWidget {
                   width: 1000 / animation.value,
                   height: 200 / animation.value);
             },*/
+
             actions: [
                 CupertinoContextMenuAction(
                   trailingIcon: Icons.copy,
@@ -170,10 +172,13 @@ class Announce extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 14,
                       )),
-                  onPressed: () {
+                  onPressed: () async {
                     FlutterClipboard.copy(announcement.content).then((_) {
                       Navigator.pop(context);
                     });
+                    //if (await Vibration.hasVibrator()) {
+                    //Vibration.vibrate();
+                    //}
                   },
                 ),
                 if (user.uid == announcement.author)
