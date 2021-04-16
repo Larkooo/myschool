@@ -26,6 +26,8 @@ class _ChatPageState extends State<ChatPage> {
   TextEditingController _messageController = TextEditingController();
   ScrollController _scrollController = ScrollController();
 
+  bool scrolled = false;
+
   String _actualGroup;
 
   @override
@@ -43,132 +45,157 @@ class _ChatPageState extends State<ChatPage> {
             : null,
         body: Column(children: [
           Expanded(
-              child: StreamBuilder(
-                  stream: DatabaseService(uid: widget.user.school.uid)
-                      .group(_actualGroup),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      SchedulerBinding.instance.scheduleFrameCallback((_) {
-                        _scrollController.animateTo(
-                            _scrollController.position.maxScrollExtent,
-                            duration: Duration(seconds: 1),
-                            curve: Curves.fastLinearToSlowEaseIn);
-                      });
-                      Group group = snapshot.data;
-                      return ListView.builder(
-                          controller: _scrollController,
-                          padding: EdgeInsets.only(top: 10),
-                          itemCount: group.messages.length,
-                          itemBuilder: (context, index) {
-                            Message message = group.messages[index];
-                            int diffInDaysNow = message.createdAt
-                                .differenceInDays(DateTime.now());
-                            return Column(
-                                crossAxisAlignment:
-                                    message.author.id == widget.user.uid
-                                        ? CrossAxisAlignment.end
-                                        : CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                      constraints: BoxConstraints(
-                                        maxWidth:
-                                            MediaQuery.of(context).size.width /
-                                                1.5,
-                                      ),
-                                      padding: EdgeInsets.all(5),
-                                      margin: EdgeInsets.fromLTRB(5, 5, 5, 5),
-                                      decoration: BoxDecoration(
-                                          color: Colors.blue[700],
-                                          borderRadius:
-                                              BorderRadius.circular(10)),
-                                      child: Text(
-                                        message.content,
-                                        style: TextStyle(fontSize: 17),
-                                      )),
-                                  Row(
-                                      mainAxisAlignment:
-                                          message.author.id == widget.user.uid
-                                              ? MainAxisAlignment.end
-                                              : MainAxisAlignment.start,
-                                      children: [
-                                        SizedBox(
-                                            width: MediaQuery.of(context)
-                                                    .size
-                                                    .width /
-                                                80),
-                                        CacheManagerMemory.cachedUsers[
-                                                    message.author] ==
-                                                null
-                                            ? FutureBuilder(
-                                                future: FirebaseFirestore
-                                                    .instance
-                                                    .collection('users')
-                                                    .doc(message.author.id
-                                                        .toString())
-                                                    .get(),
-                                                builder: (context, snapshot) {
-                                                  if (snapshot.hasData) {
-                                                    UserData author;
-                                                    if (snapshot.data.exists) {
-                                                      author = DatabaseService()
-                                                          .userDataFromSnapshot(
-                                                              snapshot.data);
-                                                      // cache the user by its id
-                                                      CacheManagerMemory
-                                                                  .cachedUsers[
-                                                              message.author.id
-                                                                  .toString()] =
-                                                          author;
-                                                    } else {
-                                                      author =
-                                                          UserData(uid: "-1");
-                                                    }
-
-                                                    return userLeadingHorizontal(
-                                                        author, 0.7);
-                                                  } else {
-                                                    return CircularProgressIndicator(
-                                                      strokeWidth: 2,
-                                                    );
-                                                  }
-                                                })
-                                            : userLeadingHorizontal(
+              child: SingleChildScrollView(
+                  controller: _scrollController,
+                  child: GestureDetector(
+                      onTap: () => FocusScope.of(context).unfocus(),
+                      child: StreamBuilder(
+                          stream: DatabaseService(uid: widget.user.school.uid)
+                              .group(_actualGroup),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              if (!scrolled) {
+                                SchedulerBinding.instance
+                                    .scheduleFrameCallback((_) {
+                                  _scrollController.animateTo(
+                                      _scrollController
+                                          .position.maxScrollExtent,
+                                      duration: Duration(seconds: 1),
+                                      curve: Curves.fastLinearToSlowEaseIn);
+                                });
+                                scrolled = true;
+                              }
+                              Group group = snapshot.data;
+                              return ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  padding: EdgeInsets.only(top: 10),
+                                  itemCount: group.messages.length,
+                                  itemBuilder: (context, index) {
+                                    Message message = group.messages[index];
+                                    int diffInDaysNow = message.createdAt
+                                        .differenceInDays(DateTime.now());
+                                    return Column(
+                                        crossAxisAlignment:
+                                            message.author.id == widget.user.uid
+                                                ? CrossAxisAlignment.end
+                                                : CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                              constraints: BoxConstraints(
+                                                maxWidth: MediaQuery.of(context)
+                                                        .size
+                                                        .width /
+                                                    1.5,
+                                              ),
+                                              padding: EdgeInsets.all(5),
+                                              margin: EdgeInsets.fromLTRB(
+                                                  5, 5, 5, 5),
+                                              decoration: BoxDecoration(
+                                                  color: Colors.blue[700],
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10)),
+                                              child: Text(
+                                                message.content,
+                                                style: TextStyle(fontSize: 17),
+                                              )),
+                                          Row(
+                                              mainAxisAlignment:
+                                                  message.author.id ==
+                                                          widget.user.uid
+                                                      ? MainAxisAlignment.end
+                                                      : MainAxisAlignment.start,
+                                              children: [
+                                                SizedBox(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width /
+                                                            80),
                                                 CacheManagerMemory.cachedUsers[
-                                                    message.author],
-                                                0.7),
-                                        SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text(
-                                          (diffInDaysNow == 0
-                                                  ? "Aujourd'hui"
-                                                  : diffInDaysNow == -1
-                                                      ? "Hier"
-                                                      : diffInDaysNow == -2
-                                                          ? "Avant-hier"
-                                                          : DateFormat
-                                                                  .yMMMMEEEEd()
-                                                              .format(message
-                                                                  .createdAt)) +
-                                              " à " +
-                                              DateFormat.Hm()
-                                                  .format(message.createdAt),
-                                          style: TextStyle(
-                                              color: Colors.grey[500],
-                                              fontSize: 12),
-                                        ),
-                                        SizedBox(
-                                            width: MediaQuery.of(context)
-                                                    .size
-                                                    .width /
-                                                80),
-                                      ])
-                                ]);
-                          });
-                    } else {
-                      return CircularProgressIndicator.adaptive();
-                    }
-                  })),
+                                                            message.author] ==
+                                                        null
+                                                    ? FutureBuilder(
+                                                        future:
+                                                            FirebaseFirestore
+                                                                .instance
+                                                                .collection(
+                                                                    'users')
+                                                                .doc(message
+                                                                    .author.id
+                                                                    .toString())
+                                                                .get(),
+                                                        builder: (context,
+                                                            snapshot) {
+                                                          if (snapshot
+                                                              .hasData) {
+                                                            UserData author;
+                                                            if (snapshot
+                                                                .data.exists) {
+                                                              author = DatabaseService()
+                                                                  .userDataFromSnapshot(
+                                                                      snapshot
+                                                                          .data);
+                                                              // cache the user by its id
+                                                              CacheManagerMemory
+                                                                      .cachedUsers[
+                                                                  message
+                                                                      .author.id
+                                                                      .toString()] = author;
+                                                            } else {
+                                                              author = UserData(
+                                                                  uid: "-1");
+                                                            }
+
+                                                            return userLeadingHorizontal(
+                                                                author, 0.7);
+                                                          } else {
+                                                            return CircularProgressIndicator(
+                                                              strokeWidth: 2,
+                                                            );
+                                                          }
+                                                        })
+                                                    : userLeadingHorizontal(
+                                                        CacheManagerMemory
+                                                                .cachedUsers[
+                                                            message.author],
+                                                        0.7),
+                                                SizedBox(
+                                                  width: 5,
+                                                ),
+                                                Text(
+                                                  (diffInDaysNow == 0
+                                                          ? "Aujourd'hui"
+                                                          : diffInDaysNow == -1
+                                                              ? "Hier"
+                                                              : diffInDaysNow ==
+                                                                      -2
+                                                                  ? "Avant-hier"
+                                                                  : DateFormat
+                                                                          .yMMMMEEEEd()
+                                                                      .format(message
+                                                                          .createdAt)) +
+                                                      " à " +
+                                                      DateFormat.Hm().format(
+                                                          message.createdAt),
+                                                  style: TextStyle(
+                                                      color: Colors.grey[500],
+                                                      fontSize: 12),
+                                                ),
+                                                SizedBox(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width /
+                                                            80),
+                                              ])
+                                        ]);
+                                  });
+                            } else {
+                              return CircularProgressIndicator.adaptive();
+                            }
+                          })))),
           Container(
               width: MediaQuery.of(context).size.width,
               child: Row(
@@ -181,6 +208,8 @@ class _ChatPageState extends State<ChatPage> {
                         textInputAction: TextInputAction.send,
                         cupertino: (context, platform) =>
                             CupertinoTextFieldData(placeholder: 'Message'),
+                        material: (context, platform) => MaterialTextFieldData(
+                            decoration: InputDecoration(hintText: 'Message')),
                         onSubmitted: (value) async {
                           if (value.length > 0) {
                             await DatabaseService(uid: widget.user.school.uid)
@@ -199,6 +228,7 @@ class _ChatPageState extends State<ChatPage> {
                                   _actualGroup);
                           _messageController.clear();
                         }
+                        FocusScope.of(context).unfocus();
                       })
                 ],
               ))
