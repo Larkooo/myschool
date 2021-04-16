@@ -57,7 +57,7 @@ class _ChatPageState extends State<ChatPage> {
                       onTap: () => FocusScope.of(context).unfocus(),
                       child: StreamBuilder(
                           stream: DatabaseService(uid: widget.user.school.uid)
-                              .group(_actualGroup),
+                              .groupMessages(_actualGroup),
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
                               if (!scrolled) {
@@ -71,14 +71,18 @@ class _ChatPageState extends State<ChatPage> {
                                 });
                                 scrolled = true;
                               }
-                              Group group = snapshot.data;
+                              List<Message> messages =
+                                  (snapshot.data as QuerySnapshot)
+                                      .docs
+                                      .map(DatabaseService.messageFromSnapshot)
+                                      .toList();
                               return ListView.builder(
                                   shrinkWrap: true,
                                   physics: NeverScrollableScrollPhysics(),
                                   padding: EdgeInsets.only(top: 10),
-                                  itemCount: group.messages.length,
+                                  itemCount: messages.length,
                                   itemBuilder: (context, index) {
-                                    Message message = group.messages[index];
+                                    Message message = messages[index];
                                     int diffInDaysNow = message.createdAt
                                         .differenceInDays(DateTime.now());
                                     return Column(
@@ -108,7 +112,9 @@ class _ChatPageState extends State<ChatPage> {
                                                         },
                                                       ),
                                                       if (message.author.id ==
-                                                          widget.user.uid)
+                                                              widget.user.uid ||
+                                                          widget.user.type ==
+                                                              UserType.teacher)
                                                         CupertinoContextMenuAction(
                                                             trailingIcon:
                                                                 Icons.delete,
@@ -133,44 +139,48 @@ class _ChatPageState extends State<ChatPage> {
                                                           ),
                                                           padding:
                                                               EdgeInsets.all(5),
-                                                          margin:
-                                                              EdgeInsets.fromLTRB(
-                                                                  5, 5, 5, 5),
+                                                          margin: EdgeInsets.fromLTRB(
+                                                              5, 5, 5, 5),
                                                           decoration: BoxDecoration(
                                                               color: Colors
                                                                   .blue[700],
                                                               borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          10)),
+                                                                  BorderRadius.circular(
+                                                                      10)),
                                                           child: Text(
                                                             message.content,
                                                             style: TextStyle(
                                                                 fontSize: 17),
                                                           ))))
                                               : GestureDetector(
-                                                onLongPress: () async => message.author.id == widget.user.uid ? await showModalActionSheet(context: context, message: 'Voulez vous supprimer ce message?') : null,
-                                                child:Container(
-                                                  constraints: BoxConstraints(
-                                                    maxWidth:
-                                                        MediaQuery.of(context)
+                                                  onLongPress: () async => message
+                                                                  .author.id ==
+                                                              widget.user.uid ||
+                                                          widget.user.type ==
+                                                              UserType.teacher
+                                                      ? showModalActionSheet<OkCancelResult>(
+                                                          context: context,
+                                                          title: 'Message',
+                                                          message: 'Voulez-vous supprimer ce message?',
+                                                          cancelLabel: 'Annuler',
+                                                          actions: [SheetAction(key: OkCancelResult.ok, label: 'Supprimer')]).then((value) => value == OkCancelResult.ok ? DatabaseService.deleteMessage(message.reference) : null)
+                                                      : null,
+                                                  child: Container(
+                                                      constraints: BoxConstraints(
+                                                        maxWidth: MediaQuery.of(
+                                                                    context)
                                                                 .size
                                                                 .width /
                                                             1.5,
-                                                  ),
-                                                  padding: EdgeInsets.all(5),
-                                                  margin: EdgeInsets.fromLTRB(
-                                                      5, 5, 5, 5),
-                                                  decoration: BoxDecoration(
-                                                      color: Colors.blue[700],
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10)),
-                                                  child: Text(
-                                                    message.content,
-                                                    style:
-                                                        TextStyle(fontSize: 17),
-                                                  ))),
+                                                      ),
+                                                      padding: EdgeInsets.all(5),
+                                                      margin: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                                                      decoration: BoxDecoration(color: Colors.blue[700], borderRadius: BorderRadius.circular(10)),
+                                                      child: Text(
+                                                        message.content,
+                                                        style: TextStyle(
+                                                            fontSize: 17),
+                                                      ))),
                                           Row(
                                               mainAxisAlignment:
                                                   message.author.id ==
@@ -185,7 +195,8 @@ class _ChatPageState extends State<ChatPage> {
                                                                 .width /
                                                             80),
                                                 CacheManagerMemory.cachedUsers[
-                                                            message.author] ==
+                                                            message
+                                                                .author.id] ==
                                                         null
                                                     ? FutureBuilder(
                                                         future:
@@ -230,7 +241,7 @@ class _ChatPageState extends State<ChatPage> {
                                                     : userLeadingHorizontal(
                                                         CacheManagerMemory
                                                                 .cachedUsers[
-                                                            message.author],
+                                                            message.author.id],
                                                         0.7),
                                                 SizedBox(
                                                   width: 5,

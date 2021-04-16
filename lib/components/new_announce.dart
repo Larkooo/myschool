@@ -66,7 +66,7 @@ class _NewAnnounceState extends State<NewAnnounce> {
                   width: MediaQuery.of(context).size.width / 1.26,
                   child: Announce(
                     announcement: Announcement(
-                        uid: -1,
+                        uid: '-1',
                         author: widget.user.uid,
                         title: _announceTitle.text,
                         content: _announceContent.text,

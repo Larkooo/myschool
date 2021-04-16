@@ -200,7 +200,7 @@ Row userLeadingHorizontal(UserData user, double size) => Row(
       children: [
         ClipRRect(
             borderRadius: BorderRadius.circular(30),
-            child: user.avatarUrl != null && user.uid != "-1"
+            child: user.avatarUrl != null
                 ? CachedNetworkImage(
                     imageUrl: user.avatarUrl,
                     //progressIndicatorBuilder:

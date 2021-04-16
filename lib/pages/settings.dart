@@ -346,7 +346,7 @@ class _SettingsState extends State<Settings> {
                     showTextInputDialog(
                         context: context,
                         title: 'Compte',
-                        message: 'Voulez vous vraiment supprimer votre compte?',
+                        message: 'Voulez-vous vraiment supprimer votre compte?',
                         okLabel: 'Supprimer',
                         cancelLabel: 'Annuler',
                         textFields: [

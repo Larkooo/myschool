@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:myschool/components/announce.dart';
+import 'package:myschool/models/announcement.dart';
 import 'package:myschool/models/school.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/services/database.dart';
@@ -20,16 +22,15 @@ class _HomeTeacherState extends State<HomeTeacher> {
     return Center(
         child: Column(children: [
       StreamBuilder(
-          stream: DatabaseService(uid: widget.user.school.uid).school,
+          stream:
+              DatabaseService(uid: widget.user.school.uid).schoolAnnouncements,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              School school = snapshot.data;
-              /* 
-                          Sorting the announcements by comparing their time of creation 
-                  */
-              if (school.announcements.length > 0) {
-                //school.announcements
-                //    .sort((a, b) => b.createdAt.compareTo(a.createdAt));
+              QuerySnapshot query = snapshot.data;
+              List<Announcement> announcements = query.docs
+                  .map(DatabaseService.announcementFromSnapshot)
+                  .toList();
+              if (announcements.length > 0) {
                 return Column(
                   children: [
                     SizedBox(
@@ -41,8 +42,7 @@ class _HomeTeacherState extends State<HomeTeacher> {
                     ),
                     Container(
                         width: MediaQuery.of(context).size.width / 1.3,
-                        child:
-                            Announce(announcement: school.announcements.last)),
+                        child: Announce(announcement: announcements.last)),
                   ],
                 );
               }

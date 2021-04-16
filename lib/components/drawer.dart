@@ -201,7 +201,7 @@ class _DrawerCompState extends State<DrawerComp> {
                       context: context,
                       okLabel: 'Oui',
                       cancelLabel: 'Non',
-                      title: 'Voulez vous vraiment vous déconnecter?')
+                      title: 'Voulez-vous vraiment vous déconnecter?')
                   .then((value) {
                 if (value == OkCancelResult.ok) FirebaseAuth.instance.signOut();
               });

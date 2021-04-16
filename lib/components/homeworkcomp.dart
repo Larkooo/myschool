@@ -51,7 +51,7 @@ class HomeworkComp extends StatelessWidget {
                             CacheManagerMemory.cachedUsers[homework.author] =
                                 author;
                           } else {
-                            author = UserData(uid: "-1");
+                            author = UserData(uid: "'-1'");
                           }
 
                           return userLeadingHorizontal(author, 1);
@@ -69,7 +69,7 @@ class HomeworkComp extends StatelessWidget {
               Text(
                 diffInDaysNow == 0
                     ? "Aujourd'hui"
-                    : diffInDaysNow == -1
+                    : diffInDaysNow == '-1'
                         ? "Hier"
                         : diffInDaysNow == -2
                             ? "Avant-hier"
@@ -108,7 +108,7 @@ class HomeworkComp extends StatelessWidget {
               SizedBox(
                 width: 5,
               ),
-              if (homework.uid != -1)
+              if (homework.uid != '-1')
                 Container(
                     width: MediaQuery.of(context).size.width / 8,
                     height: MediaQuery.of(context).size.height / 35,
@@ -124,7 +124,7 @@ class HomeworkComp extends StatelessWidget {
                             child: Center(
                                 child: Text(
                               // group
-                              homework.reference.id,
+                              homework.reference.parent.parent.id,
                               style: TextStyle(fontSize: 10),
                             ))))),
             ],
@@ -136,7 +136,7 @@ class HomeworkComp extends StatelessWidget {
               ? homework.description
               : homework.description.substring(0, 150).trim() + "..."),
           if (user.uid == homework.author &&
-              homework.uid != -1 &&
+              homework.uid != '-1' &&
               Platform.isAndroid)
             Row(children: [
               Spacer(),
@@ -148,11 +148,11 @@ class HomeworkComp extends StatelessWidget {
                               cancelLabel: 'Non',
                               title: 'Suppression',
                               message:
-                                  'Voulez vous vraiment annuler ce devoir?')
+                                  'Voulez-vous vraiment annuler ce devoir?')
                           .then((value) async {
                         if (value == OkCancelResult.ok)
-                          await DatabaseService()
-                              .deleteHomework(homework.raw, homework.reference);
+                          await DatabaseService.deleteHomework(
+                              homework.reference);
                       }))
             ]),
           Text(
@@ -170,7 +170,7 @@ class HomeworkComp extends StatelessWidget {
       ),
     ]));
 
-    return Platform.isIOS && homework.uid != -1
+    return Platform.isIOS && homework.uid != '-1'
         ? CupertinoContextMenu(
             /*previewBuilder: (BuildContext context, Animation<double> animation,
                 Widget child) {
@@ -212,13 +212,13 @@ class HomeworkComp extends StatelessWidget {
                       adaptiveDialog(
                           context: context,
                           content:
-                              Text("Voulez vous vraiment annuler ce devoir?"),
+                              Text("Voulez-vous vraiment annuler ce devoir?"),
                           actions: [
                             adaptiveDialogTextButton(
                                 context, "Non", () => Navigator.pop(context)),
                             adaptiveDialogTextButton(context, "Oui", () async {
-                              await DatabaseService().deleteHomework(
-                                  homework.raw, homework.reference);
+                              await DatabaseService.deleteHomework(
+                                  homework.reference);
                               Navigator.pop(context);
                             })
                           ]);

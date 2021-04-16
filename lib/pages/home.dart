@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:intl/intl.dart';
 import 'package:myschool/components/announce.dart';
+import 'package:myschool/models/announcement.dart';
 import 'package:myschool/pages/login.dart';
 import 'package:myschool/models/school.dart';
 import 'package:myschool/models/user.dart';
@@ -189,11 +191,16 @@ class _HomeState extends State<Home> {
             }
           }),
       StreamBuilder(
-          stream: DatabaseService(uid: widget.user.school.uid).school,
+          stream:
+              DatabaseService(uid: widget.user.school.uid).schoolAnnouncements,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              School school = snapshot.data;
-              if (school.announcements.length > 0) {
+              QuerySnapshot query = snapshot.data;
+              List<Announcement> announcements =
+                  query.docs
+                      .map(DatabaseService.announcementFromSnapshot)
+                      .toList();
+              if (announcements.length > 0) {
                 return Column(
                   children: [
                     SizedBox(
@@ -205,8 +212,7 @@ class _HomeState extends State<Home> {
                     ),
                     Container(
                         width: MediaQuery.of(context).size.width / 1.3,
-                        child:
-                            Announce(announcement: school.announcements.last)),
+                        child: Announce(announcement: announcements.last)),
                   ],
                 );
               }

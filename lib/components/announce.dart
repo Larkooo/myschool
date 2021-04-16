@@ -102,8 +102,8 @@ class Announce extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                     child: Tooltip(
                         message: announcement.scope == Scope.group
-                            ? announcement.uid != -1
-                                ? announcement.reference.id
+                            ? announcement.uid != '-1'
+                                ? announcement.reference.parent.parent.id
                                 : "Foyer"
                             : "École",
                         child: InkWell(
@@ -112,8 +112,8 @@ class Announce extends StatelessWidget {
                             child: Center(
                                 child: Text(
                               announcement.scope == Scope.group
-                                  ? announcement.uid != -1
-                                      ? announcement.reference.id
+                                  ? announcement.uid != '-1'
+                                      ? announcement.reference.parent.parent.id
                                       : "Foyer"
                                   : "École",
                               style: TextStyle(fontSize: 10),
@@ -140,11 +140,11 @@ class Announce extends StatelessWidget {
                         cancelLabel: 'Annuler',
                         title: 'Suppression',
                         message:
-                            'Voulez vous vraiment supprimer cette annonce?')
+                            'Voulez-vous vraiment supprimer cette annonce?')
                     .then((value) async {
                   if (value == OkCancelResult.ok)
-                    await DatabaseService().deleteAnnounce(
-                        announcement.raw, announcement.reference);
+                    await DatabaseService.deleteAnnounce(
+                        announcement.reference);
                 }),
               )
             ])
@@ -194,11 +194,11 @@ class Announce extends StatelessWidget {
                               cancelLabel: 'Annuler',
                               title: 'Suppression',
                               message:
-                                  'Voulez vous vraiment supprimer cette annonce?')
+                                  'Voulez-vous vraiment supprimer cette annonce?')
                           .then((value) async {
                         if (value == OkCancelResult.ok)
-                          await DatabaseService().deleteAnnounce(
-                              announcement.raw, announcement.reference);
+                          await DatabaseService.deleteAnnounce(
+                              announcement.reference);
                       });
                     },
                   ),

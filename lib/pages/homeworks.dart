@@ -37,11 +37,11 @@ class _HomeworksState extends State<Homeworks> {
     List<Stream> streams = [];
     if (widget.user.type == UserType.student) {
       streams.add(DatabaseService(uid: widget.user.school.uid)
-          .group(widget.user.school.group.uid));
+          .groupHomeworks(widget.user.school.group.uid));
     } else {
       widget.user.groups.forEach((group) {
         streams.add(DatabaseService(uid: widget.user.school.uid)
-            .group(group.toString()));
+            .groupHomeworks(group.toString()));
       });
     }
     return Scaffold(
@@ -53,14 +53,12 @@ class _HomeworksState extends State<Homeworks> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             List<Homework> homeworks = [];
-            snapshot.data.forEach((e) {
-              homeworks.addAll(e.homeworks);
+            snapshot.data.forEach((streamData) {
+              homeworks.addAll((streamData as QuerySnapshot)
+                  .docs
+                  .map(DatabaseService.homeworkFromSnapshot)
+                  .toList());
             });
-
-            /* 
-                      Sorting the homeworks by comparing their due time 
-                  */
-            homeworks.sort((a, b) => b.due.compareTo(a.due));
 
             // filtering homeworks
             homeworks.removeWhere(

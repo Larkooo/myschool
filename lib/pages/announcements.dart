@@ -38,15 +38,16 @@ class _AnnouncementsState extends State<Announcements> {
     // to get school and group(s) announcements
     List<Stream> streams = [];
     if (scope == Scope.school || scope == Scope.none)
-      streams.add(DatabaseService(uid: widget.user.school.uid).school);
+      streams.add(
+          DatabaseService(uid: widget.user.school.uid).schoolAnnouncements);
     if (widget.user.type == UserType.student) {
       if (scope == Scope.group || scope == Scope.none)
         streams.add(DatabaseService(uid: widget.user.school.uid)
-            .group(widget.user.school.group.uid));
+            .groupAnnouncements(widget.user.school.group.uid));
     } else if (scope == Scope.group || scope == Scope.none) {
       widget.user.groups.forEach((group) {
         streams.add(DatabaseService(uid: widget.user.school.uid)
-            .group(group.toString()));
+            .groupAnnouncements(group.toString()));
       });
     }
     return Scaffold(
@@ -81,14 +82,12 @@ class _AnnouncementsState extends State<Announcements> {
           if (snapshot.hasData) {
             //print(snapshot.data.length);
             List<Announcement> announcements = [];
-            snapshot.data.forEach((e) {
-              announcements.addAll(e.announcements);
+            snapshot.data.forEach((streamData) {
+              announcements.addAll((streamData as QuerySnapshot)
+                  .docs
+                  .map(DatabaseService.announcementFromSnapshot)
+                  .toList());
             });
-
-            /* 
-                          Sorting the announcements by comparing their time of creation 
-                  */
-            announcements.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
             return ListView.builder(
                 itemCount: announcements.length,

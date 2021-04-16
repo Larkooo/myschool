@@ -77,7 +77,7 @@ class _NewHomeworkState extends State<NewHomework> {
                               width: MediaQuery.of(context).size.width / 1.26,
                               child: HomeworkComp(
                                 homework: Homework(
-                                    uid: -1,
+                                    uid: '-1',
                                     author: user.uid,
                                     title: _homeworkTitle.text,
                                     description: _homeworkDescription.text,
