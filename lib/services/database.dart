@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:myschool/models/Code.dart';
 import 'package:myschool/models/announcement.dart';
 import 'package:myschool/models/group.dart';
@@ -94,11 +95,20 @@ class DatabaseService {
         'content': content,
         'createdAt': FieldValue.serverTimestamp(),
       });
+      // notification
+
+      String topic = author.school.uid + '-' + group;
+      // unsubscribing to avoid receiving the notification even if its us who sent it
+      FirebaseMessaging.instance.unsubscribeFromTopic(topic);
+
       await MessagingService.sendMessageToTopic(
           '${author.firstName} a envoyé(s) un nouveau message dans ' + group,
           content,
-          author.school.uid + '-' + group,
+          topic,
           'message');
+
+      // subscribing again
+      FirebaseMessaging.instance.subscribeToTopic(topic);
       return true;
     } catch (err) {
       return false;
@@ -115,11 +125,20 @@ class DatabaseService {
           'author': _usersCollection.doc(user.uid),
           'createdAt': FieldValue.serverTimestamp()
         });
+        // notification
+
+        String topic = user.school.uid;
+        // unsubscribing to avoid receiving the notification even if its us who sent it
+        FirebaseMessaging.instance.unsubscribeFromTopic(topic);
+
         await MessagingService.sendMessageToTopic(
             '${user.firstName} a posté(e) une nouvelle annonce!',
             title,
-            user.school.uid,
+            topic,
             'announce');
+
+        // subscribing again
+        FirebaseMessaging.instance.subscribeToTopic(topic);
       } else {
         await _schoolsCollection
             .doc(uid)
@@ -134,11 +153,20 @@ class DatabaseService {
           'createdAt': FieldValue.serverTimestamp()
         });
 
+        // notification
+
+        String topic = user.school.uid + '-' + scope.toString();
+        // unsubscribing to avoid receiving the notification even if its us who sent it
+        FirebaseMessaging.instance.unsubscribeFromTopic(topic);
+
         await MessagingService.sendMessageToTopic(
             '${user.firstName} a posté(e) une nouvelle annonce!',
             title,
             user.school.uid + '-' + scope.toString(),
             'announce');
+
+        // subscribing again
+        FirebaseMessaging.instance.subscribeToTopic(topic);
       }
       return true;
     } catch (_) {
@@ -164,11 +192,20 @@ class DatabaseService {
         'createdAt': FieldValue.serverTimestamp()
       });
 
+      // notification
+
+      String topic = user.school.uid + '-' + group;
+      // unsubscribing to avoid receiving the notification even if its us who sent it
+      FirebaseMessaging.instance.unsubscribeFromTopic(topic);
+
       await MessagingService.sendMessageToTopic(
           '${user.firstName} a posté(e) un nouveau devoir en $subject!',
           title,
           user.school.uid + '-' + group,
           'homework');
+
+      // subscribing again
+      FirebaseMessaging.instance.subscribeToTopic(topic);
       return true;
     } catch (_) {
       print(_);
