@@ -43,11 +43,17 @@ class HomeworkComp extends StatelessWidget {
                           .get(),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
-                          UserData author = DatabaseService()
-                              .userDataFromSnapshot(snapshot.data);
-                          // cache the user by its id
-                          CacheManagerMemory.cachedUsers[homework.author] =
-                              author;
+                          UserData author;
+                          if (snapshot.data.exists) {
+                            author = DatabaseService()
+                                .userDataFromSnapshot(snapshot.data);
+                            // cache the user by its id
+                            CacheManagerMemory.cachedUsers[homework.author] =
+                                author;
+                          } else {
+                            author = UserData(uid: "-1");
+                          }
+
                           return userLeadingHorizontal(author, 1);
                         } else {
                           return CircularProgressIndicator(

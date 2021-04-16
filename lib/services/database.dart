@@ -7,6 +7,7 @@ import 'package:myschool/models/Code.dart';
 import 'package:myschool/models/announcement.dart';
 import 'package:myschool/models/group.dart';
 import 'package:myschool/models/homework.dart';
+import 'package:myschool/models/message.dart';
 import 'package:myschool/models/school.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/services/messaging.dart';
@@ -86,6 +87,24 @@ class DatabaseService {
       return true;
     } catch (_) {
       print(_);
+      return false;
+    }
+  }
+
+  Future<bool> sendMessage(
+      String content, UserData author, String group) async {
+    try {
+      await _schoolsCollection.doc(uid).collection('groups').doc(group).update({
+        'messages': FieldValue.arrayUnion([
+          {
+            'author': _usersCollection.doc(author.uid),
+            'content': content,
+            'createdAt': DateTime.now(),
+          }
+        ])
+      });
+      return true;
+    } catch (err) {
       return false;
     }
   }
@@ -198,6 +217,16 @@ class DatabaseService {
         raw: data);
   }
 
+  Message messageFromData(
+          int index, Map<String, dynamic> data, DocumentReference reference) =>
+      Message(
+          uid: index,
+          author: data['author'],
+          content: data['content'],
+          createdAt: (data['createdAt'] as Timestamp).toDate(),
+          reference: reference,
+          raw: data);
+
   UserData userDataFromSnapshot(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data();
     // Student
@@ -258,14 +287,16 @@ class DatabaseService {
     Map<String, dynamic> data = snapshot.data();
     List<Announcement> announcements = [];
     List<Homework> homeworks = [];
+    List<Message> messages = [];
 
     int announcementCount = 0;
     int homeworkCount = 0;
+    int messageCount = 0;
 
-    data['announcements'].forEach((data) {
+    data['announcements'].forEach((announcement) {
       announcements.add(announcementFromData(
           announcementCount,
-          data,
+          announcement,
           snapshot.reference.parent.id == "schools"
               ? Scope.school
               : Scope.group,
@@ -273,13 +304,22 @@ class DatabaseService {
       announcementCount++;
     });
 
-    data['homeworks'].forEach((data) {
-      homeworks.add(homeworkFromData(homeworkCount, data, snapshot.reference));
+    data['homeworks'].forEach((homework) {
+      homeworks
+          .add(homeworkFromData(homeworkCount, homework, snapshot.reference));
       homeworkCount++;
     });
 
+    data['messages'].forEach((message) {
+      messages.add(messageFromData(messageCount, message, snapshot.reference));
+      messageCount++;
+    });
+
     return Group(
-        uid: snapshot.id, announcements: announcements, homeworks: homeworks);
+        uid: snapshot.id,
+        announcements: announcements,
+        homeworks: homeworks,
+        messages: messages);
   }
 
   // Users stream

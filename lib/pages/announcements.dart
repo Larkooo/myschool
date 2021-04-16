@@ -53,18 +53,23 @@ class _AnnouncementsState extends State<Announcements> {
       // only for ios for now
       appBar: Platform.isIOS
           ? AppBar(
-              title: CupertinoSlidingSegmentedControl(
-                  groupValue: scope,
-                  children: {
-                    Scope.school: Text('École', style: TextStyle(fontSize: 12)),
-                    Scope.none: Text('Tous', style: TextStyle(fontSize: 12)),
-                    Scope.group: Text('Groupe', style: TextStyle(fontSize: 12))
-                  },
-                  onValueChanged: (v) {
-                    setState(() {
-                      scope = v;
-                    });
-                  }),
+              title: Container(
+                  width: MediaQuery.of(context).size.width / 1.2,
+                  child: CupertinoSlidingSegmentedControl(
+                      groupValue: scope,
+                      children: {
+                        Scope.school:
+                            Text('École', style: TextStyle(fontSize: 12)),
+                        Scope.none:
+                            Text('Tous', style: TextStyle(fontSize: 12)),
+                        Scope.group:
+                            Text('Groupe', style: TextStyle(fontSize: 12))
+                      },
+                      onValueChanged: (v) {
+                        setState(() {
+                          scope = v;
+                        });
+                      })),
             )
           : null,
       body: StreamBuilder(

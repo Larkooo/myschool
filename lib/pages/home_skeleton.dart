@@ -9,6 +9,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:myschool/components/drawer.dart';
 import 'package:myschool/models/homework.dart';
 import 'package:myschool/models/user.dart';
+import 'package:myschool/pages/chat.dart';
 import 'package:myschool/pages/homeworks.dart';
 import 'package:myschool/pages/settings.dart';
 import 'package:myschool/pages/teacher/home.dart';
@@ -36,7 +37,13 @@ class _HomeState extends State<HomeSkeleton> {
   static UserData userData;
 
   static Map<UserType, List<Widget>> _widgetOptions = {
-    UserType.student: [Home(), Announcements(), Homeworks(), Calendar()],
+    UserType.student: [
+      Home(),
+      Announcements(),
+      Homeworks(),
+      Calendar(),
+      ChatPage()
+    ],
     UserType.teacher: [HomeTeacher(), Announcements(), Homeworks(), Groups()]
   };
 
@@ -76,7 +83,8 @@ class _HomeState extends State<HomeSkeleton> {
                 Home(user: userData),
                 Announcements(user: userData),
                 Homeworks(user: userData),
-                Calendar(user: userData)
+                Calendar(user: userData),
+                ChatPage(user: userData)
               ],
               UserType.teacher: [
                 HomeTeacher(user: userData),
@@ -126,7 +134,12 @@ class _HomeState extends State<HomeSkeleton> {
                         icon: Icon(Platform.isIOS
                             ? CupertinoIcons.calendar
                             : Icons.calendar_today),
-                        label: "Calendrier")
+                        label: "Calendrier"),
+                    BottomNavigationBarItem(
+                        icon: Icon(Platform.isIOS
+                            ? CupertinoIcons.chat_bubble
+                            : Icons.chat),
+                        label: "Chat")
                   ],
                   currentIndex: _selectedIndex,
                   onTap: _onItemTapped,

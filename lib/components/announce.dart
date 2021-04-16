@@ -50,12 +50,12 @@ class Announce extends StatelessWidget {
                           if (snapshot.data.exists) {
                             author = DatabaseService()
                                 .userDataFromSnapshot(snapshot.data);
+                            // cache the user by its id
+                            CacheManagerMemory
+                                .cachedUsers[announcement.author] = author;
                           } else {
                             author = UserData(uid: "-1");
                           }
-                          // cache the user by its id
-                          CacheManagerMemory.cachedUsers[announcement.author] =
-                              author;
 
                           return userLeadingHorizontal(author, 1);
                         } else {
@@ -172,13 +172,10 @@ class Announce extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 14,
                       )),
-                  onPressed: () async {
+                  onPressed: () {
                     FlutterClipboard.copy(announcement.content).then((_) {
                       Navigator.pop(context);
                     });
-                    //if (await Vibration.hasVibrator()) {
-                    //Vibration.vibrate();
-                    //}
                   },
                 ),
                 if (user.uid == announcement.author)

@@ -46,9 +46,7 @@ class AnnouncePage extends StatelessWidget {
           style: TextStyle(color: Colors.grey[600], fontSize: 13),
         ),
         Container(
-            height: announcement.content.length > 500
-                ? MediaQuery.of(context).size.height / 3
-                : null,
+            height: MediaQuery.of(context).size.height / 3,
             child: Card(
                 margin: EdgeInsets.fromLTRB(40, 10, 40, 0),
                 color: Colors.grey[900],
@@ -61,7 +59,7 @@ class AnnouncePage extends StatelessWidget {
                               fontSize: 15, color: Colors.grey[200]))),
                 ))),
         SizedBox(
-          height: 5,
+          height: 10,
         ),
         Text(
           diffInDaysNow == 0
