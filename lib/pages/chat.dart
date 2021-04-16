@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:adaptive_dialog/adaptive_dialog.dart';
+import 'package:clipboard/clipboard.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +16,8 @@ import 'package:myschool/services/database.dart';
 import 'package:myschool/shared/cachemanager.dart';
 import 'package:myschool/shared/constants.dart';
 import 'package:dart_date/dart_date.dart';
+// ignore: implementation_imports
+import 'package:adaptive_dialog/src/modal_action_sheet/material_modal_action_sheet.dart';
 
 class ChatPage extends StatefulWidget {
   final UserData user;
@@ -81,25 +87,90 @@ class _ChatPageState extends State<ChatPage> {
                                                 ? CrossAxisAlignment.end
                                                 : CrossAxisAlignment.start,
                                         children: [
-                                          Container(
-                                              constraints: BoxConstraints(
-                                                maxWidth: MediaQuery.of(context)
-                                                        .size
-                                                        .width /
-                                                    1.5,
-                                              ),
-                                              padding: EdgeInsets.all(5),
-                                              margin: EdgeInsets.fromLTRB(
-                                                  5, 5, 5, 5),
-                                              decoration: BoxDecoration(
-                                                  color: Colors.blue[700],
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10)),
-                                              child: Text(
-                                                message.content,
-                                                style: TextStyle(fontSize: 17),
-                                              )),
+                                          Platform.isIOS
+                                              ? CupertinoContextMenu(
+                                                  actions: [
+                                                      CupertinoContextMenuAction(
+                                                        trailingIcon:
+                                                            Icons.copy,
+                                                        child: Text("Copier",
+                                                            style: TextStyle(
+                                                              fontSize: 12,
+                                                            )),
+                                                        onPressed: () {
+                                                          FlutterClipboard.copy(
+                                                                  message
+                                                                      .content)
+                                                              .then((_) {
+                                                            Navigator.pop(
+                                                                context);
+                                                          });
+                                                        },
+                                                      ),
+                                                      if (message.author.id ==
+                                                          widget.user.uid)
+                                                        CupertinoContextMenuAction(
+                                                            trailingIcon:
+                                                                Icons.delete,
+                                                            child: Text(
+                                                              'Supprimer',
+                                                              style: TextStyle(
+                                                                  fontSize: 12,
+                                                                  color: Colors
+                                                                      .red),
+                                                            ))
+                                                    ],
+                                                  child: Material(
+                                                      color: Colors.transparent,
+                                                      child: Container(
+                                                          constraints:
+                                                              BoxConstraints(
+                                                            maxWidth: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width /
+                                                                1.5,
+                                                          ),
+                                                          padding:
+                                                              EdgeInsets.all(5),
+                                                          margin:
+                                                              EdgeInsets.fromLTRB(
+                                                                  5, 5, 5, 5),
+                                                          decoration: BoxDecoration(
+                                                              color: Colors
+                                                                  .blue[700],
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          10)),
+                                                          child: Text(
+                                                            message.content,
+                                                            style: TextStyle(
+                                                                fontSize: 17),
+                                                          ))))
+                                              : GestureDetector(
+                                                onLongPress: () async => message.author.id == widget.user.uid ? await showModalActionSheet(context: context, message: 'Voulez vous supprimer ce message?') : null,
+                                                child:Container(
+                                                  constraints: BoxConstraints(
+                                                    maxWidth:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width /
+                                                            1.5,
+                                                  ),
+                                                  padding: EdgeInsets.all(5),
+                                                  margin: EdgeInsets.fromLTRB(
+                                                      5, 5, 5, 5),
+                                                  decoration: BoxDecoration(
+                                                      color: Colors.blue[700],
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10)),
+                                                  child: Text(
+                                                    message.content,
+                                                    style:
+                                                        TextStyle(fontSize: 17),
+                                                  ))),
                                           Row(
                                               mainAxisAlignment:
                                                   message.author.id ==
