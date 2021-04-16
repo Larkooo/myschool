@@ -188,83 +188,101 @@ class _ChatPageState extends State<ChatPage> {
                                                       ? MainAxisAlignment.end
                                                       : MainAxisAlignment.start,
                                               children: [
-                                                SizedBox(
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width /
-                                                            80),
-                                                CacheManagerMemory.cachedUsers[
-                                                            message
-                                                                .author.id] ==
-                                                        null
-                                                    ? FutureBuilder(
-                                                        future:
-                                                            FirebaseFirestore
-                                                                .instance
-                                                                .collection(
-                                                                    'users')
-                                                                .doc(message
-                                                                    .author.id
-                                                                    .toString())
-                                                                .get(),
-                                                        builder: (context,
-                                                            snapshot) {
-                                                          if (snapshot
-                                                              .hasData) {
-                                                            UserData author;
+                                                if (index ==
+                                                        messages.length - 1 ||
+                                                    (messages[index + 1]
+                                                            .author
+                                                            .id !=
+                                                        message.author.id))
+                                                  SizedBox(
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width /
+                                                              80),
+                                                if (index == messages.length - 1 ||
+                                                    (messages[index + 1]
+                                                            .author
+                                                            .id !=
+                                                        message.author.id))
+                                                  CacheManagerMemory.cachedUsers[
+                                                              message
+                                                                  .author.id] ==
+                                                          null
+                                                      ? FutureBuilder(
+                                                          future: FirebaseFirestore
+                                                              .instance
+                                                              .collection(
+                                                                  'users')
+                                                              .doc(message
+                                                                  .author.id
+                                                                  .toString())
+                                                              .get(),
+                                                          builder: (context,
+                                                              snapshot) {
                                                             if (snapshot
-                                                                .data.exists) {
-                                                              author = DatabaseService()
-                                                                  .userDataFromSnapshot(
-                                                                      snapshot
-                                                                          .data);
-                                                              // cache the user by its id
-                                                              CacheManagerMemory
-                                                                      .cachedUsers[
-                                                                  message
-                                                                      .author.id
-                                                                      .toString()] = author;
-                                                            } else {
-                                                              author = UserData(
-                                                                  uid: "-1");
-                                                            }
+                                                                .hasData) {
+                                                              UserData author;
+                                                              if (snapshot.data
+                                                                  .exists) {
+                                                                author = DatabaseService()
+                                                                    .userDataFromSnapshot(
+                                                                        snapshot
+                                                                            .data);
+                                                                // cache the user by its id
+                                                                CacheManagerMemory
+                                                                        .cachedUsers[
+                                                                    message
+                                                                        .author
+                                                                        .id
+                                                                        .toString()] = author;
+                                                              } else {
+                                                                author = UserData(
+                                                                    uid: "-1");
+                                                              }
 
-                                                            return userLeadingHorizontal(
-                                                                author, 0.7);
-                                                          } else {
-                                                            return CircularProgressIndicator(
-                                                              strokeWidth: 2,
-                                                            );
-                                                          }
-                                                        })
-                                                    : userLeadingHorizontal(
-                                                        CacheManagerMemory
-                                                                .cachedUsers[
-                                                            message.author.id],
-                                                        0.7),
+                                                              return userLeadingHorizontal(
+                                                                  author, 0.7);
+                                                            } else {
+                                                              return CircularProgressIndicator(
+                                                                strokeWidth: 2,
+                                                              );
+                                                            }
+                                                          })
+                                                      : userLeadingHorizontal(
+                                                          CacheManagerMemory
+                                                              .cachedUsers[message.author.id],
+                                                          0.7),
                                                 SizedBox(
                                                   width: 5,
                                                 ),
-                                                Text(
-                                                  (diffInDaysNow == 0
-                                                          ? "Aujourd'hui"
-                                                          : diffInDaysNow == -1
-                                                              ? "Hier"
-                                                              : diffInDaysNow ==
-                                                                      -2
-                                                                  ? "Avant-hier"
-                                                                  : DateFormat
-                                                                          .yMMMMEEEEd()
-                                                                      .format(message
-                                                                          .createdAt)) +
-                                                      " à " +
-                                                      DateFormat.Hm().format(
-                                                          message.createdAt),
-                                                  style: TextStyle(
-                                                      color: Colors.grey[500],
-                                                      fontSize: 12),
-                                                ),
+                                                if (index != 0 &&
+                                                    message.createdAt
+                                                            .differenceInMinutes(
+                                                                messages[index -
+                                                                        1]
+                                                                    .createdAt) >
+                                                        5)
+                                                  Text(
+                                                    (diffInDaysNow == 0
+                                                            ? "Aujourd'hui"
+                                                            : diffInDaysNow ==
+                                                                    -1
+                                                                ? "Hier"
+                                                                : diffInDaysNow ==
+                                                                        -2
+                                                                    ? "Avant-hier"
+                                                                    : DateFormat
+                                                                            .yMMMMEEEEd()
+                                                                        .format(message
+                                                                            .createdAt)) +
+                                                        " à " +
+                                                        DateFormat.Hm().format(
+                                                            message.createdAt),
+                                                    style: TextStyle(
+                                                        color: Colors.grey[500],
+                                                        fontSize: 12),
+                                                  ),
                                                 SizedBox(
                                                     width:
                                                         MediaQuery.of(context)
