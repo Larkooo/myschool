@@ -94,6 +94,11 @@ class DatabaseService {
         'content': content,
         'createdAt': FieldValue.serverTimestamp(),
       });
+      await MessagingService.sendMessageToTopic(
+          '${author.firstName} a envoyé(s) un nouveau message dans ' + group,
+          content,
+          author.school.uid + '-' + group,
+          'message');
       return true;
     } catch (err) {
       return false;
