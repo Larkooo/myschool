@@ -16,6 +16,8 @@ import 'package:image_crop_new/image_crop_new.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 
+import '../chat.dart';
+
 class GroupPage extends StatefulWidget {
   final String groupUid;
   final String schoolUid;
@@ -202,6 +204,18 @@ class _GroupPageState extends State<GroupPage> {
                                 SizedBox(
                                   height: 5,
                                 ),
+                                Container(
+                                    width:
+                                        MediaQuery.of(context).size.width / 1.5,
+                                    child: ElevatedButton(
+                                      onPressed: () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => ChatPage(
+                                                  user: widget.user, groupUid: widget.groupUid))),
+                                      child: Text('Accèder au chat de groupe'),
+                                      style: ButtonStyle(),
+                                    )),
                                 Container(
                                     width:
                                         MediaQuery.of(context).size.width / 1.5,

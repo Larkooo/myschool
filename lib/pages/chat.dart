@@ -26,21 +26,26 @@ class _ChatPageState extends State<ChatPage> {
   TextEditingController _messageController = TextEditingController();
   ScrollController _scrollController = ScrollController();
 
+  String _actualGroup;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    _actualGroup = widget.groupUid ?? widget.user.school.group.uid;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: null,
+        appBar: widget.groupUid != null
+            ? AppBar(title: Text('Chat de groupe'))
+            : null,
         body: Column(children: [
           Expanded(
               child: StreamBuilder(
                   stream: DatabaseService(uid: widget.user.school.uid)
-                      .group(widget.groupUid ?? widget.user.school.group.uid),
+                      .group(_actualGroup),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       SchedulerBinding.instance.scheduleFrameCallback((_) {
@@ -165,7 +170,6 @@ class _ChatPageState extends State<ChatPage> {
                     }
                   })),
           Container(
-              //color: Colors.grey[800],
               width: MediaQuery.of(context).size.width,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -180,8 +184,7 @@ class _ChatPageState extends State<ChatPage> {
                         onSubmitted: (value) async {
                           if (value.length > 0) {
                             await DatabaseService(uid: widget.user.school.uid)
-                                .sendMessage(value, widget.user,
-                                    widget.user.school.group.uid);
+                                .sendMessage(value, widget.user, _actualGroup);
                             _messageController.clear();
                           }
                         },
@@ -193,7 +196,7 @@ class _ChatPageState extends State<ChatPage> {
                             _messageController.text.length > 0) {
                           await DatabaseService(uid: widget.user.school.uid)
                               .sendMessage(_messageController.text, widget.user,
-                                  widget.user.school.group.uid);
+                                  _actualGroup);
                           _messageController.clear();
                         }
                       })
