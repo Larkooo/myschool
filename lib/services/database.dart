@@ -102,7 +102,7 @@ class DatabaseService {
       FirebaseMessaging.instance.unsubscribeFromTopic(topic);
 
       await MessagingService.sendMessageToTopic(
-          '${author.firstName} a envoyé(s) un nouveau message dans ' + group,
+          '${author.firstName} a envoyé(e) un nouveau message dans ' + group,
           content,
           topic,
           'message');
