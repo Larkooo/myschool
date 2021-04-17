@@ -10,14 +10,15 @@ class MessagingService {
 
   static Future<bool> sendMessageToTopic(
       String title, String body, String topic, String type,
-      {String icon}) async {
+      {String icon, Map data}) async {
     Map requestBody = {
       'notificationTitle': title,
       'notificationBody': body,
       'topic': topic,
-      'type': type
+      'type': type,
     };
     if (icon != null) requestBody['notificationIcon'] = icon;
+    if (data != null) requestBody['data'] = data;
 
     try {
       await http.post(Uri.tryParse(_apiUrl),
