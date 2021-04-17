@@ -149,8 +149,8 @@ class _HomeState extends State<HomeSkeleton> {
               // Teacher
               //
               // subscribe to all group topics
-              userData.groups.forEach((group) => _messaging.subscribeToTopic(
-                  userData.school.uid + '-' + group.toString()));
+              userData.groups.forEach((group) => _messaging
+                  .subscribeToTopic(userData.school.uid + '-' + group));
 
               // topic
               if (!subscribed) subscribed = true;

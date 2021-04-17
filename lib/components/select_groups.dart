@@ -14,7 +14,7 @@ class SelectGroups extends StatefulWidget {
 }
 
 class _SelectGroupsState extends State<SelectGroups> {
-  List<int> _selectedGroups = [];
+  List<String> _selectedGroups = [];
 
   final RoundedLoadingButtonController _btnController =
       new RoundedLoadingButtonController();
@@ -42,8 +42,7 @@ class _SelectGroupsState extends State<SelectGroups> {
                           child: ListView.builder(
                               itemCount: groupsSnapshot.size,
                               itemBuilder: (context, index) {
-                                int groupUid =
-                                    int.parse(groupsSnapshot.docs[index].id);
+                                String groupUid = groupsSnapshot.docs[index].id;
                                 return Card(
                                   child: Container(
                                     child: CheckboxListTile(

@@ -7,6 +7,7 @@ import 'package:myschool/components/new_announce.dart';
 import 'package:myschool/components/new_homework.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/pages/settings.dart';
+import 'package:myschool/services/firebase_auth_service.dart';
 import 'package:myschool/shared/constants.dart';
 
 class DrawerComp extends StatefulWidget {
@@ -196,14 +197,15 @@ class _DrawerCompState extends State<DrawerComp> {
           ListTile(
             leading: Text('Déconnexion'),
             trailing: Icon(Icons.logout),
-            onTap: () {
+            onTap: () async {
               showOkCancelAlertDialog(
                       context: context,
                       okLabel: 'Oui',
                       cancelLabel: 'Non',
                       title: 'Voulez-vous vraiment vous déconnecter?')
-                  .then((value) {
-                if (value == OkCancelResult.ok) FirebaseAuth.instance.signOut();
+                  .then((value) async {
+                if (value == OkCancelResult.ok)
+                  await FirebaseAuthService.signOut(widget.user);
               });
             },
           ),

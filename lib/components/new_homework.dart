@@ -55,8 +55,7 @@ class _NewHomeworkState extends State<NewHomework> {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     UserData user = snapshot.data;
-                    if (widget.group == null)
-                      widget.group = user.groups[0].toString();
+                    if (widget.group == null) widget.group = user.groups[0];
                     return Form(
                       key: _formKey,
                       child: Center(
@@ -172,9 +171,9 @@ class _NewHomeworkState extends State<NewHomework> {
                               width: MediaQuery.of(context).size.width / 2.3,
                               child: DropdownButtonFormField(
                                 items: user.groups
-                                    .map((e) => DropdownMenuItem(
-                                          child: Text(e.toString()),
-                                          value: e.toString(),
+                                    .map((group) => DropdownMenuItem(
+                                          child: Text(group),
+                                          value: group,
                                         ))
                                     .toList(),
                                 value: widget.group,

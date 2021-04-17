@@ -30,6 +30,49 @@ class Homeworks extends StatefulWidget {
 }
 
 class _HomeworksState extends State<Homeworks> {
+  ScrollController _scrollController = ScrollController();
+
+  int _dynamicLimit = 5;
+
+  int _homeworkCount = 0;
+  int _streamCount = 0;
+
+  Widget _dynamicBottom;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    Future.delayed(
+        Duration.zero,
+        () => _dynamicBottom = loadButton(context, () {
+              setState(() {
+                _dynamicLimit += 10;
+              });
+            }));
+
+    _scrollController.addListener(() {
+      final totalLimit = _dynamicLimit * _streamCount;
+      // if we have more messages to load and we're scrolled up at top
+      if (_scrollController.offset == 0.0 && !(_homeworkCount < totalLimit)) {
+        setState(() {
+          _dynamicBottom = Center(child: CircularProgressIndicator.adaptive());
+          _dynamicLimit += 10;
+        });
+        Future.delayed(Duration(seconds: 1), () {
+          setState(() {
+            _dynamicBottom = loadButton(context, () {
+              setState(() {
+                _dynamicLimit += 10;
+              });
+            });
+          });
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // grouping different streams into a list to then merge them.
@@ -60,6 +103,11 @@ class _HomeworksState extends State<Homeworks> {
                   .toList());
             });
 
+            // keep track of the count of homeworks to know when we need
+            // to load more of them
+            _homeworkCount = homeworks.length;
+            _streamCount = snapshot.data.length;
+
             // filtering homeworks
             homeworks.removeWhere(
                 (homework) => homework.due.difference(DateTime.now()).inDays >
@@ -71,8 +119,19 @@ class _HomeworksState extends State<Homeworks> {
                     : false);
 
             return ListView.builder(
+                controller: _scrollController,
                 itemCount: homeworks.length,
                 itemBuilder: (context, index) {
+                  if (index == homeworks.length - 1 &&
+                      !(homeworks.length <
+                          (_dynamicLimit * snapshot.data.length))) {
+                    return Column(
+                      children: [
+                        HomeworkComp(homework: homeworks[index]),
+                        _dynamicBottom
+                      ],
+                    );
+                  }
                   /* 
                           Transforming our data to a a Homework 
                         */

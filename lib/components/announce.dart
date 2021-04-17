@@ -99,8 +99,9 @@ class Announce extends StatelessWidget {
                             child: Center(
                                 child: Text(
                               announcement.scope == Scope.group
-                                  ? announcement.reference.parent.parent.id ??
-                                      "Foyer"
+                                  ? announcement.uid != '-1'
+                                      ? announcement.reference.parent.parent.id
+                                      : "Foyer"
                                   : "École",
                               style: TextStyle(fontSize: 10),
                             ))))),

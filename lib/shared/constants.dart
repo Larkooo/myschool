@@ -212,6 +212,15 @@ Column coursePage(
       ],
     );
 
+Widget loadButton(BuildContext context, void Function() onPressed) => Center(
+    child: Container(
+        width: MediaQuery.of(context).size.width / 1.8,
+        child: ElevatedButton(
+          onPressed: onPressed,
+          child: Text('Charger plus de messages'),
+          style: ButtonStyle(),
+        )));
+
 Container noAvatar(double size) => Container(
     width: 20 * size,
     height: 20 * size,

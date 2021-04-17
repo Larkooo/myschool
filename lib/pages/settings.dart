@@ -19,6 +19,7 @@ import 'package:myschool/services/database.dart';
 import 'package:myschool/services/firebase_auth_service.dart';
 import 'package:myschool/services/firebase_storage.dart';
 import 'package:myschool/shared/constants.dart';
+import 'package:myschool/shared/local_storage.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -339,49 +340,51 @@ class _SettingsState extends State<Settings> {
                 //  /*: null*/,
                 //),
                 SettingsTile(
-                  leading: Icon(Icons.delete_forever),
-                  title: "Supprimer votre compte",
-                  subtitle: "Cette action est irréversible!",
-                  onPressed: (context) {
-                    showTextInputDialog(
-                        context: context,
-                        title: 'Compte',
-                        message: 'Voulez-vous vraiment supprimer votre compte?',
-                        okLabel: 'Supprimer',
-                        cancelLabel: 'Annuler',
-                        textFields: [
-                          DialogTextField(
-                              hintText: 'Mot de passe',
-                              obscureText: true,
-                              validator: (value) {
-                                if (value.isEmpty)
-                                  return 'Ce champs est obligatoire.';
-                                if (value.length < 6)
-                                  return 'Mot de passe trop court.';
-                                return null;
-                              })
-                        ]).then((inputs) {
-                      String currentPassword = inputs[0];
-                      user
-                          .reauthenticateWithCredential(
-                              EmailAuthProvider.credential(
-                                  email: user.email, password: currentPassword))
-                          .then((_) => FirebaseAuthService.deleteUser(user)
-                                  .then((value) {
-                                value
-                                    ? Alert(message: 'Compte supprimé').show()
-                                    : Alert(message: 'Erreur');
-                              }))
-                          .onError((error, stackTrace) =>
-                              Alert(message: 'Erreur').show());
-                      FirebaseAuthService.deleteUser(user).then((value) {
-                        value
-                            ? Alert(message: 'Compte supprimé').show()
-                            : Alert(message: 'Erreur');
+                    leading: Icon(Icons.delete_forever),
+                    title: "Supprimer votre compte",
+                    subtitle: "Cette action est irréversible!",
+                    onPressed: (context) {
+                      showTextInputDialog(
+                          context: context,
+                          title: 'Compte',
+                          message:
+                              'Voulez-vous vraiment supprimer votre compte?',
+                          okLabel: 'Supprimer',
+                          cancelLabel: 'Annuler',
+                          textFields: [
+                            DialogTextField(
+                                hintText: 'Mot de passe',
+                                obscureText: true,
+                                validator: (value) {
+                                  if (value.isEmpty)
+                                    return 'Ce champs est obligatoire.';
+                                  if (value.length < 6)
+                                    return 'Mot de passe trop court.';
+                                  return null;
+                                })
+                          ]).then((inputs) {
+                        String currentPassword = inputs[0];
+                        user
+                            .reauthenticateWithCredential(
+                                EmailAuthProvider.credential(
+                                    email: user.email,
+                                    password: currentPassword))
+                            .then((_) {
+                          Navigator.pop(context);
+                          FirebaseAuthService.deleteUser(user)
+                              .then((value) async {
+                            if (value) {
+                              Alert(message: 'Compte supprimé').show();
+                              await LocalStorage.clearSensitiveInfo();
+                            } else {
+                              Alert(message: 'Une erreur est survenue!');
+                            }
+                          });
+                        }, onError: (err) {
+                          Alert(message: 'Une erreur est survenue!').show();
+                        });
                       });
-                    });
-                  },
-                )
+                    })
               ],
             )
           ],

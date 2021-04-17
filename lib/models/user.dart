@@ -13,7 +13,7 @@ class UserData {
   final School school;
   final DateTime createdAt;
   // Teacher
-  List groups;
+  List<String> groups;
 
   UserData(
       {this.uid,

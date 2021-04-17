@@ -226,7 +226,6 @@ class _RegisterState extends State<Register> {
                               _emailController.text.trim(),
                               _passwordController.text,
                               _codeController.text.toLowerCase().trim());
-                      print(registerStatus);
                       if (registerStatus is UserData) {
                         Alert(message: "Compte crée").show();
                         _btnController.success();

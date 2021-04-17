@@ -282,12 +282,14 @@ class DatabaseService {
       );
 
     // Teacher
+    // stupid workaround for a stupid error (List<dynamic>)
+    data['groups'] = <String>[...data['groups']];
     return UserData(
       uid: snapshot.id,
       firstName: data['firstName'],
       lastName: data['lastName'],
       type: UserType.teacher,
-      groups: data['groups'],
+      groups: data['groups'] as List<String>,
       avatarUrl: data['avatarUrl'],
       usedCode: data['usedCode'],
       school: School(uid: data['school'].id),
@@ -339,44 +341,48 @@ class DatabaseService {
   }
 
   // School announcements
-  Stream<QuerySnapshot> get schoolAnnouncements {
+  Stream<QuerySnapshot> schoolAnnouncements({int limit}) {
     return _schoolsCollection
         .doc(uid)
         .collection('announcements')
         .orderBy('createdAt')
+        .limitToLast(limit ?? 10)
         .snapshots();
   }
 
   // Group announcements
-  Stream<QuerySnapshot> groupAnnouncements(String groupUid) {
+  Stream<QuerySnapshot> groupAnnouncements(String groupUid, {int limit}) {
     return _schoolsCollection
         .doc(uid)
         .collection('groups')
         .doc(groupUid)
         .collection('announcements')
         .orderBy('createdAt')
+        .limitToLast(limit ?? 10)
         .snapshots();
   }
 
   // Group homeworks
-  Stream<QuerySnapshot> groupHomeworks(String groupUid) {
+  Stream<QuerySnapshot> groupHomeworks(String groupUid, {int limit}) {
     return _schoolsCollection
         .doc(uid)
         .collection('groups')
         .doc(groupUid)
         .collection('homeworks')
         .orderBy('due')
+        .limitToLast(limit ?? 10)
         .snapshots();
   }
 
   // Group messages
-  Stream<QuerySnapshot> groupMessages(String groupUid) {
+  Stream<QuerySnapshot> groupMessages(String groupUid, {int limit}) {
     return _schoolsCollection
         .doc(uid)
         .collection('groups')
         .doc(groupUid)
         .collection('messages')
         .orderBy('createdAt')
+        .limitToLast(limit ?? 10)
         .snapshots();
   }
 

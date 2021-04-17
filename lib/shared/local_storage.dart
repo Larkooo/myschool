@@ -5,6 +5,19 @@ import 'package:myschool/shared/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalStorage {
+  static Future<bool> clearSensitiveInfo() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      // delete keys that contain user info in shared prefs
+      await prefs.remove('mozaikTimetable');
+      await prefs.remove('mozaikUserData');
+      await prefs.remove('mozaikLoyal');
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+
   static Future<String> getGroupAlias(String group) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('group${group}Alias');

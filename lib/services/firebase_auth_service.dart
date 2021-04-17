@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:myschool/models/group.dart';
 import 'package:myschool/models/school.dart';
 import 'package:myschool/services/database.dart';
 import 'package:myschool/shared/constants.dart';
+import 'package:myschool/shared/local_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user.dart';
 
 class FirebaseAuthService {
@@ -38,8 +41,9 @@ class FirebaseAuthService {
 
   static Future<bool> deleteUser(User user) async {
     try {
-      await user.delete();
       await users.doc(user.uid).delete();
+      await user.delete();
+      print('haha');
       return true;
     } on FirebaseAuthException catch (e) {
       print(e);
@@ -118,9 +122,20 @@ class FirebaseAuthService {
     }
   }
 
-  static Future<void> signOut() async {
+  static Future<void> signOut(UserData user) async {
     try {
+      // unsubscribe from user topics
+      FirebaseMessaging fcm = FirebaseMessaging.instance;
+      fcm.unsubscribeFromTopic(user.school.uid);
+      if (user.type == UserType.student) {
+        fcm.unsubscribeFromTopic(user.school.group.uid);
+      } else {
+        user.groups.forEach((group) {
+          fcm.unsubscribeFromTopic(user.school.group.uid);
+        });
+      }
       await _auth.signOut();
+      await LocalStorage.clearSensitiveInfo();
     } catch (e) {
       print(e);
     }

@@ -22,8 +22,8 @@ class _HomeTeacherState extends State<HomeTeacher> {
     return Center(
         child: Column(children: [
       StreamBuilder(
-          stream:
-              DatabaseService(uid: widget.user.school.uid).schoolAnnouncements,
+          stream: DatabaseService(uid: widget.user.school.uid)
+              .schoolAnnouncements(limit: 1),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               QuerySnapshot query = snapshot.data;

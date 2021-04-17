@@ -191,15 +191,14 @@ class _HomeState extends State<Home> {
             }
           }),
       StreamBuilder(
-          stream:
-              DatabaseService(uid: widget.user.school.uid).schoolAnnouncements,
+          stream: DatabaseService(uid: widget.user.school.uid)
+              .schoolAnnouncements(limit: 1),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               QuerySnapshot query = snapshot.data;
-              List<Announcement> announcements =
-                  query.docs
-                      .map(DatabaseService.announcementFromSnapshot)
-                      .toList();
+              List<Announcement> announcements = query.docs
+                  .map(DatabaseService.announcementFromSnapshot)
+                  .toList();
               if (announcements.length > 0) {
                 return Column(
                   children: [

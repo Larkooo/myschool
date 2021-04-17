@@ -30,24 +30,68 @@ class Announcements extends StatefulWidget {
 }
 
 class _AnnouncementsState extends State<Announcements> {
-  Scope scope = Scope.none;
+  Scope _scope = Scope.none;
+  ScrollController _scrollController = ScrollController();
+
+  int _announcementCount = 0;
+  int _streamCount = 0;
+
+  int _dynamicLimit = 5;
+
+  Widget _dynamicBottom;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    Future.delayed(
+        Duration.zero,
+        () => _dynamicBottom = loadButton(context, () {
+              setState(() {
+                _dynamicLimit += 10;
+              });
+            }));
+
+    _scrollController.addListener(() {
+      final totalLimit = _dynamicLimit * _streamCount;
+      // if we have more messages to load and we're scrolled up at top
+      if (_scrollController.offset == 0.0 &&
+          !(_announcementCount < totalLimit)) {
+        setState(() {
+          _dynamicBottom = Center(child: CircularProgressIndicator.adaptive());
+          _dynamicLimit += 10;
+        });
+        Future.delayed(Duration(seconds: 1), () {
+          setState(() {
+            _dynamicBottom = loadButton(context, () {
+              setState(() {
+                _dynamicLimit += 10;
+              });
+            });
+          });
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     // grouping different streams into a list to then merge them.
     // to get school and group(s) announcements
     List<Stream> streams = [];
-    if (scope == Scope.school || scope == Scope.none)
-      streams.add(
-          DatabaseService(uid: widget.user.school.uid).schoolAnnouncements);
+    if (_scope == Scope.school || _scope == Scope.none)
+      streams.add(DatabaseService(uid: widget.user.school.uid)
+          .schoolAnnouncements(limit: _dynamicLimit));
     if (widget.user.type == UserType.student) {
-      if (scope == Scope.group || scope == Scope.none)
+      if (_scope == Scope.group || _scope == Scope.none)
         streams.add(DatabaseService(uid: widget.user.school.uid)
-            .groupAnnouncements(widget.user.school.group.uid));
-    } else if (scope == Scope.group || scope == Scope.none) {
+            .groupAnnouncements(widget.user.school.group.uid,
+                limit: _dynamicLimit));
+    } else if (_scope == Scope.group || _scope == Scope.none) {
       widget.user.groups.forEach((group) {
         streams.add(DatabaseService(uid: widget.user.school.uid)
-            .groupAnnouncements(group.toString()));
+            .groupAnnouncements(group, limit: _dynamicLimit));
       });
     }
     return Scaffold(
@@ -57,7 +101,7 @@ class _AnnouncementsState extends State<Announcements> {
               title: Container(
                   width: MediaQuery.of(context).size.width / 1.2,
                   child: CupertinoSlidingSegmentedControl(
-                      groupValue: scope,
+                      groupValue: _scope,
                       children: {
                         Scope.school:
                             Text('École', style: TextStyle(fontSize: 12)),
@@ -68,14 +112,14 @@ class _AnnouncementsState extends State<Announcements> {
                       },
                       onValueChanged: (v) {
                         setState(() {
-                          scope = v;
+                          _scope = v;
                         });
                       })),
             )
           : null,
       body: StreamBuilder(
         /* 
-                  Merging the streams, the group(s) announcements and school ones
+                  Merging the streams, the group announcements and school ones
                   */
         stream: CombineLatestStream.list(streams),
         builder: (context, snapshot) {
@@ -89,13 +133,31 @@ class _AnnouncementsState extends State<Announcements> {
                   .toList());
             });
 
+            // keep track of the count of announcements to know when we need
+            // to load more of them
+            _announcementCount = announcements.length;
+            _streamCount = snapshot.data.length;
+
             // we need to sort the data ourselves because we have multiple separate
             // streams
             announcements.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
             return ListView.builder(
+                controller: _scrollController,
                 itemCount: announcements.length,
                 itemBuilder: (context, index) {
+                  // we have multiple streams
+
+                  if (index == announcements.length - 1 &&
+                      !(announcements.length <
+                          (_dynamicLimit * snapshot.data.length))) {
+                    return Column(
+                      children: [
+                        Announce(announcement: announcements[index]),
+                        _dynamicBottom
+                      ],
+                    );
+                  }
                   /* 
                           Transforming our data to a an Announcement 
                         */

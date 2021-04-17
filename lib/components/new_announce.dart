@@ -35,7 +35,7 @@ class _NewAnnounceState extends State<NewAnnounce> {
     // TODO: implement initState
     _announceScope = widget.group != null ? Scope.group : Scope.school;
     super.initState();
-    if (widget.group == null) widget.group = widget.user.groups[0].toString();
+    if (widget.group == null) widget.group = widget.user.groups[0];
   }
 
   final _formKey = GlobalKey<FormState>();
@@ -154,9 +154,9 @@ class _NewAnnounceState extends State<NewAnnounce> {
                     width: MediaQuery.of(context).size.width / 2.3,
                     child: DropdownButtonFormField(
                       items: widget.user.groups
-                          .map((e) => DropdownMenuItem(
-                                child: Text(e.toString()),
-                                value: e.toString(),
+                          .map((group) => DropdownMenuItem(
+                                child: Text(group),
+                                value: group,
                               ))
                           .toList(),
                       value: widget.group,

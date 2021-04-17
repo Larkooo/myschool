@@ -19,14 +19,14 @@ class Groups extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<dynamic> groups = user.groups;
+    List<String> groups = user.groups;
     // important to make the distinction between groups and levels here.
     // levels = grade 1, 2..
     // groups = group 504, 203...
     List<int> levels = [];
-    groups.forEach((element) {
+    groups.forEach((group) {
       // getting first char
-      int level = int.parse(element.toString()[0]);
+      int level = int.parse(group[0]);
       if (!(levels.contains(level))) levels.add(level);
     });
     // sorting from highest number to lowest
@@ -44,14 +44,13 @@ class Groups extends StatelessWidget {
                 scrollDirection: Axis.horizontal,
                 child: Wrap(
                   spacing: 5,
-                  children: groups
-                      .where((element) => element.toString()[0] == level)
-                      .map((e) {
+                  children:
+                      groups.where((group) => group[0] == level).map((group) {
                     Widget groupCard() {
-                      String groupAlias = CacheManagerMemory
-                          .groupData[e.toString()][GroupAttribute.alias];
-                      File groupImage = CacheManagerMemory
-                          .groupData[e.toString()][GroupAttribute.image];
+                      String groupAlias = CacheManagerMemory.groupData[group]
+                          [GroupAttribute.alias];
+                      File groupImage = CacheManagerMemory.groupData[group]
+                          [GroupAttribute.image];
                       return Material(
                         borderRadius: BorderRadius.circular(5),
                         color: Colors.grey[800],
@@ -61,7 +60,7 @@ class Groups extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => GroupPage(
-                                        groupUid: e.toString(),
+                                        groupUid: group,
                                         alias: groupAlias,
                                         image: groupImage,
                                         schoolUid: user.school.uid,
@@ -87,7 +86,7 @@ class Groups extends StatelessWidget {
                                           style: TextStyle(fontSize: 15),
                                         ),
                                         Text(
-                                          e.toString(),
+                                          group,
                                           style: TextStyle(
                                               fontSize: 13,
                                               color: Colors.grey[900]),
@@ -96,7 +95,7 @@ class Groups extends StatelessWidget {
                                     )
                                   : Center(
                                       child: Text(
-                                      e.toString(),
+                                      group,
                                       style: TextStyle(fontSize: 15),
                                     )),
                             )),
@@ -105,14 +104,14 @@ class Groups extends StatelessWidget {
 
                     Widget groupCardFuture = FutureBuilder(
                         future: Future.wait([
-                          LocalStorage.getGroupAlias(e.toString()),
-                          LocalStorage.getGroupImage(e.toString())
+                          LocalStorage.getGroupAlias(group),
+                          LocalStorage.getGroupImage(group)
                         ]),
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
                             String groupAlias = snapshot.data[0];
                             File groupImage = snapshot.data[1];
-                            CacheManagerMemory.groupData[e.toString()] = {
+                            CacheManagerMemory.groupData[group] = {
                               GroupAttribute.alias: groupAlias,
                               GroupAttribute.image: groupImage
                             };
@@ -125,7 +124,7 @@ class Groups extends StatelessWidget {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => GroupPage(
-                                              groupUid: e.toString(),
+                                              groupUid: group,
                                               alias: groupAlias,
                                               image: groupImage,
                                               schoolUid: user.school.uid,
@@ -154,7 +153,7 @@ class Groups extends StatelessWidget {
                                                 style: TextStyle(fontSize: 15),
                                               ),
                                               Text(
-                                                e.toString(),
+                                                group,
                                                 style: TextStyle(
                                                     fontSize: 13,
                                                     color: Colors.grey[900]),
@@ -163,7 +162,7 @@ class Groups extends StatelessWidget {
                                           )
                                         : Center(
                                             child: Text(
-                                            e.toString(),
+                                            group,
                                             style: TextStyle(fontSize: 15),
                                           )),
                                   )),
@@ -173,10 +172,9 @@ class Groups extends StatelessWidget {
                                 child: CircularProgressIndicator.adaptive());
                           }
                         });
-                    Widget card =
-                        CacheManagerMemory.groupData[e.toString()] != null
-                            ? groupCard()
-                            : groupCardFuture;
+                    Widget card = CacheManagerMemory.groupData[group] != null
+                        ? groupCard()
+                        : groupCardFuture;
                     return Platform.isIOS
                         ? CupertinoContextMenu(actions: [
                             CupertinoContextMenuAction(
@@ -191,7 +189,7 @@ class Groups extends StatelessWidget {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => NewAnnounce(
-                                            group: e.toString(), user: user)));
+                                            group: group, user: user)));
                               },
                             ),
                             CupertinoContextMenuAction(
@@ -206,7 +204,7 @@ class Groups extends StatelessWidget {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => NewHomework(
-                                            group: e.toString(), user: user)));
+                                            group: group, user: user)));
                               },
                             )
                           ], child: card)
