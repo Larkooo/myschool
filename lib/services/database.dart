@@ -102,7 +102,7 @@ class DatabaseService {
       FirebaseMessaging.instance.unsubscribeFromTopic(topic);
 
       await MessagingService.sendMessageToTopic(
-          '${author.firstName} a envoyé(e) un nouveau message dans ' + group,
+          '${author.firstName} a envoyé un nouveau message dans ' + group,
           content,
           topic,
           'message');
@@ -132,7 +132,7 @@ class DatabaseService {
         FirebaseMessaging.instance.unsubscribeFromTopic(topic);
 
         await MessagingService.sendMessageToTopic(
-            '${user.firstName} a posté(e) une nouvelle annonce!',
+            '${user.firstName} a posté une nouvelle annonce!',
             title,
             topic,
             'announce');
@@ -160,7 +160,7 @@ class DatabaseService {
         FirebaseMessaging.instance.unsubscribeFromTopic(topic);
 
         await MessagingService.sendMessageToTopic(
-            '${user.firstName} a posté(e) une nouvelle annonce!',
+            '${user.firstName} a posté une nouvelle annonce!',
             title,
             user.school.uid + '-' + scope.toString(),
             'announce');
@@ -199,7 +199,7 @@ class DatabaseService {
       FirebaseMessaging.instance.unsubscribeFromTopic(topic);
 
       await MessagingService.sendMessageToTopic(
-          '${user.firstName} a posté(e) un nouveau devoir en $subject!',
+          '${user.firstName} a posté un nouveau devoir en $subject!',
           title,
           user.school.uid + '-' + group,
           'homework');
