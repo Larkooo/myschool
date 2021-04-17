@@ -70,8 +70,7 @@ class _MessageHandlerState extends State<MessageHandler> {
       _saveDeviceToken();
     }
     FirebaseMessaging.onMessage.listen((message) {
-      print('yes');
-      if (message.notification != null) {
+      if (message.notification != null && Platform.isAndroid) {
         final snackbar = SnackBar(
             content: Text(message.notification.title),
             action: SnackBarAction(

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:alert/alert.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -17,6 +18,8 @@ import 'package:myschool/shared/constants.dart';
 //import 'components/login.dart';
 import 'package:provider/provider.dart';
 import 'package:device_info/device_info.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:package_info/package_info.dart';
 
 void main() async {
   await initializeDateFormatting('fr', null);
@@ -37,6 +40,25 @@ void main() async {
     await Future.delayed(Duration(seconds: 2));
     exit(-1);
   }
+
+  //RemoteConfig remoteConfig = RemoteConfig.instance;
+  //PackageInfo packageInfo = await PackageInfo.fromPlatform();
+
+  //remoteConfig.setDefaults({'latest_version': packageInfo.version});
+
+  //await remoteConfig.fetch();
+
+  //String latestVersion = remoteConfig.getString('latest_version');
+
+  //if (packageInfo.version != latestVersion) {
+  //  Alert(
+  //          message:
+  //              'Version invalide. Votre version ne correspond pas à la dernière version de MonÉcole. Veillez s\'il vous plait mettre à jour l\'application')
+  //      .show();
+  //  await Future.delayed(Duration(seconds: 3));
+  //  exit(-1);
+  //}
+
   runApp(MyApp());
 }
 

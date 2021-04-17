@@ -102,13 +102,13 @@ class DatabaseService {
       FirebaseMessaging.instance.unsubscribeFromTopic(topic);
 
       MessagingService.sendMessageToTopic(
-          '${author.firstName} a envoyé un nouveau message dans ' + group,
-          content,
-          topic,
-          'message');
+              '${author.firstName} a envoyé un nouveau message dans ' + group,
+              content,
+              topic,
+              'message')
+          .then((_) => FirebaseMessaging.instance
+              .subscribeToTopic(topic)); // subscribing again
 
-      // subscribing again
-      FirebaseMessaging.instance.subscribeToTopic(topic);
       return true;
     } catch (err) {
       return false;
@@ -132,13 +132,12 @@ class DatabaseService {
         FirebaseMessaging.instance.unsubscribeFromTopic(topic);
 
         MessagingService.sendMessageToTopic(
-            '${user.firstName} a posté une nouvelle annonce!',
-            title,
-            topic,
-            'announce');
-
-        // subscribing again
-        FirebaseMessaging.instance.subscribeToTopic(topic);
+                '${user.firstName} a posté une nouvelle annonce!',
+                title,
+                topic,
+                'announce')
+            .then((_) => // subscribing again
+                FirebaseMessaging.instance.subscribeToTopic(topic));
       } else {
         await _schoolsCollection
             .doc(uid)
@@ -160,13 +159,12 @@ class DatabaseService {
         FirebaseMessaging.instance.unsubscribeFromTopic(topic);
 
         MessagingService.sendMessageToTopic(
-            '${user.firstName} a posté une nouvelle annonce!',
-            title,
-            user.school.uid + '-' + scope.toString(),
-            'announce');
-
-        // subscribing again
-        FirebaseMessaging.instance.subscribeToTopic(topic);
+                '${user.firstName} a posté une nouvelle annonce!',
+                title,
+                user.school.uid + '-' + scope.toString(),
+                'announce')
+            .then((_) => // subscribing again
+                FirebaseMessaging.instance.subscribeToTopic(topic));
       }
       return true;
     } catch (_) {
@@ -199,13 +197,13 @@ class DatabaseService {
       FirebaseMessaging.instance.unsubscribeFromTopic(topic);
 
       MessagingService.sendMessageToTopic(
-          '${user.firstName} a posté un nouveau devoir en $subject!',
-          title,
-          user.school.uid + '-' + group,
-          'homework');
+              '${user.firstName} a posté un nouveau devoir en $subject!',
+              title,
+              user.school.uid + '-' + group,
+              'homework')
+          .then((_) => // subscribing again
+              FirebaseMessaging.instance.subscribeToTopic(topic));
 
-      // subscribing again
-      FirebaseMessaging.instance.subscribeToTopic(topic);
       return true;
     } catch (_) {
       print(_);

@@ -18,6 +18,7 @@ import 'package:myschool/shared/constants.dart';
 import 'package:dart_date/dart_date.dart';
 // ignore: implementation_imports
 import 'package:adaptive_dialog/src/modal_action_sheet/material_modal_action_sheet.dart';
+import 'package:keyboard_visibility/keyboard_visibility.dart';
 
 class ChatPage extends StatefulWidget {
   final UserData user;
@@ -39,11 +40,18 @@ class _ChatPageState extends State<ChatPage> {
   Widget sendWidget =
       Icon(Platform.isIOS ? CupertinoIcons.paperplane : Icons.send);
 
+  void scrollDown() =>
+      _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+          duration: Duration(seconds: 1), curve: Curves.fastLinearToSlowEaseIn);
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _actualGroup = widget.groupUid ?? widget.user.school.group.uid;
+    KeyboardVisibilityNotification().addNewListener(onChange: (bool visible) {
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    });
   }
 
   @override
@@ -57,7 +65,9 @@ class _ChatPageState extends State<ChatPage> {
               child: SingleChildScrollView(
                   controller: _scrollController,
                   child: GestureDetector(
-                      onTap: () => FocusScope.of(context).unfocus(),
+                      onTap: () {
+                        FocusScope.of(context).unfocus();
+                      },
                       child: StreamBuilder(
                           stream: DatabaseService(uid: widget.user.school.uid)
                               .groupMessages(_actualGroup),
@@ -66,11 +76,7 @@ class _ChatPageState extends State<ChatPage> {
                               if (!scrolled) {
                                 SchedulerBinding.instance
                                     .scheduleFrameCallback((_) {
-                                  _scrollController.animateTo(
-                                      _scrollController
-                                          .position.maxScrollExtent,
-                                      duration: Duration(seconds: 1),
-                                      curve: Curves.fastLinearToSlowEaseIn);
+                                  scrollDown();
                                 });
                                 scrolled = true;
                               }
@@ -284,13 +290,21 @@ class _ChatPageState extends State<ChatPage> {
                                                 SizedBox(
                                                   width: 5,
                                                 ),
-                                                if (index != 0 &&
-                                                    message.createdAt
-                                                            .differenceInMinutes(
-                                                                messages[index -
-                                                                        1]
-                                                                    .createdAt) >
-                                                        5)
+                                                if ((index != 0 &&
+                                                        message.createdAt
+                                                                .differenceInMinutes(
+                                                                    messages[index -
+                                                                            1]
+                                                                        .createdAt) >
+                                                            1) ||
+                                                    (index ==
+                                                            messages.length -
+                                                                1 &&
+                                                        DateTime.now()
+                                                                .differenceInMinutes(
+                                                                    message
+                                                                        .createdAt) >
+                                                            10))
                                                   formattedDate(
                                                       message.createdAt, 12),
                                                 SizedBox(
@@ -315,6 +329,8 @@ class _ChatPageState extends State<ChatPage> {
                       width: MediaQuery.of(context).size.width / 1.3,
                       child: PlatformTextField(
                         controller: _messageController,
+                        onTap: () => _scrollController
+                            .jumpTo(_scrollController.position.maxScrollExtent),
                         textInputAction: TextInputAction.send,
                         cupertino: (context, platform) =>
                             CupertinoTextFieldData(placeholder: 'Message'),
@@ -340,6 +356,7 @@ class _ChatPageState extends State<ChatPage> {
                       icon: sendWidget,
                       onPressed: () async {
                         FocusScope.of(context).unfocus();
+                        //scrollDown();
                         if (_messageController.text != null &&
                             _messageController.text.length > 0) {
                           setState(() {
