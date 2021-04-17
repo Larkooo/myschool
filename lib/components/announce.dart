@@ -112,9 +112,8 @@ class Announce extends StatelessWidget {
                             child: Center(
                                 child: Text(
                               announcement.scope == Scope.group
-                                  ? announcement.uid != '-1'
-                                      ? announcement.reference.parent.parent.id
-                                      : "Foyer"
+                                  ? announcement.reference.parent.parent.id ??
+                                      "Foyer"
                                   : "École",
                               style: TextStyle(fontSize: 10),
                             ))))),
@@ -128,7 +127,7 @@ class Announce extends StatelessWidget {
               ? announcement.content
               : announcement.content.substring(0, 150).trim() + "..."),
           if (user.uid == announcement.author &&
-              announcement.uid != -1 &&
+              announcement.uid != '-1' &&
               Platform.isAndroid)
             Row(children: [
               Spacer(),
@@ -155,7 +154,7 @@ class Announce extends StatelessWidget {
       ),
     ]));
 
-    return Platform.isIOS && announcement.uid != -1
+    return Platform.isIOS && announcement.uid != '-1'
         ? CupertinoContextMenu(
             /*previewBuilder: (BuildContext context, Animation<double> animation,
                 Widget child) {

@@ -89,6 +89,10 @@ class _AnnouncementsState extends State<Announcements> {
                   .toList());
             });
 
+            // we need to sort the data ourselves because we have multiple separate
+            // streams
+            announcements.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
             return ListView.builder(
                 itemCount: announcements.length,
                 itemBuilder: (context, index) {

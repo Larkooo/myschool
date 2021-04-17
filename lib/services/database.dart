@@ -101,7 +101,7 @@ class DatabaseService {
       // unsubscribing to avoid receiving the notification even if its us who sent it
       FirebaseMessaging.instance.unsubscribeFromTopic(topic);
 
-      await MessagingService.sendMessageToTopic(
+      MessagingService.sendMessageToTopic(
           '${author.firstName} a envoyé un nouveau message dans ' + group,
           content,
           topic,
@@ -131,7 +131,7 @@ class DatabaseService {
         // unsubscribing to avoid receiving the notification even if its us who sent it
         FirebaseMessaging.instance.unsubscribeFromTopic(topic);
 
-        await MessagingService.sendMessageToTopic(
+        MessagingService.sendMessageToTopic(
             '${user.firstName} a posté une nouvelle annonce!',
             title,
             topic,
@@ -159,7 +159,7 @@ class DatabaseService {
         // unsubscribing to avoid receiving the notification even if its us who sent it
         FirebaseMessaging.instance.unsubscribeFromTopic(topic);
 
-        await MessagingService.sendMessageToTopic(
+        MessagingService.sendMessageToTopic(
             '${user.firstName} a posté une nouvelle annonce!',
             title,
             user.school.uid + '-' + scope.toString(),
@@ -198,7 +198,7 @@ class DatabaseService {
       // unsubscribing to avoid receiving the notification even if its us who sent it
       FirebaseMessaging.instance.unsubscribeFromTopic(topic);
 
-      await MessagingService.sendMessageToTopic(
+      MessagingService.sendMessageToTopic(
           '${user.firstName} a posté un nouveau devoir en $subject!',
           title,
           user.school.uid + '-' + group,
@@ -223,7 +223,7 @@ class DatabaseService {
     Map<String, dynamic> data = snapshot.data();
     return Announcement(
         uid: snapshot.reference.id,
-        scope: snapshot.reference.parent.parent.id == 'schools'
+        scope: snapshot.reference.parent.parent.parent.id == 'schools'
             ? Scope.school
             : Scope.group,
         title: data['title'],
@@ -342,7 +342,11 @@ class DatabaseService {
 
   // School announcements
   Stream<QuerySnapshot> get schoolAnnouncements {
-    return _schoolsCollection.doc(uid).collection('announcements').snapshots();
+    return _schoolsCollection
+        .doc(uid)
+        .collection('announcements')
+        .orderBy('createdAt')
+        .snapshots();
   }
 
   // Group announcements
