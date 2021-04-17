@@ -128,7 +128,7 @@ class FirebaseAuthService {
       FirebaseMessaging fcm = FirebaseMessaging.instance;
       fcm.unsubscribeFromTopic(user.school.uid);
       if (user.type == UserType.student) {
-        fcm.unsubscribeFromTopic(user.school.group.uid);
+        fcm.unsubscribeFromTopic(user.school.uid + '-' + user.school.group.uid);
       } else {
         user.groups.forEach((group) {
           fcm.unsubscribeFromTopic(user.school.uid + '-' + group);
