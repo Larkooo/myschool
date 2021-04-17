@@ -48,8 +48,8 @@ class Announce extends StatelessWidget {
                         if (snapshot.hasData) {
                           UserData author;
                           if (snapshot.data.exists) {
-                            author = DatabaseService()
-                                .userDataFromSnapshot(snapshot.data);
+                            author = DatabaseService.userDataFromSnapshot(
+                                snapshot.data);
                             // cache the user by its id
                             CacheManagerMemory
                                 .cachedUsers[announcement.author] = author;
@@ -69,21 +69,8 @@ class Announce extends StatelessWidget {
               SizedBox(
                 width: 5,
               ),
-              Text(
-                diffInDaysNow == 0
-                    ? "Aujourd'hui"
-                    : diffInDaysNow == -1
-                        ? "Hier"
-                        : diffInDaysNow == -2
-                            ? "Avant-hier"
-                            : DateFormat.yMMMMEEEEd()
-                                    .format(announcement.createdAt) +
-                                " à " +
-                                DateFormat.Hm().format(announcement.createdAt),
-                style: TextStyle(
-                    color: Colors.grey[500],
-                    fontSize: MediaQuery.of(context).size.width / 30),
-              ),
+              formattedDate(announcement.createdAt,
+                  MediaQuery.of(context).size.width / 30)
             ],
           ),
           SizedBox(height: 5),

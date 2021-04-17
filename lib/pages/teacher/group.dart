@@ -212,7 +212,8 @@ class _GroupPageState extends State<GroupPage> {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) => ChatPage(
-                                                  user: widget.user, groupUid: widget.groupUid))),
+                                                  user: widget.user,
+                                                  groupUid: widget.groupUid))),
                                       child: Text('Accèder au chat de groupe'),
                                       style: ButtonStyle(),
                                     )),
@@ -317,7 +318,7 @@ class _GroupPageState extends State<GroupPage> {
                                                       GroupAttribute
                                                           .students] = (snapshot
                                                       .data.docs
-                                                      .map((doc) => DatabaseService()
+                                                      .map((doc) => DatabaseService
                                                           .userDataFromSnapshot(
                                                               doc))).toList();
 

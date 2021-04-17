@@ -45,8 +45,8 @@ class HomeworkComp extends StatelessWidget {
                         if (snapshot.hasData) {
                           UserData author;
                           if (snapshot.data.exists) {
-                            author = DatabaseService()
-                                .userDataFromSnapshot(snapshot.data);
+                            author = DatabaseService.userDataFromSnapshot(
+                                snapshot.data);
                             // cache the user by its id
                             CacheManagerMemory.cachedUsers[homework.author] =
                                 author;
@@ -66,21 +66,8 @@ class HomeworkComp extends StatelessWidget {
               SizedBox(
                 width: 5,
               ),
-              Text(
-                diffInDaysNow == 0
-                    ? "Aujourd'hui"
-                    : diffInDaysNow == '-1'
-                        ? "Hier"
-                        : diffInDaysNow == -2
-                            ? "Avant-hier"
-                            : DateFormat.yMMMMEEEEd()
-                                    .format(homework.createdAt) +
-                                " à " +
-                                DateFormat.Hm().format(homework.createdAt),
-                style: TextStyle(
-                    color: Colors.grey[500],
-                    fontSize: MediaQuery.of(context).size.width / 30),
-              ),
+              formattedDate(
+                  homework.createdAt, MediaQuery.of(context).size.width / 30)
             ],
           ),
           SizedBox(height: 5),

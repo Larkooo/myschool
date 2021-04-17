@@ -61,18 +61,7 @@ class AnnouncePage extends StatelessWidget {
         SizedBox(
           height: 10,
         ),
-        Text(
-          diffInDaysNow == 0
-              ? "Aujourd'hui"
-              : diffInDaysNow == -1
-                  ? "Hier"
-                  : diffInDaysNow == -2
-                      ? "Avant-hier"
-                      : DateFormat.yMMMMEEEEd().format(announcement.createdAt) +
-                          " à " +
-                          DateFormat.Hm().format(announcement.createdAt),
-          style: TextStyle(color: Colors.grey[500], fontSize: 15),
-        ),
+        formattedDate(announcement.createdAt, 15)
       ],
     );
   }

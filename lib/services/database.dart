@@ -264,12 +264,12 @@ class DatabaseService {
         reference: snapshot.reference);
   }
 
-  UserData userDataFromSnapshot(DocumentSnapshot snapshot) {
+  static UserData userDataFromSnapshot(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data();
     // Student
     if (userTypeDefinitions[data['type']] == UserType.student)
       return UserData(
-        uid: uid,
+        uid: snapshot.id,
         firstName: data['firstName'],
         lastName: data['lastName'],
         type: UserType.student,
@@ -285,7 +285,7 @@ class DatabaseService {
 
     // Teacher
     return UserData(
-      uid: uid,
+      uid: snapshot.id,
       firstName: data['firstName'],
       lastName: data['lastName'],
       type: UserType.teacher,

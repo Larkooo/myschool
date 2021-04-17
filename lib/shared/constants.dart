@@ -4,6 +4,7 @@ import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:alert/alert.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -11,6 +12,7 @@ import 'package:intl/intl.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/pages/announcements.dart';
 import 'package:myschool/pages/homeworks.dart';
+import 'package:myschool/services/database.dart';
 import 'package:myschool/shared/cachemanager.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:dart_date/dart_date.dart';
@@ -59,6 +61,29 @@ Future getImage(ImagePicker picker) async {
   } else {
     return null;
   }
+}
+
+Future<UserData> getUserWithCache(String uid) async {
+  if (CacheManagerMemory.cachedUsers[uid] != null)
+    return CacheManagerMemory.cachedUsers[uid];
+  return DatabaseService.userDataFromSnapshot(
+      await FirebaseFirestore.instance.collection('users').doc(uid).get());
+}
+
+Text formattedDate(DateTime date, fontSize) {
+  int diffInDaysNow = DateTime.now().differenceInDays(date);
+  return Text(
+    (diffInDaysNow == 0
+            ? "Aujourd'hui"
+            : diffInDaysNow == -1
+                ? "Hier"
+                : diffInDaysNow == -2
+                    ? "Avant-hier"
+                    : DateFormat.yMMMMEEEEd().format(date)) +
+        " à " +
+        DateFormat.Hm().format(date),
+    style: TextStyle(color: Colors.grey[500], fontSize: 12),
+  );
 }
 
 Column coursePage(

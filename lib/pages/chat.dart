@@ -36,6 +36,9 @@ class _ChatPageState extends State<ChatPage> {
 
   String _actualGroup;
 
+  Widget sendWidget =
+      Icon(Platform.isIOS ? CupertinoIcons.paperplane : Icons.send);
+
   @override
   void initState() {
     // TODO: implement initState
@@ -83,8 +86,6 @@ class _ChatPageState extends State<ChatPage> {
                                   itemCount: messages.length,
                                   itemBuilder: (context, index) {
                                     Message message = messages[index];
-                                    int diffInDaysNow = message.createdAt
-                                        .differenceInDays(DateTime.now());
                                     return Column(
                                         crossAxisAlignment:
                                             message.author.id == widget.user.uid
@@ -116,15 +117,42 @@ class _ChatPageState extends State<ChatPage> {
                                                           widget.user.type ==
                                                               UserType.teacher)
                                                         CupertinoContextMenuAction(
-                                                            trailingIcon:
-                                                                Icons.delete,
-                                                            child: Text(
-                                                              'Supprimer',
-                                                              style: TextStyle(
-                                                                  fontSize: 12,
-                                                                  color: Colors
-                                                                      .red),
-                                                            ))
+                                                          trailingIcon:
+                                                              Icons.delete,
+                                                          child: Text(
+                                                            'Supprimer',
+                                                            style: TextStyle(
+                                                                fontSize: 12,
+                                                                color:
+                                                                    Colors.red),
+                                                          ),
+                                                          onPressed: () {
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop();
+                                                            showOkCancelAlertDialog(
+                                                                    context:
+                                                                        context,
+                                                                    okLabel:
+                                                                        'Supprimer',
+                                                                    cancelLabel:
+                                                                        'Annuler',
+                                                                    title:
+                                                                        'Suppression',
+                                                                    message:
+                                                                        'Voulez-vous vraiment supprimer ce message?')
+                                                                .then(
+                                                                    (value) async {
+                                                              if (value ==
+                                                                  OkCancelResult
+                                                                      .ok)
+                                                                await DatabaseService
+                                                                    .deleteAnnounce(
+                                                                        message
+                                                                            .reference);
+                                                            });
+                                                          },
+                                                        )
                                                     ],
                                                   child: Material(
                                                       color: Colors.transparent,
@@ -225,7 +253,7 @@ class _ChatPageState extends State<ChatPage> {
                                                               UserData author;
                                                               if (snapshot.data
                                                                   .exists) {
-                                                                author = DatabaseService()
+                                                                author = DatabaseService
                                                                     .userDataFromSnapshot(
                                                                         snapshot
                                                                             .data);
@@ -263,26 +291,8 @@ class _ChatPageState extends State<ChatPage> {
                                                                         1]
                                                                     .createdAt) >
                                                         5)
-                                                  Text(
-                                                    (diffInDaysNow == 0
-                                                            ? "Aujourd'hui"
-                                                            : diffInDaysNow ==
-                                                                    -1
-                                                                ? "Hier"
-                                                                : diffInDaysNow ==
-                                                                        -2
-                                                                    ? "Avant-hier"
-                                                                    : DateFormat
-                                                                            .yMMMMEEEEd()
-                                                                        .format(message
-                                                                            .createdAt)) +
-                                                        " à " +
-                                                        DateFormat.Hm().format(
-                                                            message.createdAt),
-                                                    style: TextStyle(
-                                                        color: Colors.grey[500],
-                                                        fontSize: 12),
-                                                  ),
+                                                  formattedDate(
+                                                      message.createdAt, 12),
                                                 SizedBox(
                                                     width:
                                                         MediaQuery.of(context)
@@ -312,23 +322,39 @@ class _ChatPageState extends State<ChatPage> {
                             decoration: InputDecoration(hintText: 'Message')),
                         onSubmitted: (value) async {
                           if (value.length > 0) {
+                            setState(() {
+                              sendWidget = CircularProgressIndicator.adaptive();
+                            });
+                            _messageController.clear();
                             await DatabaseService(uid: widget.user.school.uid)
                                 .sendMessage(value, widget.user, _actualGroup);
-                            _messageController.clear();
+                            setState(() {
+                              sendWidget = Icon(Platform.isIOS
+                                  ? CupertinoIcons.paperplane
+                                  : Icons.send);
+                            });
                           }
                         },
                       )),
                   IconButton(
-                      icon: Icon(Icons.send),
+                      icon: sendWidget,
                       onPressed: () async {
+                        FocusScope.of(context).unfocus();
                         if (_messageController.text != null &&
                             _messageController.text.length > 0) {
-                          await DatabaseService(uid: widget.user.school.uid)
-                              .sendMessage(_messageController.text, widget.user,
-                                  _actualGroup);
+                          setState(() {
+                            sendWidget = CircularProgressIndicator.adaptive();
+                          });
+                          String message = _messageController.text;
                           _messageController.clear();
+                          await DatabaseService(uid: widget.user.school.uid)
+                              .sendMessage(message, widget.user, _actualGroup);
+                          setState(() {
+                            sendWidget = Icon(Platform.isIOS
+                                ? CupertinoIcons.paperplane
+                                : Icons.send);
+                          });
                         }
-                        FocusScope.of(context).unfocus();
                       })
                 ],
               ))
