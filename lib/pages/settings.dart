@@ -371,11 +371,10 @@ class _SettingsState extends State<Settings> {
                                     password: currentPassword))
                             .then((_) {
                           Navigator.pop(context);
-                          FirebaseAuthService.deleteUser(user)
+                          FirebaseAuthService.deleteUser(user, widget.user)
                               .then((value) async {
                             if (value) {
                               Alert(message: 'Compte supprimé').show();
-                              await LocalStorage.clearSensitiveInfo();
                             } else {
                               Alert(message: 'Une erreur est survenue!');
                             }

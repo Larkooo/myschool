@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:http/http.dart' as http;
+import 'package:myschool/models/user.dart';
+import 'package:myschool/shared/constants.dart';
 
 class MessagingService {
   static final FirebaseMessaging _messaging = FirebaseMessaging.instance;
@@ -28,6 +30,19 @@ class MessagingService {
     } catch (err) {
       print(err);
       return false;
+    }
+  }
+
+  static void unsubscribeFromTopics(UserData user) {
+    // unsubscribe from user topics
+    FirebaseMessaging fcm = FirebaseMessaging.instance;
+    fcm.unsubscribeFromTopic(user.school.uid);
+    if (user.type == UserType.student) {
+      fcm.unsubscribeFromTopic(user.school.uid + '-' + user.school.group.uid);
+    } else {
+      user.groups.forEach((group) {
+        fcm.unsubscribeFromTopic(user.school.uid + '-' + group);
+      });
     }
   }
 }
