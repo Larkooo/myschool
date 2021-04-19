@@ -56,7 +56,7 @@ class _NewAnnounceState extends State<NewAnnounce> {
                 height: 20,
               ),
               Text(
-                "Preview",
+                "Prévisualisation",
                 style: TextStyle(fontSize: 20, color: Colors.grey[600]),
               ),
               SizedBox(
@@ -86,15 +86,15 @@ class _NewAnnounceState extends State<NewAnnounce> {
                     maxLength: 25,
                     controller: _announceTitle,
                     validator: (value) {
-                      if (value.isEmpty) return 'Ce champs est obligatoire.';
-                      if (value.length < 5) return 'Titre trop court.';
+                      if (value.isEmpty) return 'Ce champ est obligatoire.';
+                      if (value.length < 3) return 'Titre trop court.';
 
                       return null;
                     },
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'Titre',
-                      hintText: "Mon annonce",
+                      hintText: "ex. Mon annonce",
                     ),
                   )),
               SizedBox(
@@ -113,14 +113,14 @@ class _NewAnnounceState extends State<NewAnnounce> {
 
                     controller: _announceContent,
                     validator: (value) {
-                      if (value.isEmpty) return 'Ce champs est obligatoire.';
+                      if (value.isEmpty) return 'Ce champ est obligatoire.';
                       if (value.length < 10) return 'Contenu trop court.';
 
                       return null;
                     },
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: 'Contenu',
+                      labelText: 'Description',
                     ),
                   )),
               SizedBox(
@@ -169,7 +169,7 @@ class _NewAnnounceState extends State<NewAnnounce> {
               SizedBox(
                 height: 15,
               ),
-              mainBlueLoadingBtn(context, _btnController, "Publier", () async {
+              mainBlueLoadingBtn(context, _btnController, "Envoyer", () async {
                 if (_formKey.currentState.validate()) {
                   _btnController.start();
                   bool announce =

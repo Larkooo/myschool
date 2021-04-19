@@ -91,7 +91,7 @@ class _RegisterState extends State<Register> {
                             keyboardType: TextInputType.name,
                             validator: (value) {
                               if (value.isEmpty)
-                                return 'Ce champs est obligatoire.';
+                                return 'Ce champ est obligatoire.';
                               return null;
                             },
                             decoration: InputDecoration(
@@ -109,7 +109,7 @@ class _RegisterState extends State<Register> {
                             keyboardType: TextInputType.name,
                             validator: (value) {
                               if (value.isEmpty)
-                                return 'Ce champs est obligatoire.';
+                                return 'Ce champ est obligatoire.';
                               return null;
                             },
                             decoration: InputDecoration(
@@ -128,8 +128,7 @@ class _RegisterState extends State<Register> {
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
                         validator: (value) {
-                          if (value.isEmpty)
-                            return 'Ce champs est obligatoire.';
+                          if (value.isEmpty) return 'Ce champ est obligatoire.';
                           bool v = EmailValidator.validate(value.trim());
                           if (!v) {
                             return "Adresse courriel invalide.";
@@ -150,8 +149,7 @@ class _RegisterState extends State<Register> {
                       child: TextFormField(
                         controller: _passwordController,
                         validator: (value) {
-                          if (value.isEmpty)
-                            return 'Ce champs est obligatoire.';
+                          if (value.isEmpty) return 'Ce champ est obligatoire.';
                           bool v = PasswordValidator(min: 6, max: 30)
                               .validate(value.trim());
                           if (!v && value.trim().length <= 30) {
@@ -175,8 +173,7 @@ class _RegisterState extends State<Register> {
                       child: TextFormField(
                         controller: _codeController,
                         validator: (value) {
-                          if (value.isEmpty)
-                            return 'Ce champs est obligatoire.';
+                          if (value.isEmpty) return 'Ce champ est obligatoire.';
                           if (value.length < 5) {
                             return "Code invalide.";
                           }
@@ -227,7 +224,7 @@ class _RegisterState extends State<Register> {
                               _passwordController.text,
                               _codeController.text.toLowerCase().trim());
                       if (registerStatus is UserData) {
-                        Alert(message: "Compte crée").show();
+                        Alert(message: "Compte créé").show();
                         _btnController.success();
                         //showSlideDialog(
                         //    context: context,
@@ -259,7 +256,7 @@ class _RegisterState extends State<Register> {
                       } else if (registerStatus == AuthCode.emailAlreadyUsed) {
                         Alert(
                                 message:
-                                    "Un compte avec cette adresse email existe déjà")
+                                    "Un compte avec cette adresse courriel existe déjà")
                             .show();
                         _btnController.stop();
                       } else if (registerStatus == AuthCode.codeNotFound) {

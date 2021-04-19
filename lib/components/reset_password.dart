@@ -38,7 +38,7 @@ class _ResetPasswordComponentState extends State<ResetPasswordComponent> {
                   child: TextFormField(
                     controller: _emailController,
                     validator: (value) {
-                      if (value.isEmpty) return 'Ce champs est obligatoire.';
+                      if (value.isEmpty) return 'Ce champ est obligatoire.';
                       bool v = EmailValidator.validate(value);
                       if (!v) {
                         return "Adresse courriel invalide.";

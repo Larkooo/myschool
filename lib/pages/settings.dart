@@ -99,7 +99,7 @@ class _SettingsState extends State<Settings> {
                               obscureText: true,
                               validator: (value) {
                                 if (value.isEmpty)
-                                  return 'Ce champs est obligatoire.';
+                                  return 'Ce champ est obligatoire.';
                                 return null;
                               },
                             ),
@@ -109,7 +109,7 @@ class _SettingsState extends State<Settings> {
                               validator: (value) {
                                 value = value.trim();
                                 if (value.isEmpty)
-                                  return 'Ce champs est obligatoire.';
+                                  return 'Ce champ est obligatoire.';
                                 bool v = EmailValidator.validate(value);
                                 if (!v) {
                                   return "Adresse courriel invalide.";
@@ -126,8 +126,8 @@ class _SettingsState extends State<Settings> {
                                     email: user.email,
                                     password: currentPassword))
                             .then((_) {
-                          user.updateEmail(email).catchError(
-                              (err) => Alert(message: "Email invalide").show);
+                          user.updateEmail(email).catchError((err) =>
+                              Alert(message: "Adresse courriel invalide").show);
                         }, onError: (err) {
                           Alert(message: "Mot de passe invalide").show();
                         });
@@ -147,7 +147,7 @@ class _SettingsState extends State<Settings> {
                             builder: (context) => AlertDialog(
                                   title: Text("Taille de l'image trop grosse"),
                                   content: Text(
-                                      "La taille de votre image doit faire au maximum 2 mégaoctets"),
+                                      "La taille de votre image doit faire au maximum 2 Mo"),
                                   actions: [
                                     TextButton(
                                         onPressed: () => Navigator.pop(context),
@@ -276,9 +276,9 @@ class _SettingsState extends State<Settings> {
                               obscureText: true,
                               validator: (value) {
                                 if (value.isEmpty)
-                                  return 'Ce champs est obligatoire.';
+                                  return 'Ce champ est obligatoire.';
                                 if (value.length < 6)
-                                  return 'Mot de passe trop court.';
+                                  return 'Mot de passe trop court. (min. 6 caractères)';
                                 return null;
                               },
                             ),
@@ -287,9 +287,9 @@ class _SettingsState extends State<Settings> {
                                 obscureText: true,
                                 validator: (value) {
                                   if (value.isEmpty)
-                                    return 'Ce champs est obligatoire.';
+                                    return 'Ce champ est obligatoire.';
                                   if (value.length < 6)
-                                    return 'Mot de passe trop court.';
+                                    return 'Mot de passe trop court. (min. 6 caractères)';
                                   return null;
                                 })
                           ]).then((inputs) {
@@ -306,7 +306,7 @@ class _SettingsState extends State<Settings> {
                               Alert(message: "Mot de passe modifié").show();
                             }, onError: (err) {
                               if (err.code == 'weak-password')
-                                Alert(message: "Mot de passe trop fragile")
+                                Alert(message: "Mot de passe trop faible")
                                     .show();
                             });
                           }, onError: (err) {
@@ -357,7 +357,7 @@ class _SettingsState extends State<Settings> {
                                 obscureText: true,
                                 validator: (value) {
                                   if (value.isEmpty)
-                                    return 'Ce champs est obligatoire.';
+                                    return 'Ce champ est obligatoire.';
                                   if (value.length < 6)
                                     return 'Mot de passe trop court.';
                                   return null;

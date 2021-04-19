@@ -65,7 +65,7 @@ class _NewHomeworkState extends State<NewHomework> {
                             height: 20,
                           ),
                           Text(
-                            "Preview",
+                            "Prévisualisation",
                             style: TextStyle(
                                 fontSize: 20, color: Colors.grey[600]),
                           ),
@@ -98,8 +98,8 @@ class _NewHomeworkState extends State<NewHomework> {
                                 controller: _homeworkTitle,
                                 validator: (value) {
                                   if (value.isEmpty)
-                                    return 'Ce champs est obligatoire.';
-                                  if (value.length < 5)
+                                    return 'Ce champ est obligatoire.';
+                                  if (value.length < 3)
                                     return 'Titre trop court.';
 
                                   return null;
@@ -107,7 +107,7 @@ class _NewHomeworkState extends State<NewHomework> {
                                 decoration: InputDecoration(
                                   border: OutlineInputBorder(),
                                   labelText: 'Titre',
-                                  hintText: "Devoir #1",
+                                  hintText: "ex. Devoir #1",
                                 ),
                               )),
                           SizedBox(
@@ -127,8 +127,8 @@ class _NewHomeworkState extends State<NewHomework> {
                                 controller: _homeworkDescription,
                                 validator: (value) {
                                   if (value.isEmpty)
-                                    return 'Ce champs est obligatoire.';
-                                  if (value.length < 10)
+                                    return 'Ce champ est obligatoire.';
+                                  if (value.length < 5)
                                     return 'Contenu trop court.';
 
                                   return null;
@@ -136,6 +136,7 @@ class _NewHomeworkState extends State<NewHomework> {
                                 decoration: InputDecoration(
                                   border: OutlineInputBorder(),
                                   labelText: 'Description',
+                                  hintText: "ex. Pages 8 à 11",
                                 ),
                               )),
                           SizedBox(
@@ -152,7 +153,7 @@ class _NewHomeworkState extends State<NewHomework> {
                                 controller: _homeworkSubject,
                                 validator: (value) {
                                   if (value.isEmpty)
-                                    return 'Ce champs est obligatoire.';
+                                    return 'Ce champ est obligatoire.';
                                   if (value.length < 3)
                                     return 'Texte trop court.';
 
@@ -161,7 +162,7 @@ class _NewHomeworkState extends State<NewHomework> {
                                 decoration: InputDecoration(
                                   border: OutlineInputBorder(),
                                   labelText: 'Matière',
-                                  hintText: "Français",
+                                  hintText: "ex. Français",
                                 ),
                               )),
                           SizedBox(
@@ -212,7 +213,7 @@ class _NewHomeworkState extends State<NewHomework> {
                           SizedBox(
                             height: 15,
                           ),
-                          mainBlueLoadingBtn(context, _btnController, "Publier",
+                          mainBlueLoadingBtn(context, _btnController, "Envoyer",
                               () async {
                             if (_formKey.currentState.validate()) {
                               _btnController.start();
