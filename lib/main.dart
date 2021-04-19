@@ -20,6 +20,7 @@ import 'package:provider/provider.dart';
 import 'package:device_info/device_info.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:package_info/package_info.dart';
+import 'package:flutter/services.dart';
 
 void main() async {
   await initializeDateFormatting('fr', null);
@@ -67,6 +68,10 @@ bool isDark = true;
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.grey[850], // navigation bar color
+      //  statusBarColor: Colors.pink, // status bar color
+    ));
     return StreamProvider<User>.value(
       initialData: null,
       value: FirebaseAuthService.user,
