@@ -47,6 +47,7 @@ class AnnouncePage extends StatelessWidget {
         ),
         Container(
             height: MediaQuery.of(context).size.height / 3,
+            width: MediaQuery.of(context).size.height / 1.8,
             child: Card(
                 margin: EdgeInsets.fromLTRB(40, 10, 40, 0),
                 color: Colors.grey[900],

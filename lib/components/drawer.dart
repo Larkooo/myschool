@@ -113,9 +113,7 @@ class _DrawerCompState extends State<DrawerComp> {
                                 Text(widget.user.lastName +
                                     ' ' +
                                     widget.user.firstName),
-                                Text(widget.user.type == UserType.student
-                                    ? 'Élève'
-                                    : 'Enseignant')
+                                Text(userTypeLocale[widget.user.type])
                               ]))
                             /*StreamBuilder(
                                 stream: Connectivity().onConnectivityChanged,
@@ -149,7 +147,9 @@ class _DrawerCompState extends State<DrawerComp> {
                             //],
                             //),
                           ]))))),
-          if (widget.user.type == UserType.teacher)
+          if (widget.user.type == UserType.teacher ||
+              widget.user.type == UserType.staff ||
+              widget.user.type == UserType.direction)
             ListTile(
               leading: Text('Publier une annonce'),
               trailing: Icon(Icons.announcement),
@@ -173,7 +173,10 @@ class _DrawerCompState extends State<DrawerComp> {
                     MaterialPageRoute(builder: (context) => NewHomework()));
               },
             ),
-          if (widget.user.type == UserType.teacher) Divider(),
+          if (widget.user.type == UserType.teacher ||
+              widget.user.type == UserType.staff ||
+              widget.user.type == UserType.direction)
+            Divider(),
           ListTile(
               leading: Text('Donner votre avis'),
               trailing: Icon(Icons.analytics),

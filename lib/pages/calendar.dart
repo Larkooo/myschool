@@ -132,21 +132,19 @@ class _CalendarState extends State<Calendar> {
                       builder: (context) =>
                           Center(child: CircularProgressIndicator()));
 
+                  //print(timetableEncoded);
+                  //print(await MozaikService.getMozaikTimetable());
+
                   dynamic timetable = timetableEncoded == null
                       ? await MozaikService.getMozaikTimetable()
                       : jsonDecode(timetableEncoded);
-
-                  Navigator.pop(context);
 
                   prefs.setString('mozaikTimetable', jsonEncode(timetable));
                   CacheManagerMemory.rawMozaikTimetable = timetable;
 
                   // Setting the startday and the endday of the calendar (so the startday/endday of school in this case)
-                  setState(() async {
-                    CacheManagerMemory.courses = Map.fromIterable(
-                        timetableEncoded == null
-                            ? await MozaikService.getMozaikTimetable()
-                            : jsonDecode(timetableEncoded),
+                  setState(() {
+                    CacheManagerMemory.courses = Map.fromIterable(timetable,
                         key: (e) => DateTime.parse(
                             e['dateDebut'] + 'T' + e['heureDebut']),
                         value: (e) => {
@@ -159,6 +157,8 @@ class _CalendarState extends State<Calendar> {
                     _startDay = CacheManagerMemory.courses.entries.first.key;
                     _endDay = CacheManagerMemory.courses.entries.last.key;
                   });
+
+                  Navigator.pop(context);
                 }
               });
             }

@@ -16,7 +16,7 @@ import 'package:image_crop_new/image_crop_new.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 
-import '../chat.dart';
+import '../../chat.dart';
 
 class GroupPage extends StatefulWidget {
   final String groupUid;
@@ -211,19 +211,6 @@ class _GroupPageState extends State<GroupPage> {
                                       onPressed: () => Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (context) => ChatPage(
-                                                  user: widget.user,
-                                                  groupUid: widget.groupUid))),
-                                      child: Text('Accèder au chat de groupe'),
-                                      style: ButtonStyle(),
-                                    )),
-                                Container(
-                                    width:
-                                        MediaQuery.of(context).size.width / 1.5,
-                                    child: ElevatedButton(
-                                      onPressed: () => Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
                                               builder: (context) => NewAnnounce(
                                                   group: widget.groupUid,
                                                   user: widget.user))),
@@ -292,7 +279,7 @@ class _GroupPageState extends State<GroupPage> {
                                                   [GroupAttribute.students] !=
                                               null
                                           ? Text(
-                                              'Élèves : ' +
+                                              'Membres : ' +
                                                   CacheManagerMemory
                                                       .groupData[widget.groupUid]
                                                           [GroupAttribute
@@ -323,7 +310,7 @@ class _GroupPageState extends State<GroupPage> {
                                                               doc))).toList();
 
                                                   return Text(
-                                                    'Élèves : ' +
+                                                    'Membres : ' +
                                                         snapshot.data.size
                                                             .toString(),
                                                     style:
@@ -349,7 +336,7 @@ class _GroupPageState extends State<GroupPage> {
                                                         GroupAttribute
                                                             .students],
                                                   ))),
-                                      child: Text('Liste des élèves'),
+                                      child: Text('Liste des membres'),
                                       style: ButtonStyle(),
                                     )),
                                 SizedBox(

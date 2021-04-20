@@ -171,10 +171,11 @@ class _AnnouncementsState extends State<Announcements> {
           }
         },
       ),
-      floatingActionButton: widget.user.type == UserType.teacher
+      floatingActionButton: widget.user.type == UserType.teacher ||
+              widget.user.type == UserType.direction
           ? FloatingActionButton(
               tooltip: 'Publier une annonce',
-              backgroundColor: Colors.grey[700].withOpacity(0.4),
+              backgroundColor: Colors.blue[400],
               child: Icon(Icons.add),
               onPressed: () => Navigator.push(
                   context,

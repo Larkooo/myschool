@@ -135,7 +135,7 @@ class _NewAnnounceState extends State<NewAnnounce> {
                         value: Scope.school,
                       ),
                       DropdownMenuItem(
-                        child: Text("Foyer"),
+                        child: Text("Groupe"),
                         value: Scope.group,
                       ),
                     ],

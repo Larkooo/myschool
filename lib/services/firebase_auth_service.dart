@@ -97,8 +97,9 @@ class FirebaseAuthService {
         "createdAt": FieldValue.serverTimestamp()
       };
 
-      // If teacher, add groups field
-      if (codeData['type'] == 1) data['groups'] = [];
+      // If staff or admin, add groups field with staff already in it
+      if (codeData['type'] == 1 || codeData['type'] == 2)
+        data['groups'] = ['staff'];
 
       await users.doc(result.user.uid).set(data);
 
@@ -107,7 +108,7 @@ class FirebaseAuthService {
           firstName: firstName,
           lastName: lastName,
           avatarUrl: null,
-          type: codeData['type'] == 0 ? UserType.student : UserType.teacher,
+          type: userTypeDefinitions[codeData['type']],
           school: School(uid: (codeData['school'] as DocumentReference).id),
           usedCode: code,
           createdAt: DateTime.now());

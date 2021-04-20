@@ -1,3 +1,4 @@
+import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -244,15 +245,36 @@ class _RegisterState extends State<Register> {
                         //        )
                         //      ],
                         //    ));
-                        Navigator.pop(context);
-                        if (registerStatus.type == UserType.teacher)
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => SelectGroups(
-                                        userUid: registerStatus.uid,
-                                        schoolUid: registerStatus.school.uid,
-                                      )));
+
+                        // initially, for just some simplicity, the staff member is a teacher but he has to then choose his role
+                        if (registerStatus.type == UserType.teacher) {
+                          // he can choose to be a teacher or just a staff member
+                          UserType choosenType = await showModalActionSheet<
+                                  UserType>(
+                              context: context,
+                              title: registerStatus.firstName,
+                              message:
+                                  'Êtes-vous un professeur ou un autre membre du personnel?',
+                              actions: [
+                                SheetAction(
+                                    label: 'Professeur', key: UserType.teacher),
+                                SheetAction(
+                                    label: 'Autre membre du personnel',
+                                    key: UserType.staff)
+                              ]);
+                          await DatabaseService(uid: registerStatus.uid)
+                              .updateUserData(userType: choosenType);
+                          Navigator.pop(context);
+                          // if the new role of the user is teacher, then we ask him to choose his groups
+                          if (choosenType == UserType.teacher)
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => SelectGroups(
+                                          userUid: registerStatus.uid,
+                                          schoolUid: registerStatus.school.uid,
+                                        )));
+                        }
                       } else if (registerStatus == AuthCode.emailAlreadyUsed) {
                         Alert(
                                 message:

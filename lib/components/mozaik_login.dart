@@ -41,36 +41,38 @@ class _MozaikLoginState extends State<MozaikLogin> {
           initialOptions: InAppWebViewGroupOptions(
             crossPlatform: InAppWebViewOptions(javaScriptEnabled: true),
           ),
-          onWebViewCreated: Platform.isIOS
-              // ios workaround
-              ? (controller) async {
-                  Future.doWhile(() async {
-                    await Future.delayed(Duration(seconds: 1));
-                    print('bop');
-                    try {
-                      Map<String, dynamic> tokens = await controller
-                          .webStorage.localStorage
-                          .getItem(key: 'jeton_mozaikportail_activedirectory');
+          onWebViewCreated: (controller) async {
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            if (prefs.getBool('mozaikLoyal') == null) {
+              print('yes');
+              controller.clearCache();
+              controller.reload();
+            }
 
-                      Mozaik.idToken = tokens['id_token'];
-                      Mozaik.payload = Jwt.parseJwt(Mozaik.idToken);
+            // ios workaround
+            if (Platform.isIOS)
+              Future.doWhile(() async {
+                await Future.delayed(Duration(seconds: 1));
+                try {
+                  Map<String, dynamic> tokens = await controller
+                      .webStorage.localStorage
+                      .getItem(key: 'jeton_mozaikportail_activedirectory');
 
-                      SharedPreferences prefs =
-                          await SharedPreferences.getInstance();
-                      prefs.setString(
-                          'mozaikUserData', jsonEncode(Mozaik.payload));
-                      // user logged in at least one time
-                      prefs.setBool('mozaikLoyal', true);
-                      if (Mozaik.idToken.isNotEmpty) Navigator.pop(context);
+                  Mozaik.idToken = tokens['id_token'];
+                  Mozaik.payload = Jwt.parseJwt(Mozaik.idToken);
 
-                      return Mozaik.idToken.isEmpty;
-                    } catch (err) {
-                      if (err is MissingPluginException) return false;
-                      return true;
-                    }
-                  });
+                  prefs.setString('mozaikUserData', jsonEncode(Mozaik.payload));
+                  // user logged in at least one time
+                  prefs.setBool('mozaikLoyal', true);
+                  if (Mozaik.idToken.isNotEmpty) Navigator.pop(context);
+
+                  return Mozaik.idToken.isEmpty;
+                } catch (err) {
+                  if (err is MissingPluginException) return false;
+                  return true;
                 }
-              : null,
+              });
+          },
           onLoadStart: (controller, url) async {
             String urlString = url.toString();
             if (urlString.contains('#id_token') && Platform.isAndroid) {

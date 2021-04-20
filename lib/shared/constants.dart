@@ -21,8 +21,8 @@ import 'package:url_launcher/url_launcher.dart';
 enum GroupAttribute { alias, image, students }
 enum AnnounceCategory { essay, homework, important, message }
 enum Scope { school, group, none }
-enum UserType { student, teacher }
-enum CodeType { student, staff }
+enum UserType { student, teacher, direction, staff }
+enum CodeType { student, staff, admin }
 enum AuthCode {
   ok,
   accountNotFound,
@@ -50,7 +50,22 @@ final Map<String, Type> pageType = {
 const Map<int, UserType> userTypeDefinitions = {
   0: UserType.student,
   1: UserType.teacher,
-  2: UserType.student
+  2: UserType.direction,
+  3: UserType.staff
+};
+
+const Map<UserType, int> userTypeId = {
+  UserType.student: 0,
+  UserType.teacher: 1,
+  UserType.direction: 2,
+  UserType.staff: 3
+};
+
+const Map<UserType, String> userTypeLocale = {
+  UserType.student: 'Étudiant',
+  UserType.teacher: 'Professeur',
+  UserType.direction: 'Direction',
+  UserType.staff: 'Membre du personnel'
 };
 
 Future getImage(ImagePicker picker) async {

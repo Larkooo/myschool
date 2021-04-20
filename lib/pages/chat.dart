@@ -235,112 +235,112 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: widget.groupUid != null
-            ? AppBar(title: Text('Chat de groupe'))
-            : null,
+        //appBar: widget.groupUid != null
+        //    ? AppBar(title: Text('Chat de groupe'))
+        //    : null,
         body: Column(children: [
-          Expanded(
-              child: SingleChildScrollView(
-                  controller: _scrollController,
-                  child: GestureDetector(
-                      onTap: () {
-                        FocusScope.of(context).unfocus();
-                      },
-                      child: StreamBuilder(
-                          stream: DatabaseService(uid: widget.user.school.uid)
-                              .groupMessages(_actualGroup, limit: _dynamicLimit),
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              if (!_scrolled) {
-                                SchedulerBinding.instance
-                                    .scheduleFrameCallback((_) {
-                                  _scrollDown();
-                                });
-                                _scrolled = true;
-                              }
-                              List<Message> messages =
-                                  (snapshot.data as QuerySnapshot)
-                                      .docs
-                                      .map(DatabaseService.messageFromSnapshot)
-                                      .toList();
-                              _messageCount = messages.length;
-                              return ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  padding: EdgeInsets.only(top: 10),
-                                  itemCount: messages.length,
-                                  itemBuilder: (context, index) {
-                                    // if messagesCount is less than the limit, then there is no more messages to load
-                                    if (index == 0 &&
-                                        !(_messageCount < _dynamicLimit)) {
-                                      return Column(
-                                        children: [
-                                          _dynamicTop,
-                                          _messageWidget(index, messages)
-                                        ],
-                                      );
-                                    }
-                                    return _messageWidget(index, messages);
-                                  });
-                            } else {
-                              return CircularProgressIndicator.adaptive();
-                            }
-                          })))),
-          Container(
-              width: MediaQuery.of(context).size.width,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Container(
-                      width: MediaQuery.of(context).size.width / 1.3,
-                      child: PlatformTextField(
-                        controller: _messageController,
-                        onTap: () => _scrollController
-                            .jumpTo(_scrollController.position.maxScrollExtent),
-                        textInputAction: TextInputAction.send,
-                        cupertino: (context, platform) =>
-                            CupertinoTextFieldData(placeholder: 'Message'),
-                        material: (context, platform) => MaterialTextFieldData(
-                            decoration: InputDecoration(hintText: 'Message')),
-                        onSubmitted: (value) async {
-                          if (value.length > 0) {
-                            setState(() {
-                              _sendWidget = CircularProgressIndicator.adaptive();
+      Expanded(
+          child: SingleChildScrollView(
+              controller: _scrollController,
+              child: GestureDetector(
+                  onTap: () {
+                    FocusScope.of(context).unfocus();
+                  },
+                  child: StreamBuilder(
+                      stream: DatabaseService(uid: widget.user.school.uid)
+                          .groupMessages(_actualGroup, limit: _dynamicLimit),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          if (!_scrolled) {
+                            SchedulerBinding.instance
+                                .scheduleFrameCallback((_) {
+                              _scrollDown();
                             });
-                            _messageController.clear();
-                            await DatabaseService(uid: widget.user.school.uid)
-                                .sendMessage(value, widget.user, _actualGroup);
-                            setState(() {
-                              _sendWidget = Icon(Platform.isIOS
-                                  ? CupertinoIcons.paperplane
-                                  : Icons.send);
-                            });
+                            _scrolled = true;
                           }
-                        },
-                      )),
-                  IconButton(
-                      icon: _sendWidget,
-                      onPressed: () async {
-                        FocusScope.of(context).unfocus();
-                        //scrollDown();
-                        if (_messageController.text != null &&
-                            _messageController.text.length > 0) {
-                          setState(() {
-                            _sendWidget = CircularProgressIndicator.adaptive();
-                          });
-                          String message = _messageController.text;
-                          _messageController.clear();
-                          await DatabaseService(uid: widget.user.school.uid)
-                              .sendMessage(message, widget.user, _actualGroup);
-                          setState(() {
-                            _sendWidget = Icon(Platform.isIOS
-                                ? CupertinoIcons.paperplane
-                                : Icons.send);
-                          });
+                          List<Message> messages =
+                              (snapshot.data as QuerySnapshot)
+                                  .docs
+                                  .map(DatabaseService.messageFromSnapshot)
+                                  .toList();
+                          _messageCount = messages.length;
+                          return ListView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              padding: EdgeInsets.only(top: 10),
+                              itemCount: messages.length,
+                              itemBuilder: (context, index) {
+                                // if messagesCount is less than the limit, then there is no more messages to load
+                                if (index == 0 &&
+                                    !(_messageCount < _dynamicLimit)) {
+                                  return Column(
+                                    children: [
+                                      _dynamicTop,
+                                      _messageWidget(index, messages)
+                                    ],
+                                  );
+                                }
+                                return _messageWidget(index, messages);
+                              });
+                        } else {
+                          return CircularProgressIndicator.adaptive();
                         }
-                      })
-                ],
-              ))
-        ]));
+                      })))),
+      Container(
+          width: MediaQuery.of(context).size.width,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Container(
+                  width: MediaQuery.of(context).size.width / 1.3,
+                  child: PlatformTextField(
+                    controller: _messageController,
+                    onTap: () => _scrollController
+                        .jumpTo(_scrollController.position.maxScrollExtent),
+                    textInputAction: TextInputAction.send,
+                    cupertino: (context, platform) =>
+                        CupertinoTextFieldData(placeholder: 'Message'),
+                    material: (context, platform) => MaterialTextFieldData(
+                        decoration: InputDecoration(hintText: 'Message')),
+                    onSubmitted: (value) async {
+                      if (value.length > 0) {
+                        setState(() {
+                          _sendWidget = CircularProgressIndicator.adaptive();
+                        });
+                        _messageController.clear();
+                        await DatabaseService(uid: widget.user.school.uid)
+                            .sendMessage(value, widget.user, _actualGroup);
+                        setState(() {
+                          _sendWidget = Icon(Platform.isIOS
+                              ? CupertinoIcons.paperplane
+                              : Icons.send);
+                        });
+                      }
+                    },
+                  )),
+              IconButton(
+                  icon: _sendWidget,
+                  onPressed: () async {
+                    FocusScope.of(context).unfocus();
+                    //scrollDown();
+                    if (_messageController.text != null &&
+                        _messageController.text.length > 0) {
+                      setState(() {
+                        _sendWidget = CircularProgressIndicator.adaptive();
+                      });
+                      String message = _messageController.text;
+                      _messageController.clear();
+                      await DatabaseService(uid: widget.user.school.uid)
+                          .sendMessage(message, widget.user, _actualGroup);
+                      setState(() {
+                        _sendWidget = Icon(Platform.isIOS
+                            ? CupertinoIcons.paperplane
+                            : Icons.send);
+                      });
+                    }
+                  })
+            ],
+          ))
+    ]));
   }
 }

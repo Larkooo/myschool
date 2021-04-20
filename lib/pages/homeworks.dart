@@ -145,9 +145,10 @@ class _HomeworksState extends State<Homeworks> {
           }
         },
       ),
-      floatingActionButton: widget.user.type == UserType.teacher
+      floatingActionButton: widget.user.type == UserType.teacher ||
+              widget.user.type == UserType.direction
           ? FloatingActionButton(
-              backgroundColor: Colors.grey[700].withOpacity(0.4),
+              backgroundColor: Colors.blue[400],
               tooltip: 'Poster un devoir',
               child: Icon(Icons.add),
               onPressed: () => Navigator.push(

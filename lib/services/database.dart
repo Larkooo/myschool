@@ -45,7 +45,8 @@ class DatabaseService {
     Map<String, dynamic> data = {};
     if (firstName != null) data['firstName'] = firstName;
     if (lastName != null) data['lastName'] = lastName;
-    if (school != null) data['schoolReference'] = school;
+    if (school != null) data['school'] = school;
+    if (userType != null) data['type'] = userTypeId[userType];
     if (avatarUrl != null) data['avatarUrl'] = avatarUrl;
     if (usedCode != null) data['usedCode'] = usedCode;
     if (createdAt != null) data['createdAt'] = createdAt;
@@ -78,6 +79,29 @@ class DatabaseService {
       return true;
     } catch (_) {
       print(_);
+      return false;
+    }
+  }
+
+  Future<bool> createGroup(String name, String uid,
+      {String code, UserType codeType}) async {
+    try {
+      DocumentReference groupRef =
+          _schoolsCollection.doc(this.uid).collection('groups').doc(uid);
+      await groupRef.set({'name': name});
+      if (code != null && codeType != null) {
+        print('yes');
+        await _codesCollection.doc(code).set({
+          'usedTimes': 0,
+          'school': groupRef,
+          'type': userTypeId[codeType],
+          'createdAt': FieldValue.serverTimestamp()
+        });
+      }
+
+      return true;
+    } catch (err) {
+      print(err);
       return false;
     }
   }
@@ -241,7 +265,7 @@ class DatabaseService {
         title: data['title'],
         description: data['description'],
         subject: data['subject'],
-        due: (data['createdAt'] as Timestamp ??
+        due: (data['due'] as Timestamp ??
                 Timestamp.fromMillisecondsSinceEpoch(0))
             .toDate(),
         createdAt: (data['createdAt'] as Timestamp ??
@@ -281,14 +305,14 @@ class DatabaseService {
             .toDate(),
       );
 
-    // Teacher
+    // Staff
     // stupid workaround for a stupid error (List<dynamic>)
     data['groups'] = <String>[...data['groups']];
     return UserData(
       uid: snapshot.id,
       firstName: data['firstName'],
       lastName: data['lastName'],
-      type: UserType.teacher,
+      type: userTypeDefinitions[data['type']],
       groups: data['groups'] as List<String>,
       avatarUrl: data['avatarUrl'],
       usedCode: data['usedCode'],
@@ -301,7 +325,7 @@ class DatabaseService {
 
   School schoolFromSnapshot(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data();
-    return School(uid: uid, name: data['name']);
+    return School(uid: uid, name: data['name'], avatarUrl: data['avatarUrl']);
   }
 
   Code codeFromSnapshot(DocumentSnapshot snapshot) {

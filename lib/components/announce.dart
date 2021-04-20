@@ -9,7 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:myschool/models/announcement.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/components/announce_page.dart';
-import 'package:myschool/pages/teacher/group.dart';
+import 'package:myschool/pages/staff/teacher/group.dart';
 import 'package:myschool/services/database.dart';
 import 'package:myschool/shared/cachemanager.dart';
 import 'package:myschool/shared/constants.dart';
@@ -76,7 +76,11 @@ class Announce extends StatelessWidget {
           SizedBox(height: 5),
           Row(
             children: [
-              Text(announcement.title),
+              Container(
+                child: Text(announcement.title),
+                constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width / 1.9),
+              ),
               Spacer(),
               Container(
                 width: MediaQuery.of(context).size.width / 7,
@@ -114,7 +118,7 @@ class Announce extends StatelessWidget {
           Text(announcement.content.length < 150
               ? announcement.content
               : announcement.content.substring(0, 150).trim() + "..."),
-          if (user.uid == announcement.author &&
+          if ((user.uid == announcement.author) &&
               announcement.uid != '-1' &&
               Platform.isAndroid)
             Row(children: [
