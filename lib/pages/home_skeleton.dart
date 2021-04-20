@@ -103,7 +103,8 @@ class _HomeState extends State<HomeSkeleton> {
                 HomeTeacher(user: userData),
                 Announcements(user: userData),
                 Groups(user: userData),
-                if (userData.groups.contains('staff'))
+                if (userData.type != UserType.student &&
+                    userData.groups.contains('staff'))
                   ChatPage(
                     user: userData,
                     groupUid: 'staff',
@@ -114,7 +115,8 @@ class _HomeState extends State<HomeSkeleton> {
                 Announcements(user: userData),
                 Homeworks(user: userData),
                 Groups(user: userData),
-                if (userData.groups.contains('staff'))
+                if (userData.type != UserType.student &&
+                    userData.groups.contains('staff'))
                   ChatPage(
                     user: userData,
                     groupUid: 'staff',
@@ -127,7 +129,8 @@ class _HomeState extends State<HomeSkeleton> {
                 ),
                 Announcements(user: userData),
                 Groups(user: userData),
-                if (userData.groups.contains('staff'))
+                if (userData.type != UserType.student &&
+                    userData.groups.contains('staff'))
                   ChatPage(
                     user: userData,
                     groupUid: 'staff',

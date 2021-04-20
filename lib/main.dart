@@ -67,10 +67,10 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      systemNavigationBarColor: Colors.grey[850], // navigation bar color
-      // statusBarColor: Colors.grey[850], // status bar color
-    ));
+    //SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    //  systemNavigationBarColor: Colors.grey[850], // navigation bar color
+    //  // statusBarColor: Colors.grey[850], // status bar color
+    //));
 
     return StreamProvider<User>.value(
       initialData: null,
