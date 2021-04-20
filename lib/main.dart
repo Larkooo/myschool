@@ -99,6 +99,9 @@ class MyApp extends StatelessWidget {
             primaryColor: Colors.grey[900],
             backgroundColor: Colors.black,
             cardColor: Colors.grey[900],
+            cupertinoOverrideTheme: const CupertinoThemeData(
+              textTheme: CupertinoTextThemeData(), // This is required
+            ),
             colorScheme: ColorScheme(
                 brightness: Brightness.dark,
                 primary: Colors.blue,
