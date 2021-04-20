@@ -68,7 +68,7 @@ class MessagingService {
       List<String> disabledGroupsNotifications =
           prefs.getStringList('disabledGroupsNotifications') ?? [];
       groups.forEach((group) {
-        _messaging.unsubscribeFromTopic(schoolUid + '-' + group);
+        _messaging.subscribeToTopic(schoolUid + '-' + group);
         disabledGroupsNotifications.remove(group);
       });
       prefs.setStringList(
@@ -81,7 +81,7 @@ class MessagingService {
 
   static Future<bool> unsubscribeFromSchool(String uid) async {
     try {
-      _messaging.subscribeToTopic(uid);
+      _messaging.unsubscribeFromTopic(uid);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setBool('schoolNotifications', false);
       return true;
@@ -93,7 +93,7 @@ class MessagingService {
   static Future<List<String>> unsubscribeFromGroup(
       String schoolUid, String groupUid) async {
     try {
-      _messaging.subscribeToTopic(schoolUid + '-' + groupUid);
+      _messaging.unsubscribeFromTopic(schoolUid + '-' + groupUid);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       List<String> disabledGroupsNotifications =
           prefs.getStringList('disabledGroupsNotifications') ?? [];
