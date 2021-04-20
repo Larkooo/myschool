@@ -397,7 +397,7 @@ Widget adaptiveBottomNavBar(
       items: items,
       currentIndex: currentIndex,
       onTap: onTap,
-      backgroundColor: Colors.black.withOpacity(0.2),
+      backgroundColor: Colors.transparent,
       iconSize: 25,
     );
   }
