@@ -21,6 +21,7 @@ import 'package:device_info/device_info.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:package_info/package_info.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 
 void main() async {
   await initializeDateFormatting('fr', null);
@@ -63,30 +64,56 @@ void main() async {
   runApp(MyApp());
 }
 
-bool isDark = true;
-
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       systemNavigationBarColor: Colors.grey[850], // navigation bar color
-      //  statusBarColor: Colors.pink, // status bar color
+      // statusBarColor: Colors.grey[850], // status bar color
     ));
+
     return StreamProvider<User>.value(
       initialData: null,
       value: FirebaseAuthService.user,
       child: MaterialApp(
         title: 'MonEcole',
+        theme: ThemeData.light().copyWith(
+          primaryColor: Colors.grey[850],
+          colorScheme: ColorScheme(
+              brightness: Brightness.light,
+              primary: Colors.blue,
+              primaryVariant: Colors.black,
+              secondary: Colors.black,
+              secondaryVariant: Colors.black,
+              background: Colors.black,
+              surface: Colors.grey[600], // bottom bar icons
+              onBackground: Colors.black,
+              onSurface: Colors.black,
+              onError: Colors.black,
+              onPrimary: Colors.black,
+              onSecondary: Colors.black,
+              error: Colors.red.shade400),
+          cardColor: Colors.grey[300],
+        ),
         darkTheme: ThemeData.dark().copyWith(
-          cupertinoOverrideTheme: const CupertinoThemeData(
-            textTheme: CupertinoTextThemeData(), // This is required
-          ),
-        ),
-        theme: ThemeData.dark().copyWith(
-          cupertinoOverrideTheme: const CupertinoThemeData(
-            textTheme: CupertinoTextThemeData(), // This is required
-          ),
-        ),
+            primaryColor: Colors.grey[900],
+            backgroundColor: Colors.black,
+            cardColor: Colors.grey[900],
+            colorScheme: ColorScheme(
+                brightness: Brightness.dark,
+                primary: Colors.blue,
+                primaryVariant: Colors.black,
+                secondary: Colors.black,
+                secondaryVariant: Colors.black,
+                background: Colors.black,
+                surface: Colors.grey[700],
+                onBackground: Colors.black,
+                onSurface: Colors.black,
+                onError: Colors.white,
+                onPrimary: Colors.white,
+                onSecondary: Colors.white,
+                error: Colors.red.shade400)),
+        themeMode: ThemeMode.system,
         home: Welcome(),
       ),
     );

@@ -128,7 +128,7 @@ class HomeworkComp extends StatelessWidget {
             Row(children: [
               Spacer(),
               IconButton(
-                  icon: Icon(Icons.delete, color: Colors.grey),
+                  icon: Icon(Icons.delete),
                   onPressed: () => showOkCancelAlertDialog(
                               context: context,
                               okLabel: 'Oui',

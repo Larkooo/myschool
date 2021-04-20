@@ -24,6 +24,7 @@ import 'package:settings_ui/settings_ui.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:slide_popup_dialog/slide_popup_dialog.dart';
+import 'package:get/get.dart';
 
 class Settings extends StatefulWidget {
   final UserData user;
@@ -62,9 +63,10 @@ class _SettingsState extends State<Settings> {
   Widget build(BuildContext context) {
     final user = context.watch<User>();
     return Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(title: Text("Paramètres")),
         body: SettingsList(
-          darkBackgroundColor: Colors.grey[900],
+          darkBackgroundColor: Colors.grey[850],
+          lightBackgroundColor: Colors.white,
           sections: [
             CustomSection(
                 child: SizedBox(
@@ -385,7 +387,7 @@ class _SettingsState extends State<Settings> {
                       });
                     })
               ],
-            )
+            ),
           ],
         ));
   }

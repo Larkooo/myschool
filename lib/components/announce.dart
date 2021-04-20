@@ -86,7 +86,6 @@ class Announce extends StatelessWidget {
                 width: MediaQuery.of(context).size.width / 7,
                 height: MediaQuery.of(context).size.height / 35,
                 decoration: BoxDecoration(
-                  color: Colors.grey[700],
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Material(
@@ -124,7 +123,7 @@ class Announce extends StatelessWidget {
             Row(children: [
               Spacer(),
               IconButton(
-                icon: Icon(Icons.delete, color: Colors.grey),
+                icon: Icon(Icons.delete),
                 onPressed: () => showOkCancelAlertDialog(
                         context: context,
                         okLabel: 'Supprimer',

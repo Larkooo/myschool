@@ -122,17 +122,18 @@ class _GroupPageState extends State<GroupPage> {
                     }
                   },
                   child: Badge(
-                    badgeColor: Colors.grey[900],
+                    badgeColor: Colors.grey[300],
                     badgeContent: Icon(
                       Icons.add_photo_alternate_outlined,
+                      color: Colors.black,
                     ),
                     child: Container(
                       width: MediaQuery.of(context).size.height / 7,
                       height: MediaQuery.of(context).size.height / 7,
                       decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.grey[800],
-                      ),
+                          shape: BoxShape.circle,
+                          border:
+                              Border.all(width: 2, color: Colors.grey[500])),
                       child: groupImage != null
                           ? ClipRRect(
                               borderRadius:
@@ -180,7 +181,6 @@ class _GroupPageState extends State<GroupPage> {
               Container(
                   width: MediaQuery.of(context).size.width / 1.1,
                   child: Card(
-                      color: Colors.grey[800],
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(10))),
                       child: Column(
@@ -191,13 +191,11 @@ class _GroupPageState extends State<GroupPage> {
                           ),
                           Text(
                             'Actions',
-                            style:
-                                TextStyle(fontSize: 20, color: Colors.white70),
+                            style: TextStyle(fontSize: 20),
                           ),
                           Container(
                               width: MediaQuery.of(context).size.width / 1.2,
                               decoration: BoxDecoration(
-                                  color: Colors.grey[900],
                                   borderRadius: BorderRadius.circular(10)),
                               margin: EdgeInsets.all(10),
                               child: Column(children: [
@@ -240,7 +238,6 @@ class _GroupPageState extends State<GroupPage> {
               Container(
                   width: MediaQuery.of(context).size.width / 1.1,
                   child: Card(
-                      color: Colors.grey[800],
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(10))),
                       child: Column(
@@ -251,13 +248,11 @@ class _GroupPageState extends State<GroupPage> {
                           ),
                           Text(
                             'Informations',
-                            style:
-                                TextStyle(fontSize: 20, color: Colors.white70),
+                            style: TextStyle(fontSize: 20),
                           ),
                           Container(
                             width: MediaQuery.of(context).size.width / 1.2,
                             decoration: BoxDecoration(
-                                color: Colors.grey[900],
                                 borderRadius: BorderRadius.circular(10)),
                             margin: EdgeInsets.all(10),
                             child: Column(

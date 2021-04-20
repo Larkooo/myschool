@@ -50,14 +50,12 @@ class AnnouncePage extends StatelessWidget {
             width: MediaQuery.of(context).size.height / 1.8,
             child: Card(
                 margin: EdgeInsets.fromLTRB(40, 10, 40, 0),
-                color: Colors.grey[900],
                 child: SingleChildScrollView(
                   child: Container(
                       margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
                       //width: MediaQuery.of(context).size.width / 10,
                       child: Text(announcement.content,
-                          style: TextStyle(
-                              fontSize: 15, color: Colors.grey[200]))),
+                          style: TextStyle(fontSize: 15))),
                 ))),
         SizedBox(
           height: 10,

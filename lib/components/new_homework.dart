@@ -66,8 +66,7 @@ class _NewHomeworkState extends State<NewHomework> {
                           ),
                           Text(
                             "Prévisualisation",
-                            style: TextStyle(
-                                fontSize: 20, color: Colors.grey[600]),
+                            style: TextStyle(fontSize: 20),
                           ),
                           SizedBox(
                             height: 10,

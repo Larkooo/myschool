@@ -149,7 +149,7 @@ class _HomeState extends State<Home> {
                 children: [
                   Text(
                     "Prochain cours",
-                    style: TextStyle(fontSize: 18, color: Colors.grey[400]),
+                    style: TextStyle(fontSize: 18),
                   ),
                   Container(
                       width: MediaQuery.of(context).size.width / 1.3,
@@ -207,7 +207,7 @@ class _HomeState extends State<Home> {
                     ),
                     Text(
                       "Dernière annonce école",
-                      style: TextStyle(fontSize: 18, color: Colors.grey[400]),
+                      style: TextStyle(fontSize: 18),
                     ),
                     Container(
                         width: MediaQuery.of(context).size.width / 1.3,
