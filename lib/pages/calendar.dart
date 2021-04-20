@@ -157,6 +157,13 @@ class _CalendarState extends State<Calendar> {
                     _startDay = CacheManagerMemory.courses.entries.first.key;
                     _endDay = CacheManagerMemory.courses.entries.last.key;
                   });
+                  CacheManagerMemory.courses.forEach((day, data) {
+                    if (day.isSameDay(_selectedDay)) {
+                      setState(() {
+                        CacheManagerMemory.dayCourses[day] = data;
+                      });
+                    }
+                  });
 
                   Navigator.pop(context);
                 }
@@ -182,11 +189,7 @@ class _CalendarState extends State<Calendar> {
                   } */
 
             // Using future.delayed to resolve the setState error happening on build
-            Future.delayed(Duration.zero, () {
-              /* 
-                    Checking the date of each of our events to then assign them to CacheManagerMemory.dayCourses
-                    CacheManagerMemory.courses has to be not empty.
-                  */
+            SchedulerBinding.instance.scheduleFrameCallback((_) {
               if (CacheManagerMemory.courses.isNotEmpty)
                 CacheManagerMemory.courses.forEach((day, data) {
                   if (day.isSameDay(_selectedDay)) {
@@ -195,8 +198,13 @@ class _CalendarState extends State<Calendar> {
                     });
                   }
                 });
+            });
+            /* 
+                    Checking the date of each of our events to then assign them to CacheManagerMemory.dayCourses
+                    CacheManagerMemory.courses has to be not empty.
+                  */
 
-              /*
+            /*
                     /* 
                       Same thing. We're just checking if we're home or at school here.
                   */
@@ -216,7 +224,6 @@ class _CalendarState extends State<Calendar> {
                         }
                       });
                       */
-            });
           },
           /* 
                   If a day is selected, redo all the calculations that have been done at the creation of the page ^

@@ -44,7 +44,6 @@ class _MozaikLoginState extends State<MozaikLogin> {
           onWebViewCreated: (controller) async {
             SharedPreferences prefs = await SharedPreferences.getInstance();
             if (prefs.getBool('mozaikLoyal') == null) {
-              print('yes');
               controller.clearCache();
               controller.reload();
             }

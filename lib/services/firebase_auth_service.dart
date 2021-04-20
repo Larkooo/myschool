@@ -5,6 +5,7 @@ import 'package:myschool/models/group.dart';
 import 'package:myschool/models/school.dart';
 import 'package:myschool/services/database.dart';
 import 'package:myschool/services/messaging.dart';
+import 'package:myschool/shared/cachemanager.dart';
 import 'package:myschool/shared/constants.dart';
 import 'package:myschool/shared/local_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -130,6 +131,7 @@ class FirebaseAuthService {
       MessagingService.unsubscribeFromTopics(user);
       await _auth.signOut();
       await LocalStorage.clearSensitiveInfo();
+      CacheManagerMemory.clearEverything();
     } catch (e) {
       print(e);
     }

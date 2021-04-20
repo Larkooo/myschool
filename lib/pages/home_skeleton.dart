@@ -37,29 +37,8 @@ class _HomeState extends State<HomeSkeleton> {
 
   static UserData userData;
 
-  static Map<UserType, List<Widget>> _widgetOptions = {
-    UserType.student: [
-      Home(),
-      Announcements(),
-      Homeworks(),
-      Calendar(),
-    ],
-    UserType.staff: [HomeTeacher(), Announcements(), Groups(), ChatPage()],
-    UserType.teacher: [
-      HomeTeacher(),
-      Announcements(),
-      Homeworks(),
-      Groups(),
-      ChatPage()
-    ],
-    UserType.direction: [
-      HomeTeacher(),
-      SchoolPage(),
-      Announcements(),
-      Groups(),
-      ChatPage()
-    ],
-  };
+  // will be altered later depending on user type and data to push data to it
+  static List<Widget> _widgetOptions = [];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -92,58 +71,27 @@ class _HomeState extends State<HomeSkeleton> {
           if (snapshot.hasData) {
             userData = snapshot.data;
 
-            _widgetOptions = {
-              UserType.student: [
-                Home(user: userData),
-                Announcements(user: userData),
-                Homeworks(user: userData),
-                Calendar(user: userData),
-              ],
-              UserType.staff: [
-                HomeTeacher(user: userData),
-                Announcements(user: userData),
-                Groups(user: userData),
-                if (userData.type != UserType.student &&
-                    userData.groups.contains('staff'))
-                  ChatPage(
-                    user: userData,
-                    groupUid: 'staff',
-                  )
-              ],
-              UserType.teacher: [
-                HomeTeacher(user: userData),
-                Announcements(user: userData),
-                Homeworks(user: userData),
-                Groups(user: userData),
-                if (userData.type != UserType.student &&
-                    userData.groups.contains('staff'))
-                  ChatPage(
-                    user: userData,
-                    groupUid: 'staff',
-                  )
-              ],
-              UserType.direction: [
-                HomeTeacher(user: userData),
-                SchoolPage(
-                  user: userData,
-                ),
-                Announcements(user: userData),
-                Groups(user: userData),
-                if (userData.type != UserType.student &&
-                    userData.groups.contains('staff'))
-                  ChatPage(
-                    user: userData,
-                    groupUid: 'staff',
-                  )
-              ]
-            };
-
             // subscribe to school topic
             if (!subscribed) _messaging.subscribeToTopic(userData.school.uid);
 
             switch (userData.type) {
               case UserType.direction:
                 {
+                  // Direction / principal
+
+                  _widgetOptions = [
+                    HomeTeacher(user: userData),
+                    SchoolPage(
+                      user: userData,
+                    ),
+                    Announcements(user: userData),
+                    Groups(user: userData),
+                    if (userData.groups.contains('staff'))
+                      ChatPage(
+                        user: userData,
+                        groupUid: 'staff',
+                      )
+                  ];
                   // subscribe to all group topics
                   userData.groups.forEach((group) => _messaging
                       .subscribeToTopic(userData.school.uid + '-' + group));
@@ -154,8 +102,7 @@ class _HomeState extends State<HomeSkeleton> {
                       drawer: DrawerComp(
                         user: userData,
                       ),
-                      body: _widgetOptions[UserType.direction]
-                          .elementAt(_selectedIndex),
+                      body: _widgetOptions.elementAt(_selectedIndex),
                       bottomNavigationBar: adaptiveBottomNavBar(
                         items: <BottomNavigationBarItem>[
                           BottomNavigationBarItem(
@@ -193,7 +140,21 @@ class _HomeState extends State<HomeSkeleton> {
               case UserType.teacher:
                 {
                   // Teacher
-                  //
+
+                  _widgetOptions = [
+                    HomeTeacher(user: userData),
+                    Announcements(user: userData),
+                    Homeworks(user: userData),
+                    Groups(user: userData),
+                    Calendar(user: userData),
+                    if (userData.type != UserType.student &&
+                        userData.groups.contains('staff'))
+                      ChatPage(
+                        user: userData,
+                        groupUid: 'staff',
+                      )
+                  ];
+
                   // subscribe to all group topics
                   userData.groups.forEach((group) => _messaging
                       .subscribeToTopic(userData.school.uid + '-' + group));
@@ -204,8 +165,7 @@ class _HomeState extends State<HomeSkeleton> {
                       drawer: DrawerComp(
                         user: userData,
                       ),
-                      body: _widgetOptions[UserType.teacher]
-                          .elementAt(_selectedIndex),
+                      body: _widgetOptions.elementAt(_selectedIndex),
                       bottomNavigationBar: adaptiveBottomNavBar(
                         items: <BottomNavigationBarItem>[
                           BottomNavigationBarItem(
@@ -228,6 +188,11 @@ class _HomeState extends State<HomeSkeleton> {
                                   ? CupertinoIcons.group
                                   : Icons.group),
                               label: "Groupes"),
+                          BottomNavigationBarItem(
+                              icon: Icon(Platform.isIOS
+                                  ? CupertinoIcons.calendar
+                                  : Icons.calendar_today),
+                              label: "Calendrier"),
                           if (userData.groups.contains('staff'))
                             BottomNavigationBarItem(
                                 icon: Icon(Platform.isIOS
@@ -242,6 +207,18 @@ class _HomeState extends State<HomeSkeleton> {
 
               case UserType.staff:
                 {
+                  _widgetOptions = [
+                    HomeTeacher(user: userData),
+                    Announcements(user: userData),
+                    Groups(user: userData),
+                    if (userData.type != UserType.student &&
+                        userData.groups.contains('staff'))
+                      ChatPage(
+                        user: userData,
+                        groupUid: 'staff',
+                      )
+                  ];
+
                   // subscribe to all group topics
                   userData.groups.forEach((group) => _messaging
                       .subscribeToTopic(userData.school.uid + '-' + group));
@@ -252,8 +229,7 @@ class _HomeState extends State<HomeSkeleton> {
                       drawer: DrawerComp(
                         user: userData,
                       ),
-                      body: _widgetOptions[UserType.staff]
-                          .elementAt(_selectedIndex),
+                      body: _widgetOptions.elementAt(_selectedIndex),
                       bottomNavigationBar: adaptiveBottomNavBar(
                         items: <BottomNavigationBarItem>[
                           BottomNavigationBarItem(
@@ -271,6 +247,11 @@ class _HomeState extends State<HomeSkeleton> {
                                   ? CupertinoIcons.group
                                   : Icons.group),
                               label: "Groupes"),
+                          BottomNavigationBarItem(
+                              icon: Icon(Platform.isIOS
+                                  ? CupertinoIcons.calendar
+                                  : Icons.calendar_today),
+                              label: "Calendrier"),
                           if (userData.groups.contains('staff'))
                             BottomNavigationBarItem(
                                 icon: Icon(Platform.isIOS
@@ -286,7 +267,12 @@ class _HomeState extends State<HomeSkeleton> {
               default:
                 {
                   // Student
-
+                  _widgetOptions = [
+                    Home(user: userData),
+                    Announcements(user: userData),
+                    Homeworks(user: userData),
+                    Calendar(user: userData),
+                  ];
                   // subscribe to group topic
                   if (!subscribed) {
                     _messaging.subscribeToTopic(
@@ -299,8 +285,7 @@ class _HomeState extends State<HomeSkeleton> {
                     drawer: DrawerComp(
                       user: userData,
                     ),
-                    body: _widgetOptions[UserType.student]
-                        .elementAt(_selectedIndex),
+                    body: _widgetOptions.elementAt(_selectedIndex),
                     bottomNavigationBar: adaptiveBottomNavBar(
                       items: <BottomNavigationBarItem>[
                         BottomNavigationBarItem(

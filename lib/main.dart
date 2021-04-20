@@ -78,6 +78,20 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'MonEcole',
         theme: ThemeData.light().copyWith(
+          appBarTheme: AppBarTheme(
+              textTheme: TextTheme(
+                  headline6: TextStyle(color: Colors.grey[800], fontSize: 20)),
+              elevation: 5,
+              backgroundColor: Colors.grey[100],
+              iconTheme: IconThemeData(color: Colors.grey[900])),
+          bottomNavigationBarTheme: BottomNavigationBarThemeData(
+              showSelectedLabels: true,
+              backgroundColor: Colors.white,
+              elevation: 0,
+              selectedIconTheme:
+                  IconThemeData(color: Colors.grey[800], size: 30),
+              unselectedIconTheme:
+                  IconThemeData(color: Colors.grey[500], size: 20)),
           primaryColor: Colors.grey[850],
           colorScheme: ColorScheme(
               brightness: Brightness.light,

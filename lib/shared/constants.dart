@@ -125,14 +125,17 @@ Column coursePage(
         SizedBox(
           height: 25,
         ),
-        Text(
-          "Groupe",
-          style: TextStyle(fontSize: 16),
-        ),
-        Text(
-          user.school.group.uid,
-          style: TextStyle(color: Colors.grey[500]),
-        ),
+        if (user.type == UserType.student)
+          Column(children: [
+            Text(
+              "Groupe",
+              style: TextStyle(fontSize: 16),
+            ),
+            Text(
+              user.school.group.uid,
+              style: TextStyle(color: Colors.grey[500]),
+            )
+          ]),
         SizedBox(
           height: 20,
         ),

@@ -62,7 +62,7 @@ class _DrawerCompState extends State<DrawerComp> {
                                     child: Container(
                                         width: 50,
                                         height: 50,
-                                        color: Colors.grey[800],
+                                        color: Theme.of(context).cardColor,
                                         child: widget.user.avatarUrl != null
                                             // Caching the image so we dont have to request it everytime the app is reloaded
                                             ? CachedNetworkImage(

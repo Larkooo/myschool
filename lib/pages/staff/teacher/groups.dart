@@ -61,7 +61,7 @@ class Groups extends StatelessWidget {
                             [GroupAttribute.image];
                         return Material(
                           borderRadius: BorderRadius.circular(5),
-                          color: Colors.grey[800],
+                          color: Theme.of(context).cardColor,
                           child: InkWell(
                               borderRadius: BorderRadius.circular(5),
                               onTap: () => Navigator.push(
@@ -125,7 +125,7 @@ class Groups extends StatelessWidget {
                               };
                               return Material(
                                 borderRadius: BorderRadius.circular(5),
-                                color: Colors.grey[800],
+                                color: Theme.of(context).cardColor,
                                 child: InkWell(
                                     borderRadius: BorderRadius.circular(5),
                                     onTap: () => Navigator.push(
