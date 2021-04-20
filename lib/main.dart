@@ -22,6 +22,8 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:package_info/package_info.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'shared/constants.dart';
 
 void main() async {
   await initializeDateFormatting('fr', null);
@@ -33,6 +35,7 @@ void main() async {
     badge: true,
     sound: true,
   );
+  SharedPreferences prefs = await SharedPreferences.getInstance();
   String hwid = await FirebaseMessaging.instance.getToken();
   if (await DatabaseService(uid: hwid).HWIDBanned()) {
     Alert(
@@ -42,7 +45,9 @@ void main() async {
     await Future.delayed(Duration(seconds: 2));
     exit(-1);
   }
-
+  if (prefs.getBool('darkMode') != null)
+    themeNotifier.value =
+        prefs.getBool('darkMode') ? ThemeMode.dark : ThemeMode.light;
   //RemoteConfig remoteConfig = RemoteConfig.instance;
   //PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
@@ -71,68 +76,72 @@ class MyApp extends StatelessWidget {
     //  systemNavigationBarColor: Colors.grey[850], // navigation bar color
     //  // statusBarColor: Colors.grey[850], // status bar color
     //));
+    //
 
-    return StreamProvider<User>.value(
-      initialData: null,
-      value: FirebaseAuthService.user,
-      child: MaterialApp(
-        title: 'MonEcole',
-        theme: ThemeData.light().copyWith(
-          appBarTheme: AppBarTheme(
-              textTheme: TextTheme(
-                  headline6: TextStyle(color: Colors.grey[800], fontSize: 20)),
-              elevation: 5,
-              backgroundColor: Colors.grey[100],
-              iconTheme: IconThemeData(color: Colors.grey[900])),
-          bottomNavigationBarTheme: BottomNavigationBarThemeData(
-              showSelectedLabels: true,
-              backgroundColor: Colors.white,
-              elevation: 0,
-              selectedIconTheme:
-                  IconThemeData(color: Colors.grey[800], size: 30),
-              unselectedIconTheme:
-                  IconThemeData(color: Colors.grey[500], size: 20)),
-          primaryColor: Colors.grey[850],
-          colorScheme: ColorScheme(
-              brightness: Brightness.light,
-              primary: Colors.blue,
-              primaryVariant: Colors.black,
-              secondary: Colors.black,
-              secondaryVariant: Colors.black,
-              background: Colors.black,
-              surface: Colors.grey[600], // bottom bar icons
-              onBackground: Colors.black,
-              onSurface: Colors.black,
-              onError: Colors.black,
-              onPrimary: Colors.black,
-              onSecondary: Colors.black,
-              error: Colors.red.shade400),
-          cardColor: Colors.grey[300],
-        ),
-        darkTheme: ThemeData.dark().copyWith(
-            primaryColor: Colors.grey[900],
-            backgroundColor: Colors.black,
-            cardColor: Colors.grey[900],
-            cupertinoOverrideTheme: const CupertinoThemeData(
-              textTheme: CupertinoTextThemeData(), // This is required
-            ),
-            colorScheme: ColorScheme(
-                brightness: Brightness.dark,
-                primary: Colors.blue,
-                primaryVariant: Colors.black,
-                secondary: Colors.black,
-                secondaryVariant: Colors.black,
-                background: Colors.black,
-                surface: Colors.grey[700],
-                onBackground: Colors.black,
-                onSurface: Colors.black,
-                onError: Colors.white,
-                onPrimary: Colors.white,
-                onSecondary: Colors.white,
-                error: Colors.red.shade400)),
-        themeMode: ThemeMode.system,
-        home: Welcome(),
-      ),
-    );
+    return ValueListenableBuilder<ThemeMode>(
+        valueListenable: themeNotifier,
+        builder: (_, mode, __) => StreamProvider<User>.value(
+              initialData: null,
+              value: FirebaseAuthService.user,
+              child: MaterialApp(
+                title: 'MonEcole',
+                theme: ThemeData.light().copyWith(
+                  appBarTheme: AppBarTheme(
+                      textTheme: TextTheme(
+                          headline6:
+                              TextStyle(color: Colors.grey[800], fontSize: 20)),
+                      elevation: 5,
+                      backgroundColor: Colors.grey[100],
+                      iconTheme: IconThemeData(color: Colors.grey[900])),
+                  bottomNavigationBarTheme: BottomNavigationBarThemeData(
+                      showSelectedLabels: true,
+                      backgroundColor: Colors.white,
+                      elevation: 0,
+                      selectedIconTheme:
+                          IconThemeData(color: Colors.grey[800], size: 30),
+                      unselectedIconTheme:
+                          IconThemeData(color: Colors.grey[500], size: 20)),
+                  primaryColor: Colors.grey[850],
+                  colorScheme: ColorScheme(
+                      brightness: Brightness.light,
+                      primary: Colors.blue,
+                      primaryVariant: Colors.black,
+                      secondary: Colors.black,
+                      secondaryVariant: Colors.black,
+                      background: Colors.black,
+                      surface: Colors.grey[600], // bottom bar icons
+                      onBackground: Colors.black,
+                      onSurface: Colors.black,
+                      onError: Colors.black,
+                      onPrimary: Colors.black,
+                      onSecondary: Colors.black,
+                      error: Colors.red.shade400),
+                  cardColor: Colors.grey[300],
+                ),
+                darkTheme: ThemeData.dark().copyWith(
+                    primaryColor: Colors.grey[900],
+                    backgroundColor: Colors.black,
+                    cardColor: Colors.grey[900],
+                    cupertinoOverrideTheme: const CupertinoThemeData(
+                      textTheme: CupertinoTextThemeData(), // This is required
+                    ),
+                    colorScheme: ColorScheme(
+                        brightness: Brightness.dark,
+                        primary: Colors.blue,
+                        primaryVariant: Colors.black,
+                        secondary: Colors.black,
+                        secondaryVariant: Colors.black,
+                        background: Colors.black,
+                        surface: Colors.grey[700],
+                        onBackground: Colors.black,
+                        onSurface: Colors.black,
+                        onError: Colors.white,
+                        onPrimary: Colors.white,
+                        onSecondary: Colors.white,
+                        error: Colors.red.shade400)),
+                themeMode: mode,
+                home: Welcome(),
+              ),
+            ));
   }
 }

@@ -18,6 +18,7 @@ import 'package:myschool/models/user.dart';
 import 'package:myschool/services/database.dart';
 import 'package:myschool/services/firebase_auth_service.dart';
 import 'package:myschool/services/firebase_storage.dart';
+import 'package:myschool/services/messaging.dart';
 import 'package:myschool/shared/constants.dart';
 import 'package:myschool/shared/local_storage.dart';
 import 'package:settings_ui/settings_ui.dart';
@@ -37,23 +38,24 @@ class Settings extends StatefulWidget {
 class _SettingsState extends State<Settings> {
   final picker = ImagePicker();
 
-  //String _mozaikAccountText = "Lier votre compte Mozaik";
+  bool schoolNotifications = true;
+  List<String> disabledGroupsNotifications = [];
+
+  Future<void> getNotificationsPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      schoolNotifications = prefs.getBool('schoolNotifications') ?? true;
+      disabledGroupsNotifications =
+          prefs.getStringList('disabledGroupsNotifications') ?? [];
+    });
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    //SharedPreferences.getInstance().then((prefs) {
-    //  if (prefs.getString('access_token') != null) {
-    //    setState(() {
-    //      _mozaikAccountText = "Compte Mozaik lié";
-    //    });
-    //  }
-    //});
+    getNotificationsPreferences();
   }
-
-  TextEditingController _newEmail = TextEditingController();
-  bool _newEmailValid = false;
 
   final imgCropKey = GlobalKey<CropState>();
 
@@ -321,6 +323,67 @@ class _SettingsState extends State<Settings> {
                       })
                   //subtitle: user.email,
                   )
+            ]),
+            CustomSection(
+                child: SizedBox(
+              height: 10,
+            )),
+            SettingsSection(title: "Application", tiles: [
+              SettingsTile.switchTile(
+                  leading: Icon(Icons.nightlight_round),
+                  title: 'Mode sombre',
+                  onToggle: (v) async {
+                    themeNotifier.value == ThemeMode.dark
+                        ? themeNotifier.value = ThemeMode.light
+                        : themeNotifier.value = ThemeMode.dark;
+
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    prefs.setBool('darkMode', v);
+                  },
+                  switchValue: themeNotifier.value == ThemeMode.dark),
+              SettingsTile.switchTile(
+                  leading: Icon(Icons.notification_important),
+                  title: "Notifications de l\'école",
+                  onToggle: (v) async {
+                    if (!v) {
+                      bool unsubscribed =
+                          !(await MessagingService.unsubscribeFromSchool(
+                              widget.user.school.uid));
+                      setState(() {
+                        schoolNotifications = unsubscribed;
+                      });
+                    } else {
+                      bool subscribed =
+                          await MessagingService.subscribeToSchool(
+                              widget.user.school.uid);
+                      setState(() {
+                        schoolNotifications = subscribed;
+                      });
+                    }
+                  },
+                  switchValue: schoolNotifications),
+              if (widget.user.type == UserType.student)
+                SettingsTile.switchTile(
+                    leading: Icon(Icons.notifications),
+                    title: "Notifications de groupe (" +
+                        widget.user.school.group.uid +
+                        ")",
+                    onToggle: (v) async {
+                      List<String> r = v
+                          ? await MessagingService.subscribeToGroup(
+                              widget.user.school.uid,
+                              widget.user.school.group.uid)
+                          : await MessagingService.unsubscribeFromGroup(
+                              widget.user.school.uid,
+                              widget.user.school.group.uid);
+                      print(r);
+                      setState(() {
+                        disabledGroupsNotifications = r;
+                      });
+                    },
+                    switchValue: !(disabledGroupsNotifications
+                        .contains(widget.user.school.group.uid)))
             ]),
             CustomSection(
                 child: SizedBox(

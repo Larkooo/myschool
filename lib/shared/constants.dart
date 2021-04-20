@@ -38,6 +38,8 @@ enum AuthCode {
 const String surveyURL = 'https://forms.gle/kc9eBHqVJLnDwFrS9';
 const String bugReportURL = 'https://forms.gle/1gaeqdCgbr8wbrCn6';
 
+ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.dark);
+
 void launchURL(String url) async => await canLaunch(url)
     ? await launch(url)
     : Alert(message: 'Could not launch URL').show();

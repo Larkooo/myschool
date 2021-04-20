@@ -17,6 +17,7 @@ import 'package:myschool/pages/staff/teacher/home.dart';
 import 'package:myschool/services/database.dart';
 import 'package:myschool/services/firebase_auth_service.dart';
 import 'package:myschool/shared/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'home.dart';
 import 'calendar.dart';
 import 'announcements.dart';
@@ -55,11 +56,23 @@ class _HomeState extends State<HomeSkeleton> {
   FirebaseMessaging _messaging = FirebaseMessaging.instance;
   bool subscribed = false;
 
+  bool schoolNotifications = true;
+  List<String> disabledGroupsNotifications = [];
+
+  Future<void> getNotificationsPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      schoolNotifications = prefs.getBool('schoolNotifications') ?? true;
+      disabledGroupsNotifications =
+          prefs.getStringList('disabledGroupsNotifications') ?? [];
+    });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    //showSlideDialog(context: context, child: Text("Testing welcome message"));
+    getNotificationsPreferences();
   }
 
   @override
@@ -72,7 +85,8 @@ class _HomeState extends State<HomeSkeleton> {
             userData = snapshot.data;
 
             // subscribe to school topic
-            if (!subscribed) _messaging.subscribeToTopic(userData.school.uid);
+            if (!subscribed && schoolNotifications)
+              _messaging.subscribeToTopic(userData.school.uid);
 
             switch (userData.type) {
               case UserType.direction:
@@ -93,9 +107,15 @@ class _HomeState extends State<HomeSkeleton> {
                       )
                   ];
                   // subscribe to all group topics
-                  userData.groups.forEach((group) => _messaging
-                      .subscribeToTopic(userData.school.uid + '-' + group));
-                  if (!subscribed) subscribed = true;
+
+                  if (!subscribed) {
+                    userData.groups.forEach((group) =>
+                        disabledGroupsNotifications.contains(group) == false
+                            ? _messaging.subscribeToTopic(
+                                userData.school.uid + '-' + group)
+                            : null);
+                    subscribed = true;
+                  }
 
                   return Scaffold(
                       appBar: AppBar(),
@@ -156,9 +176,14 @@ class _HomeState extends State<HomeSkeleton> {
                   ];
 
                   // subscribe to all group topics
-                  userData.groups.forEach((group) => _messaging
-                      .subscribeToTopic(userData.school.uid + '-' + group));
-                  if (!subscribed) subscribed = true;
+                  if (!subscribed) {
+                    userData.groups.forEach((group) =>
+                        disabledGroupsNotifications.contains(group) == false
+                            ? _messaging.subscribeToTopic(
+                                userData.school.uid + '-' + group)
+                            : null);
+                    subscribed = true;
+                  }
 
                   return Scaffold(
                       appBar: AppBar(),
@@ -220,9 +245,15 @@ class _HomeState extends State<HomeSkeleton> {
                   ];
 
                   // subscribe to all group topics
-                  userData.groups.forEach((group) => _messaging
-                      .subscribeToTopic(userData.school.uid + '-' + group));
-                  if (!subscribed) subscribed = true;
+
+                  if (!subscribed) {
+                    userData.groups.forEach((group) =>
+                        disabledGroupsNotifications.contains(group) == false
+                            ? _messaging.subscribeToTopic(
+                                userData.school.uid + '-' + group)
+                            : null);
+                    subscribed = true;
+                  }
 
                   return Scaffold(
                       appBar: AppBar(),
@@ -274,7 +305,9 @@ class _HomeState extends State<HomeSkeleton> {
                     Calendar(user: userData),
                   ];
                   // subscribe to group topic
-                  if (!subscribed) {
+                  if (!subscribed &&
+                      !(disabledGroupsNotifications
+                          .contains(userData.school.group.uid))) {
                     _messaging.subscribeToTopic(
                         userData.school.uid + '-' + userData.school.group.uid);
                     subscribed = true;
