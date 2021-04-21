@@ -10,6 +10,7 @@ import 'package:myschool/shared/constants.dart';
 import 'package:myschool/shared/local_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user.dart';
+import '../shared/platform_utility.dart';
 
 class FirebaseAuthService {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -128,7 +129,7 @@ class FirebaseAuthService {
 
   static Future<void> signOut(UserData user) async {
     try {
-      MessagingService.unsubscribeFromTopics(user);
+      if (!PlatformUtils.isWeb) MessagingService.unsubscribeFromTopics(user);
       await _auth.signOut();
       await LocalStorage.clearSensitiveInfo();
       CacheManagerMemory.clearEverything();

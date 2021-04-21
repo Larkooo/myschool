@@ -168,6 +168,7 @@ class _AnnouncementsState extends State<Announcements> {
                   return Announce(announcement: announcement);
                 });
           } else {
+            print(snapshot.error);
             return Center(child: CircularProgressIndicator.adaptive());
           }
         },
