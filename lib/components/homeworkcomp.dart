@@ -18,6 +18,7 @@ import 'package:clipboard/clipboard.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:slide_popup_dialog/slide_popup_dialog.dart';
+import '../shared/platform_utility.dart';
 
 class HomeworkComp extends StatelessWidget {
   final Homework homework;
@@ -124,7 +125,7 @@ class HomeworkComp extends StatelessWidget {
               : homework.description.substring(0, 150).trim() + "..."),
           if (user.uid == homework.author &&
               homework.uid != '-1' &&
-              Platform.isAndroid)
+              PlatformUtils.isAndroid)
             Row(children: [
               Spacer(),
               IconButton(
@@ -157,7 +158,7 @@ class HomeworkComp extends StatelessWidget {
       ),
     ]));
 
-    return Platform.isIOS && homework.uid != '-1'
+    return PlatformUtils.isIOS && homework.uid != '-1'
         ? CupertinoContextMenu(
             /*previewBuilder: (BuildContext context, Animation<double> animation,
                 Widget child) {

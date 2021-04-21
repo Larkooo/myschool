@@ -19,6 +19,7 @@ import 'package:dart_date/dart_date.dart';
 // ignore: implementation_imports
 import 'package:adaptive_dialog/src/modal_action_sheet/material_modal_action_sheet.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
+import '../shared/platform_utility.dart';
 
 class ChatPage extends StatefulWidget {
   final UserData user;
@@ -38,7 +39,7 @@ class _ChatPageState extends State<ChatPage> {
   String _actualGroup;
 
   Widget _sendWidget =
-      Icon(Platform.isIOS ? CupertinoIcons.paperplane : Icons.send);
+      Icon(PlatformUtils.isIOS ? CupertinoIcons.paperplane : Icons.send);
 
   void _scrollDown() =>
       _scrollController.animateTo(_scrollController.position.maxScrollExtent,
@@ -54,7 +55,7 @@ class _ChatPageState extends State<ChatPage> {
             ? CrossAxisAlignment.end
             : CrossAxisAlignment.start,
         children: [
-          Platform.isIOS
+          PlatformUtils.isIOS
               ? CupertinoContextMenu(
                   actions: [
                       CupertinoContextMenuAction(
@@ -311,7 +312,7 @@ class _ChatPageState extends State<ChatPage> {
                         await DatabaseService(uid: widget.user.school.uid)
                             .sendMessage(value, widget.user, _actualGroup);
                         setState(() {
-                          _sendWidget = Icon(Platform.isIOS
+                          _sendWidget = Icon(PlatformUtils.isIOS
                               ? CupertinoIcons.paperplane
                               : Icons.send);
                         });
@@ -333,7 +334,7 @@ class _ChatPageState extends State<ChatPage> {
                       await DatabaseService(uid: widget.user.school.uid)
                           .sendMessage(message, widget.user, _actualGroup);
                       setState(() {
-                        _sendWidget = Icon(Platform.isIOS
+                        _sendWidget = Icon(PlatformUtils.isIOS
                             ? CupertinoIcons.paperplane
                             : Icons.send);
                       });

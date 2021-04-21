@@ -11,6 +11,7 @@ import 'package:myschool/services/database.dart';
 import 'package:myschool/shared/constants.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:provider/provider.dart';
+import '../shared/platform_utility.dart';
 
 import 'announce.dart';
 import 'homeworkcomp.dart';
@@ -193,7 +194,7 @@ class _NewHomeworkState extends State<NewHomework> {
                                 due,
                                 DateTime.now(),
                                 DateTime.now().add(Duration(days: 90)),
-                                Platform.isAndroid
+                                PlatformUtils.isAndroid
                                     ? (date) {
                                         showTimePicker(
                                           context: context,

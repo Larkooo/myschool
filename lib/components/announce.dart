@@ -20,6 +20,7 @@ import 'package:dart_date/dart_date.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:slide_popup_dialog/slide_popup_dialog.dart';
 import 'package:vibration/vibration.dart';
+import '../shared/platform_utility.dart';
 
 class Announce extends StatelessWidget {
   final Announcement announcement;
@@ -119,7 +120,7 @@ class Announce extends StatelessWidget {
               : announcement.content.substring(0, 150).trim() + "..."),
           if ((user.uid == announcement.author) &&
               announcement.uid != '-1' &&
-              Platform.isAndroid)
+              PlatformUtils.isAndroid)
             Row(children: [
               Spacer(),
               IconButton(
@@ -145,7 +146,7 @@ class Announce extends StatelessWidget {
       ),
     ]));
 
-    return Platform.isIOS && announcement.uid != '-1'
+    return PlatformUtils.isIOS && announcement.uid != '-1'
         ? CupertinoContextMenu(
             /*previewBuilder: (BuildContext context, Animation<double> animation,
                 Widget child) {

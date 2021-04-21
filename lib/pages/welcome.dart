@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:myschool/pages/login.dart';
 import 'package:myschool/models/user.dart';
@@ -10,13 +11,18 @@ import 'package:myschool/pages/home_skeleton.dart';
 import 'package:myschool/services/firebase_auth_service.dart';
 import 'package:myschool/shared/constants.dart';
 import 'package:provider/provider.dart';
+import '../shared/platform_utility.dart';
 
 class Welcome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = context.watch<User>();
     // MessageHandler -> handles messages -> homeskeleton
-    return user != null ? MessageHandler() : Login();
+    return user != null
+        ? kIsWeb
+            ? HomeSkeleton()
+            : MessageHandler()
+        : Login();
   }
 }
 
@@ -49,7 +55,7 @@ class _MessageHandlerState extends State<MessageHandler> {
           .doc(token);
       await tokenRef.set({
         'createdAt': FieldValue.serverTimestamp(),
-        'platform': Platform.operatingSystem
+        'platform': PlatformUtils.isWeb ? 'web' : Platform.operatingSystem
       });
     }
   }
@@ -59,7 +65,7 @@ class _MessageHandlerState extends State<MessageHandler> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    if (Platform.isIOS) {
+    if (PlatformUtils.isIOS) {
       _messaging.requestPermission().then((value) async {
         if (value.authorizationStatus == AuthorizationStatus.authorized ||
             value.authorizationStatus == AuthorizationStatus.provisional) {
@@ -70,7 +76,7 @@ class _MessageHandlerState extends State<MessageHandler> {
       _saveDeviceToken();
     }
     FirebaseMessaging.onMessage.listen((message) {
-      if (message.notification != null && Platform.isAndroid) {
+      if (message.notification != null && PlatformUtils.isAndroid) {
         final snackbar = SnackBar(
             content: Text(message.notification.title),
             action: SnackBarAction(

@@ -20,6 +20,7 @@ import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import '../services/database.dart';
 import '../models/school.dart';
+import '../shared/platform_utility.dart';
 
 class Announcements extends StatefulWidget {
   final UserData user;
@@ -96,7 +97,7 @@ class _AnnouncementsState extends State<Announcements> {
     }
     return Scaffold(
       // only for ios for now
-      appBar: Platform.isIOS
+      appBar: PlatformUtils.isIOS
           ? AppBar(
               title: Container(
                   width: MediaQuery.of(context).size.width / 1.2,

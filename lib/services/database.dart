@@ -90,7 +90,6 @@ class DatabaseService {
           _schoolsCollection.doc(this.uid).collection('groups').doc(uid);
       await groupRef.set({'name': name});
       if (code != null && codeType != null) {
-        print('yes');
         await _codesCollection.doc(code).set({
           'usedTimes': 0,
           'school': groupRef,

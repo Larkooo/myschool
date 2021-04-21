@@ -13,6 +13,7 @@ import '../../../models/user.dart';
 import '../../../services/database.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../../shared/platform_utility.dart';
 
 class Groups extends StatelessWidget {
   final UserData user;
@@ -185,7 +186,7 @@ class Groups extends StatelessWidget {
                       Widget card = CacheManagerMemory.groupData[group] != null
                           ? groupCard()
                           : groupCardFuture;
-                      return Platform.isIOS
+                      return PlatformUtils.isIOS
                           ? CupertinoContextMenu(actions: [
                               CupertinoContextMenuAction(
                                 child: Text(

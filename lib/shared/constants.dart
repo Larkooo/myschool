@@ -17,6 +17,7 @@ import 'package:myschool/shared/cachemanager.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'platform_utility.dart';
 
 enum GroupAttribute { alias, image, students }
 enum AnnounceCategory { essay, homework, important, message }
@@ -304,7 +305,7 @@ dynamic adaptiveDialog(
   return showDialog(
       context: context,
       builder: (context) {
-        if (Platform.isIOS) {
+        if (PlatformUtils.isIOS) {
           return CupertinoAlertDialog(
             title: title,
             content: content,
@@ -360,7 +361,7 @@ TextButton textButton(BuildContext context, String text, Function onPressed) {
 Widget adaptiveCalendarPicker(
     DateTime initialDate, DateTime firstDate, DateTime lastDate,
     [Function(DateTime) onDateChanged]) {
-  if (Platform.isIOS) {
+  if (PlatformUtils.isIOS) {
     return CupertinoDatePicker(
         initialDateTime: initialDate,
         minimumDate: firstDate,
@@ -377,14 +378,14 @@ Widget adaptiveCalendarPicker(
 
 TextButton adaptiveDialogTextButton(
     BuildContext context, String text, Function onPressed) {
-  if (Platform.isIOS) {
+  if (PlatformUtils.isIOS) {
     return textButton(context, text, onPressed);
   }
   return TextButton(child: Text(text), onPressed: onPressed);
 }
 
 Widget adaptiveAppBar({String title, Widget leading}) {
-  if (Platform.isIOS) {
+  if (PlatformUtils.isIOS) {
     return CupertinoNavigationBar(middle: Text(title), leading: leading);
   }
   return AppBar(title: Text(title), leading: leading);
@@ -392,7 +393,7 @@ Widget adaptiveAppBar({String title, Widget leading}) {
 
 Widget adaptiveBottomNavBar(
     {List<BottomNavigationBarItem> items, int currentIndex, Function onTap}) {
-  if (Platform.isIOS) {
+  if (PlatformUtils.isIOS) {
     return CupertinoTabBar(
       items: items,
       currentIndex: currentIndex,

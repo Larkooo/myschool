@@ -6,10 +6,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:myschool/pages/login.dart';
+import 'package:myschool/pages/register.dart';
 import 'package:myschool/pages/welcome.dart';
 import 'package:myschool/services/database.dart';
 import 'package:myschool/services/firebase_auth_service.dart';
@@ -24,27 +27,30 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'shared/constants.dart';
+import 'shared/platform_utility.dart';
 
 void main() async {
   await initializeDateFormatting('fr', null);
   Intl.defaultLocale = 'fr';
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-    alert: true, // Required to display a heads up notification
-    badge: true,
-    sound: true,
-  );
+  if (PlatformUtils.isIOS)
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
+      alert: true, // Required to display a heads up notification
+      badge: true,
+      sound: true,
+    );
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  String hwid = await FirebaseMessaging.instance.getToken();
-  if (await DatabaseService(uid: hwid).HWIDBanned()) {
-    Alert(
-            message:
-                'Your device has been HWID locked from MySchool. Closing the app...')
-        .show();
-    await Future.delayed(Duration(seconds: 2));
-    exit(-1);
-  }
+  // String hwid = await FirebaseMessaging.instance.getToken();
+  //if (await DatabaseService(uid: hwid).HWIDBanned()) {
+  //  Alert(
+  //          message:
+  //              'Your device has been HWID locked from MySchool. Closing the app...')
+  //      .show();
+  //  await Future.delayed(Duration(seconds: 2));
+  //  exit(-1);
+  //}
   if (prefs.getBool('darkMode') != null)
     themeNotifier.value =
         prefs.getBool('darkMode') ? ThemeMode.dark : ThemeMode.light;

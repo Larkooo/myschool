@@ -21,6 +21,7 @@ import 'package:slide_popup_dialog/slide_popup_dialog.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:myschool/shared/cachemanager.dart';
+import '../shared/platform_utility.dart';
 
 import '../components/mozaik_login.dart';
 
@@ -264,7 +265,7 @@ class _CalendarState extends State<Calendar> {
         Expanded(
             child: ListView(
                 children: CacheManagerMemory.dayCourses.entries
-                    .map((e) => Platform.isAndroid
+                    .map((e) => PlatformUtils.isAndroid
                         ? Card(
                             child: ListTile(
                               onTap: () => showSlideDialog(

@@ -23,6 +23,7 @@ import 'calendar.dart';
 import 'announcements.dart';
 import 'package:provider/provider.dart';
 import '../pages/staff/teacher/groups.dart';
+import '../shared/platform_utility.dart';
 
 class HomeSkeleton extends StatefulWidget {
   final UserData user;
@@ -85,7 +86,7 @@ class _HomeState extends State<HomeSkeleton> {
             userData = snapshot.data;
 
             // subscribe to school topic
-            if (!subscribed && schoolNotifications)
+            if (!PlatformUtils.isWeb && !subscribed && schoolNotifications)
               _messaging.subscribeToTopic(userData.school.uid);
 
             switch (userData.type) {
@@ -108,7 +109,7 @@ class _HomeState extends State<HomeSkeleton> {
                   ];
                   // subscribe to all group topics
 
-                  if (!subscribed) {
+                  if (!PlatformUtils.isWeb && !subscribed) {
                     userData.groups.forEach((group) =>
                         disabledGroupsNotifications.contains(group) == false
                             ? _messaging.subscribeToTopic(
@@ -126,28 +127,28 @@ class _HomeState extends State<HomeSkeleton> {
                       bottomNavigationBar: adaptiveBottomNavBar(
                         items: <BottomNavigationBarItem>[
                           BottomNavigationBarItem(
-                              icon: Icon(Platform.isIOS
+                              icon: Icon(PlatformUtils.isIOS
                                   ? CupertinoIcons.home
                                   : Icons.home),
                               label: "Accueil"),
                           BottomNavigationBarItem(
-                              icon: Icon(Platform.isIOS
+                              icon: Icon(PlatformUtils.isIOS
                                   ? CupertinoIcons.book_solid
                                   : Icons.school),
                               label: "École"),
                           BottomNavigationBarItem(
-                              icon: Icon(Platform.isIOS
+                              icon: Icon(PlatformUtils.isIOS
                                   ? CupertinoIcons.news
                                   : Icons.announcement),
                               label: "Annonces"),
                           BottomNavigationBarItem(
-                              icon: Icon(Platform.isIOS
+                              icon: Icon(PlatformUtils.isIOS
                                   ? CupertinoIcons.group
                                   : Icons.group),
                               label: "Groupes"),
                           if (userData.groups.contains('staff'))
                             BottomNavigationBarItem(
-                                icon: Icon(Platform.isIOS
+                                icon: Icon(PlatformUtils.isIOS
                                     ? CupertinoIcons.chat_bubble
                                     : Icons.chat),
                                 label: "Chat")
@@ -176,7 +177,7 @@ class _HomeState extends State<HomeSkeleton> {
                   ];
 
                   // subscribe to all group topics
-                  if (!subscribed) {
+                  if (!PlatformUtils.isWeb && !subscribed) {
                     userData.groups.forEach((group) =>
                         disabledGroupsNotifications.contains(group) == false
                             ? _messaging.subscribeToTopic(
@@ -194,33 +195,33 @@ class _HomeState extends State<HomeSkeleton> {
                       bottomNavigationBar: adaptiveBottomNavBar(
                         items: <BottomNavigationBarItem>[
                           BottomNavigationBarItem(
-                              icon: Icon(Platform.isIOS
+                              icon: Icon(PlatformUtils.isIOS
                                   ? CupertinoIcons.home
                                   : Icons.home),
                               label: "Accueil"),
                           BottomNavigationBarItem(
-                              icon: Icon(Platform.isIOS
+                              icon: Icon(PlatformUtils.isIOS
                                   ? CupertinoIcons.news
                                   : Icons.announcement),
                               label: "Annonces"),
                           BottomNavigationBarItem(
-                              icon: Icon(Platform.isIOS
+                              icon: Icon(PlatformUtils.isIOS
                                   ? CupertinoIcons.plus_slash_minus
                                   : Icons.work),
                               label: "Devoirs"),
                           BottomNavigationBarItem(
-                              icon: Icon(Platform.isIOS
+                              icon: Icon(PlatformUtils.isIOS
                                   ? CupertinoIcons.group
                                   : Icons.group),
                               label: "Groupes"),
                           BottomNavigationBarItem(
-                              icon: Icon(Platform.isIOS
+                              icon: Icon(PlatformUtils.isIOS
                                   ? CupertinoIcons.calendar
                                   : Icons.calendar_today),
                               label: "Calendrier"),
                           if (userData.groups.contains('staff'))
                             BottomNavigationBarItem(
-                                icon: Icon(Platform.isIOS
+                                icon: Icon(PlatformUtils.isIOS
                                     ? CupertinoIcons.chat_bubble
                                     : Icons.chat),
                                 label: "Chat")
@@ -246,7 +247,7 @@ class _HomeState extends State<HomeSkeleton> {
 
                   // subscribe to all group topics
 
-                  if (!subscribed) {
+                  if (!PlatformUtils.isWeb && !subscribed) {
                     userData.groups.forEach((group) =>
                         disabledGroupsNotifications.contains(group) == false
                             ? _messaging.subscribeToTopic(
@@ -264,28 +265,28 @@ class _HomeState extends State<HomeSkeleton> {
                       bottomNavigationBar: adaptiveBottomNavBar(
                         items: <BottomNavigationBarItem>[
                           BottomNavigationBarItem(
-                              icon: Icon(Platform.isIOS
+                              icon: Icon(PlatformUtils.isIOS
                                   ? CupertinoIcons.home
                                   : Icons.home),
                               label: "Accueil"),
                           BottomNavigationBarItem(
-                              icon: Icon(Platform.isIOS
+                              icon: Icon(PlatformUtils.isIOS
                                   ? CupertinoIcons.news
                                   : Icons.announcement),
                               label: "Annonces"),
                           BottomNavigationBarItem(
-                              icon: Icon(Platform.isIOS
+                              icon: Icon(PlatformUtils.isIOS
                                   ? CupertinoIcons.group
                                   : Icons.group),
                               label: "Groupes"),
                           BottomNavigationBarItem(
-                              icon: Icon(Platform.isIOS
+                              icon: Icon(PlatformUtils.isIOS
                                   ? CupertinoIcons.calendar
                                   : Icons.calendar_today),
                               label: "Calendrier"),
                           if (userData.groups.contains('staff'))
                             BottomNavigationBarItem(
-                                icon: Icon(Platform.isIOS
+                                icon: Icon(PlatformUtils.isIOS
                                     ? CupertinoIcons.chat_bubble
                                     : Icons.chat),
                                 label: "Chat")
@@ -305,7 +306,8 @@ class _HomeState extends State<HomeSkeleton> {
                     Calendar(user: userData),
                   ];
                   // subscribe to group topic
-                  if (!subscribed &&
+                  if (!PlatformUtils.isWeb &&
+                      !subscribed &&
                       !(disabledGroupsNotifications
                           .contains(userData.school.group.uid))) {
                     _messaging.subscribeToTopic(
@@ -322,22 +324,22 @@ class _HomeState extends State<HomeSkeleton> {
                     bottomNavigationBar: adaptiveBottomNavBar(
                       items: <BottomNavigationBarItem>[
                         BottomNavigationBarItem(
-                            icon: Icon(Platform.isIOS
+                            icon: Icon(PlatformUtils.isIOS
                                 ? CupertinoIcons.home
                                 : Icons.home),
                             label: "Accueil"),
                         BottomNavigationBarItem(
-                            icon: Icon(Platform.isIOS
+                            icon: Icon(PlatformUtils.isIOS
                                 ? CupertinoIcons.news
                                 : Icons.announcement),
                             label: "Annonces"),
                         BottomNavigationBarItem(
-                            icon: Icon(Platform.isIOS
+                            icon: Icon(PlatformUtils.isIOS
                                 ? CupertinoIcons.plus_slash_minus
                                 : Icons.calculate),
                             label: "Devoirs"),
                         BottomNavigationBarItem(
-                            icon: Icon(Platform.isIOS
+                            icon: Icon(PlatformUtils.isIOS
                                 ? CupertinoIcons.calendar
                                 : Icons.calendar_today),
                             label: "Calendrier"),

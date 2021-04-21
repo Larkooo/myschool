@@ -12,6 +12,7 @@ import 'package:myschool/services/mozaik_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decode/jwt_decode.dart';
+import '../shared/platform_utility.dart';
 
 class MozaikLogin extends StatefulWidget {
   MozaikLogin({Key key}) : super(key: key);
@@ -49,7 +50,7 @@ class _MozaikLoginState extends State<MozaikLogin> {
             }
 
             // ios workaround
-            if (Platform.isIOS)
+            if (PlatformUtils.isIOS)
               Future.doWhile(() async {
                 await Future.delayed(Duration(seconds: 1));
                 try {
@@ -74,7 +75,7 @@ class _MozaikLoginState extends State<MozaikLogin> {
           },
           onLoadStart: (controller, url) async {
             String urlString = url.toString();
-            if (urlString.contains('#id_token') && Platform.isAndroid) {
+            if (urlString.contains('#id_token') && PlatformUtils.isAndroid) {
               url = Uri.parse(urlString.replaceFirst('#', '?'));
 
               if (url.queryParameters['id_token'].length < 2) {
