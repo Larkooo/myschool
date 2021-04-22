@@ -41,6 +41,8 @@ class Groups extends StatelessWidget {
     keys.sort((a, b) => b.compareTo(a));
     return Scaffold(
       body: ListView.builder(
+          padding:
+              const EdgeInsets.only(bottom: kFloatingActionButtonMargin + 55),
           itemCount: keys.length,
           itemBuilder: (context, index) {
             String level = keys[index];

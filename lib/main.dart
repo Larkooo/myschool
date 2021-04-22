@@ -85,6 +85,7 @@ class MyApp extends StatelessWidget {
               value: FirebaseAuthService.user,
               child: MaterialApp(
                 title: 'MonEcole',
+                /////////////////////////// LIGHT THEME ///////////////////////////
                 theme: ThemeData.light().copyWith(
                   snackBarTheme: SnackBarThemeData(
                       backgroundColor: Colors.grey[900],
@@ -122,6 +123,7 @@ class MyApp extends StatelessWidget {
                       error: Colors.red.shade400),
                   cardColor: Colors.grey[300],
                 ),
+                /////////////////////////// DARK THEME ///////////////////////////
                 darkTheme: ThemeData.dark().copyWith(
                     snackBarTheme: SnackBarThemeData(
                         backgroundColor: Colors.white,
