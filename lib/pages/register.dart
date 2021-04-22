@@ -225,7 +225,6 @@ class _RegisterState extends State<Register> {
                               _passwordController.text,
                               _codeController.text.toLowerCase().trim());
                       if (registerStatus is UserData) {
-                        Alert(message: "Compte créé").show();
                         _btnController.success();
                         //showSlideDialog(
                         //    context: context,
@@ -271,8 +270,7 @@ class _RegisterState extends State<Register> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => SelectGroups(
-                                          userUid: registerStatus.uid,
-                                          schoolUid: registerStatus.school.uid,
+                                          user: registerStatus,
                                         )));
                         }
                       } else if (registerStatus == AuthCode.emailAlreadyUsed) {

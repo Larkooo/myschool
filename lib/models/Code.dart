@@ -3,7 +3,7 @@ import 'package:myschool/models/school.dart';
 class Code {
   final String uid;
   final School school;
-  final String type;
+  final int type;
   final int usedTimes;
   final DateTime createdAt;
 

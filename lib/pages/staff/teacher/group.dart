@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:myschool/components/new_announce.dart';
 import 'package:myschool/components/new_homework.dart';
 import 'package:myschool/components/student_list.dart';
+import 'package:myschool/models/Code.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/services/database.dart';
 import 'package:myschool/shared/cachemanager.dart';
@@ -257,6 +258,71 @@ class _GroupPageState extends State<GroupPage> {
                             margin: EdgeInsets.all(10),
                             child: Column(
                               children: [
+                                CacheManagerMemory.groupData[widget.groupUid]
+                                            [GroupAttribute.code] !=
+                                        null
+                                    ? Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                            Icon(Icons.code),
+                                            SizedBox(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  40,
+                                            ),
+                                            Text(
+                                                'Code : ' +
+                                                    CacheManagerMemory
+                                                                .groupData[
+                                                            widget.groupUid]
+                                                        [GroupAttribute.code],
+                                                style: TextStyle(fontSize: 15))
+                                          ])
+                                    : FutureBuilder(
+                                        future: FirebaseFirestore.instance
+                                            .collection('codes')
+                                            .where('school',
+                                                isEqualTo: FirebaseFirestore
+                                                    .instance
+                                                    .collection('schools')
+                                                    .doc(widget.user.school.uid)
+                                                    .collection('groups')
+                                                    .doc(widget.groupUid))
+                                            .get(),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.hasData) {
+                                            if (snapshot.data.docs.length < 1)
+                                              return Container();
+                                            Code code = DatabaseService()
+                                                .codeFromSnapshot(
+                                                    snapshot.data.docs[0]);
+                                            CacheManagerMemory.groupData[
+                                                        widget.groupUid]
+                                                    [GroupAttribute.code] =
+                                                code.uid;
+                                            return Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Icon(Icons.code),
+                                                  SizedBox(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width /
+                                                            40,
+                                                  ),
+                                                  Text('Code : ' + code.uid,
+                                                      style: TextStyle(
+                                                          fontSize: 15))
+                                                ]);
+                                          } else {
+                                            return CircularProgressIndicator
+                                                .adaptive();
+                                          }
+                                        }),
                                 SizedBox(
                                   height: 5,
                                 ),

@@ -90,7 +90,6 @@ class DatabaseService {
           _schoolsCollection.doc(this.uid).collection('groups').doc(uid);
       await groupRef.set({'name': name});
       if (code != null && codeType != null) {
-        print('yes');
         await _codesCollection.doc(code).set({
           'usedTimes': 0,
           'school': groupRef,
@@ -109,6 +108,10 @@ class DatabaseService {
   Future<bool> sendMessage(
       String content, UserData author, String group) async {
     try {
+      String topic = author.school.uid + '-' + group;
+      // unsubscribing to avoid receiving the notification even if its us who sent it
+      FirebaseMessaging.instance.unsubscribeFromTopic(topic);
+
       await _schoolsCollection
           .doc(uid)
           .collection('groups')
@@ -118,20 +121,7 @@ class DatabaseService {
         'author': _usersCollection.doc(author.uid),
         'content': content,
         'createdAt': FieldValue.serverTimestamp(),
-      });
-      // notification
-
-      String topic = author.school.uid + '-' + group;
-      // unsubscribing to avoid receiving the notification even if its us who sent it
-      FirebaseMessaging.instance.unsubscribeFromTopic(topic);
-
-      MessagingService.sendMessageToTopic(
-              '${author.firstName} a envoyé un nouveau message dans ' + group,
-              content,
-              topic,
-              'message')
-          .then((_) => FirebaseMessaging.instance
-              .subscribeToTopic(topic)); // subscribing again
+      }).then((_) => FirebaseMessaging.instance.subscribeToTopic(topic));
 
       return true;
     } catch (err) {
@@ -143,26 +133,20 @@ class DatabaseService {
       String title, String content, dynamic scope, UserData user) async {
     try {
       if (scope == Scope.school) {
+        String topic = user.school.uid;
+        // unsubscribing to avoid receiving the notification even if its us who sent it
+        FirebaseMessaging.instance.unsubscribeFromTopic(topic);
+
         await _schoolsCollection.doc(uid).collection('announcements').add({
           'title': title,
           'content': content,
           'author': _usersCollection.doc(user.uid),
           'createdAt': FieldValue.serverTimestamp()
-        });
-        // notification
-
-        String topic = user.school.uid;
+        }).then((_) => FirebaseMessaging.instance.subscribeToTopic(topic));
+      } else {
+        String topic = user.school.uid + '-' + scope.toString();
         // unsubscribing to avoid receiving the notification even if its us who sent it
         FirebaseMessaging.instance.unsubscribeFromTopic(topic);
-
-        MessagingService.sendMessageToTopic(
-                '${user.firstName} a posté une nouvelle annonce!',
-                title,
-                topic,
-                'announce')
-            .then((_) => // subscribing again
-                FirebaseMessaging.instance.subscribeToTopic(topic));
-      } else {
         await _schoolsCollection
             .doc(uid)
             .collection('groups')
@@ -174,21 +158,7 @@ class DatabaseService {
           'content': content,
           'author': _usersCollection.doc(user.uid),
           'createdAt': FieldValue.serverTimestamp()
-        });
-
-        // notification
-
-        String topic = user.school.uid + '-' + scope.toString();
-        // unsubscribing to avoid receiving the notification even if its us who sent it
-        FirebaseMessaging.instance.unsubscribeFromTopic(topic);
-
-        MessagingService.sendMessageToTopic(
-                '${user.firstName} a posté une nouvelle annonce!',
-                title,
-                user.school.uid + '-' + scope.toString(),
-                'announce')
-            .then((_) => // subscribing again
-                FirebaseMessaging.instance.subscribeToTopic(topic));
+        }).then((_) => FirebaseMessaging.instance.subscribeToTopic(topic));
       }
       return true;
     } catch (_) {
@@ -200,6 +170,10 @@ class DatabaseService {
   Future<bool> createHomework(String title, String description, String subject,
       UserData user, DateTime due, String group) async {
     try {
+      String topic = user.school.uid + '-' + group;
+      // unsubscribing to avoid receiving the notification even if its us who sent it
+      FirebaseMessaging.instance.unsubscribeFromTopic(topic);
+
       await _schoolsCollection
           .doc(uid)
           .collection('groups')
@@ -212,21 +186,9 @@ class DatabaseService {
         'author': _usersCollection.doc(user.uid),
         'due': due,
         'createdAt': FieldValue.serverTimestamp()
-      });
-
-      // notification
-
-      String topic = user.school.uid + '-' + group;
-      // unsubscribing to avoid receiving the notification even if its us who sent it
-      FirebaseMessaging.instance.unsubscribeFromTopic(topic);
-
-      MessagingService.sendMessageToTopic(
-              '${user.firstName} a posté un nouveau devoir en $subject!',
-              title,
-              user.school.uid + '-' + group,
-              'homework')
-          .then((_) => // subscribing again
+      }).then((_) => // subscribing again
               FirebaseMessaging.instance.subscribeToTopic(topic));
+      ;
 
       return true;
     } catch (_) {
@@ -335,7 +297,7 @@ class DatabaseService {
         school: School(uid: (data['school'] as DocumentReference).id),
         type: data['type'],
         usedTimes: data['usedTimes'],
-        createdAt: data['createdAt']);
+        createdAt: (data['createdAt'] as Timestamp).toDate());
   }
 
   static Group groupFromSnapshot(DocumentSnapshot snapshot) {

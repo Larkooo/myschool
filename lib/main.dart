@@ -86,6 +86,10 @@ class MyApp extends StatelessWidget {
               child: MaterialApp(
                 title: 'MonEcole',
                 theme: ThemeData.light().copyWith(
+                  snackBarTheme: SnackBarThemeData(
+                      backgroundColor: Colors.grey[900],
+                      actionTextColor: Colors.white,
+                      contentTextStyle: TextStyle(color: Colors.white)),
                   appBarTheme: AppBarTheme(
                       textTheme: TextTheme(
                           headline6:
@@ -119,6 +123,10 @@ class MyApp extends StatelessWidget {
                   cardColor: Colors.grey[300],
                 ),
                 darkTheme: ThemeData.dark().copyWith(
+                    snackBarTheme: SnackBarThemeData(
+                        backgroundColor: Colors.white,
+                        actionTextColor: Colors.grey[900],
+                        contentTextStyle: TextStyle(color: Colors.grey[900])),
                     primaryColor: Colors.grey[900],
                     backgroundColor: Colors.black,
                     cardColor: Colors.grey[900],

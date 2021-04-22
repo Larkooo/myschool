@@ -234,58 +234,57 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        //appBar: widget.groupUid != null
-        //    ? AppBar(title: Text('Chat de groupe'))
-        //    : null,
-        body: Column(children: [
+    return Column(children: [
       Expanded(
-          child: SingleChildScrollView(
-              controller: _scrollController,
-              child: GestureDetector(
-                  onTap: () {
-                    FocusScope.of(context).unfocus();
-                  },
-                  child: StreamBuilder(
-                      stream: DatabaseService(uid: widget.user.school.uid)
-                          .groupMessages(_actualGroup, limit: _dynamicLimit),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          if (!_scrolled) {
-                            SchedulerBinding.instance
-                                .scheduleFrameCallback((_) {
-                              _scrollDown();
-                            });
-                            _scrolled = true;
-                          }
-                          List<Message> messages =
-                              (snapshot.data as QuerySnapshot)
-                                  .docs
-                                  .map(DatabaseService.messageFromSnapshot)
-                                  .toList();
-                          _messageCount = messages.length;
-                          return ListView.builder(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              padding: EdgeInsets.only(top: 10),
-                              itemCount: messages.length,
-                              itemBuilder: (context, index) {
-                                // if messagesCount is less than the limit, then there is no more messages to load
-                                if (index == 0 &&
-                                    !(_messageCount < _dynamicLimit)) {
-                                  return Column(
-                                    children: [
-                                      _dynamicTop,
-                                      _messageWidget(index, messages)
-                                    ],
-                                  );
-                                }
-                                return _messageWidget(index, messages);
-                              });
-                        } else {
-                          return CircularProgressIndicator.adaptive();
-                        }
-                      })))),
+          child: Scrollbar(
+              child: SingleChildScrollView(
+                  physics: AlwaysScrollableScrollPhysics(),
+                  controller: _scrollController,
+                  child: GestureDetector(
+                      onTap: () {
+                        FocusScope.of(context).unfocus();
+                      },
+                      child: StreamBuilder(
+                          stream: DatabaseService(uid: widget.user.school.uid)
+                              .groupMessages(_actualGroup,
+                                  limit: _dynamicLimit),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              if (!_scrolled) {
+                                SchedulerBinding.instance
+                                    .scheduleFrameCallback((_) {
+                                  _scrollDown();
+                                });
+                                _scrolled = true;
+                              }
+                              List<Message> messages =
+                                  (snapshot.data as QuerySnapshot)
+                                      .docs
+                                      .map(DatabaseService.messageFromSnapshot)
+                                      .toList();
+                              _messageCount = messages.length;
+                              return ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  padding: EdgeInsets.only(top: 10),
+                                  itemCount: messages.length,
+                                  itemBuilder: (context, index) {
+                                    // if messagesCount is less than the limit, then there is no more messages to load
+                                    if (index == 0 &&
+                                        !(_messageCount < _dynamicLimit)) {
+                                      return Column(
+                                        children: [
+                                          _dynamicTop,
+                                          _messageWidget(index, messages)
+                                        ],
+                                      );
+                                    }
+                                    return _messageWidget(index, messages);
+                                  });
+                            } else {
+                              return CircularProgressIndicator.adaptive();
+                            }
+                          }))))),
       Container(
           width: MediaQuery.of(context).size.width,
           child: Row(
@@ -341,6 +340,6 @@ class _ChatPageState extends State<ChatPage> {
                   })
             ],
           ))
-    ]));
+    ]);
   }
 }

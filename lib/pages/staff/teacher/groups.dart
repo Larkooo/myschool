@@ -225,6 +225,7 @@ class Groups extends StatelessWidget {
           }),
       floatingActionButton: user.type == UserType.direction
           ? FloatingActionButton.extended(
+              icon: Icon(Icons.group_add),
               backgroundColor: Colors.blue[400],
               onPressed: () => Navigator.push(
                   context,

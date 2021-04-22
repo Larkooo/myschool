@@ -6,8 +6,10 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:jwt_decode/jwt_decode.dart';
 import 'package:myschool/components/drawer.dart';
 import 'package:myschool/models/homework.dart';
+import 'package:myschool/models/mozaik.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/pages/chat.dart';
 import 'package:myschool/pages/homeworks.dart';
@@ -109,11 +111,11 @@ class _HomeState extends State<HomeSkeleton> {
                   // subscribe to all group topics
 
                   if (!subscribed) {
-                    userData.groups.forEach((group) =>
-                        disabledGroupsNotifications.contains(group) == false
-                            ? _messaging.subscribeToTopic(
-                                userData.school.uid + '-' + group)
-                            : null);
+                    // userData.groups.forEach((group) =>
+                    //     disabledGroupsNotifications.contains(group) == false
+                    //         ? _messaging.subscribeToTopic(
+                    //             userData.school.uid + '-' + group)
+                    //         : null);
                     subscribed = true;
                   }
 
@@ -177,11 +179,11 @@ class _HomeState extends State<HomeSkeleton> {
 
                   // subscribe to all group topics
                   if (!subscribed) {
-                    userData.groups.forEach((group) =>
-                        disabledGroupsNotifications.contains(group) == false
-                            ? _messaging.subscribeToTopic(
-                                userData.school.uid + '-' + group)
-                            : null);
+                    // userData.groups.forEach((group) =>
+                    //     disabledGroupsNotifications.contains(group) == false
+                    //         ? _messaging.subscribeToTopic(
+                    //             userData.school.uid + '-' + group)
+                    //         : null);
                     subscribed = true;
                   }
 
@@ -247,11 +249,11 @@ class _HomeState extends State<HomeSkeleton> {
                   // subscribe to all group topics
 
                   if (!subscribed) {
-                    userData.groups.forEach((group) =>
-                        disabledGroupsNotifications.contains(group) == false
-                            ? _messaging.subscribeToTopic(
-                                userData.school.uid + '-' + group)
-                            : null);
+                    // userData.groups.forEach((group) =>
+                    //     disabledGroupsNotifications.contains(group) == false
+                    //         ? _messaging.subscribeToTopic(
+                    //             userData.school.uid + '-' + group)
+                    //         : null);
                     subscribed = true;
                   }
 

@@ -118,28 +118,30 @@ class _HomeworksState extends State<Homeworks> {
                     ? homework.author != widget.user.uid
                     : false);
 
-            return ListView.builder(
-                controller: _scrollController,
-                itemCount: homeworks.length,
-                itemBuilder: (context, index) {
-                  if (index == homeworks.length - 1 &&
-                      !(homeworks.length <
-                          (_dynamicLimit * snapshot.data.length))) {
-                    return Column(
-                      children: [
-                        HomeworkComp(homework: homeworks[index]),
-                        _dynamicBottom
-                      ],
-                    );
-                  }
-                  /* 
+            return Scrollbar(
+                child: ListView.builder(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    controller: _scrollController,
+                    itemCount: homeworks.length,
+                    itemBuilder: (context, index) {
+                      if (index == homeworks.length - 1 &&
+                          !(homeworks.length <
+                              (_dynamicLimit * snapshot.data.length))) {
+                        return Column(
+                          children: [
+                            HomeworkComp(homework: homeworks[index]),
+                            _dynamicBottom
+                          ],
+                        );
+                      }
+                      /* 
                           Transforming our data to a a Homework 
                         */
-                  Homework homework = homeworks[index];
+                      Homework homework = homeworks[index];
 
-                  // Rendering part
-                  return HomeworkComp(homework: homework);
-                });
+                      // Rendering part
+                      return HomeworkComp(homework: homework);
+                    }));
           } else {
             return Center(child: CircularProgressIndicator.adaptive());
           }

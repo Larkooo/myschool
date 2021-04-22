@@ -18,7 +18,7 @@ import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-enum GroupAttribute { alias, image, students }
+enum GroupAttribute { alias, image, students, code }
 enum AnnounceCategory { essay, homework, important, message }
 enum Scope { school, group, none }
 enum UserType { student, teacher, direction, staff }
@@ -102,6 +102,11 @@ Text formattedDate(DateTime date, fontSize) {
     style: TextStyle(color: Colors.grey[500], fontSize: 12),
   );
 }
+
+Future<Widget> loadingBackdrop(BuildContext context) => showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) => Center(child: CircularProgressIndicator()));
 
 Column coursePage(
         BuildContext context,
@@ -244,7 +249,9 @@ Widget loadButton(BuildContext context, void Function() onPressed) => Center(
 Container noAvatar(double size) => Container(
     width: 20 * size,
     height: 20 * size,
-    color: Colors.grey[900],
+    color: themeNotifier.value == ThemeMode.dark
+        ? Colors.grey[900]
+        : Colors.grey[400],
     child: Icon(
       Icons.person,
       size: 10 * size,

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:jwt_decode/jwt_decode.dart';
 import 'package:myschool/models/mozaik.dart';
 import 'package:http/http.dart' as http;
 import 'package:dart_date/dart_date.dart';
@@ -9,12 +10,27 @@ import 'package:shared_preferences/shared_preferences.dart';
 class MozaikService {
   static String _timetableUrl() {
     String role = Mozaik.payload['role'];
-    return 'https://apiaffaires.mozaikportail.ca/api/organisationScolaire/donneesAnnuelles/' +
-        Mozaik.payload[role] +
-        '/' +
-        Mozaik.payload['ficheJeune'] +
-        '/activitescalendrier' +
-        '?dateDebut=${DateTime(DateTime.now().year - 1).format('yyyy-MM-dd')}&dateFin=${DateTime(DateTime.now().year + 1).format('yyyy-MM-dd')}';
+    switch (role) {
+      // teacher
+      case 'enseignantJeune':
+        {
+          return 'https://apiaffaires.mozaikportail.ca/api/organisationScolaire/horaire/${Mozaik.payload[role]}' +
+              '/anneeCourante/enseignants/${Mozaik.payload['matricule']}' +
+              '/activitesCalendrier' +
+              '?dateDebut=${DateTime(DateTime.now().year - 1).format('yyyy-MM-dd')}&dateFin=${DateTime(DateTime.now().year + 1).format('yyyy-MM-dd')}';
+        }
+      default:
+        // student
+
+        {
+          return 'https://apiaffaires.mozaikportail.ca/api/organisationScolaire/donneesAnnuelles/' +
+              Mozaik.payload[role] +
+              '/' +
+              Mozaik.payload['ficheJeune'] +
+              '/activitescalendrier' +
+              '?dateDebut=${DateTime(DateTime.now().year - 1).format('yyyy-MM-dd')}&dateFin=${DateTime(DateTime.now().year + 1).format('yyyy-MM-dd')}';
+        }
+    }
   }
 
   static Future getMozaikTimetable() async {

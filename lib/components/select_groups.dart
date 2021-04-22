@@ -1,13 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:myschool/models/user.dart';
 import 'package:myschool/services/database.dart';
 import 'package:myschool/shared/constants.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 class SelectGroups extends StatefulWidget {
-  final String schoolUid;
-  final String userUid;
-  SelectGroups({this.userUid, this.schoolUid});
+  final UserData user;
+  SelectGroups({this.user});
 
   @override
   _SelectGroupsState createState() => _SelectGroupsState();
@@ -16,6 +16,13 @@ class SelectGroups extends StatefulWidget {
 class _SelectGroupsState extends State<SelectGroups> {
   List<String> _selectedGroups = [];
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _selectedGroups = widget.user.groups;
+  }
+
   final RoundedLoadingButtonController _btnController =
       new RoundedLoadingButtonController();
 
@@ -23,7 +30,7 @@ class _SelectGroupsState extends State<SelectGroups> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: StreamBuilder(
-            stream: DatabaseService(uid: widget.schoolUid).groups,
+            stream: DatabaseService(uid: widget.user.school.uid).groups,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 QuerySnapshot groupsSnapshot = snapshot.data;
@@ -76,11 +83,8 @@ class _SelectGroupsState extends State<SelectGroups> {
                                   _btnController.start();
                                   FirebaseFirestore.instance
                                       .collection('users')
-                                      .doc(widget.userUid)
-                                      .update({
-                                    "groups":
-                                        FieldValue.arrayUnion(_selectedGroups)
-                                  });
+                                      .doc(widget.user.uid)
+                                      .update({"groups": _selectedGroups});
                                   _btnController.success();
                                   Navigator.pop(context);
                                 })

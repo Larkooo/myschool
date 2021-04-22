@@ -142,30 +142,32 @@ class _AnnouncementsState extends State<Announcements> {
             // streams
             announcements.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-            return ListView.builder(
-                controller: _scrollController,
-                itemCount: announcements.length,
-                itemBuilder: (context, index) {
-                  // we have multiple streams
+            return Scrollbar(
+                child: ListView.builder(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    controller: _scrollController,
+                    itemCount: announcements.length,
+                    itemBuilder: (context, index) {
+                      // we have multiple streams
 
-                  if (index == announcements.length - 1 &&
-                      !(announcements.length <
-                          (_dynamicLimit * snapshot.data.length))) {
-                    return Column(
-                      children: [
-                        Announce(announcement: announcements[index]),
-                        _dynamicBottom
-                      ],
-                    );
-                  }
-                  /* 
+                      if (index == announcements.length - 1 &&
+                          !(announcements.length <
+                              (_dynamicLimit * snapshot.data.length))) {
+                        return Column(
+                          children: [
+                            Announce(announcement: announcements[index]),
+                            _dynamicBottom
+                          ],
+                        );
+                      }
+                      /* 
                           Transforming our data to a an Announcement 
                         */
-                  Announcement announcement = announcements[index];
+                      Announcement announcement = announcements[index];
 
-                  // Rendering part
-                  return Announce(announcement: announcement);
-                });
+                      // Rendering part
+                      return Announce(announcement: announcement);
+                    }));
           } else {
             return Center(child: CircularProgressIndicator.adaptive());
           }

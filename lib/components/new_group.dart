@@ -156,6 +156,10 @@ class _NewGroupState extends State<NewGroup> {
                                 : null);
                     if (groupCreated) {
                       _buttonController.success();
+                      Alert(
+                              message:
+                                  'Groupe crée. Pour l\'ajouter dans vos groupes, visitez les paramètres')
+                          .show();
                       Navigator.pop(context);
                     } else {
                       _buttonController.error();

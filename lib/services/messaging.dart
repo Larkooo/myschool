@@ -8,7 +8,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 class MessagingService {
   static final FirebaseMessaging _messaging = FirebaseMessaging.instance;
   static final FirebaseAuth _auth = FirebaseAuth.instance;
-  static final String _apiUrl =
+  // Deprecrated, using cloud functions instead now
+  // onCreate document
+  /* static final String _apiUrl =
       'https://us-central1-cool-framing-281906.cloudfunctions.net/send_notification_topic';
 
   static Future<bool> sendMessageToTopic(
@@ -32,7 +34,7 @@ class MessagingService {
       print(err);
       return false;
     }
-  }
+  } */
 
   static Future<bool> subscribeToSchool(String uid) async {
     try {

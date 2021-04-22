@@ -14,6 +14,7 @@ import 'package:myschool/services/database.dart';
 import 'package:myschool/services/firebase_storage.dart';
 import 'package:myschool/shared/constants.dart';
 import 'package:myschool/shared/local_storage.dart';
+import 'package:rxdart/rxdart.dart';
 
 class SchoolPage extends StatelessWidget {
   final UserData user;
@@ -113,7 +114,7 @@ class SchoolPage extends StatelessWidget {
                           child: school.avatarUrl != null
                               ? ClipRRect(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(50)),
+                                      BorderRadius.all(Radius.circular(90)),
                                   child: CachedNetworkImage(
                                       imageUrl: school.avatarUrl))
                               : Center(
@@ -153,7 +154,6 @@ class SchoolPage extends StatelessWidget {
                   Container(
                       width: MediaQuery.of(context).size.width / 1.1,
                       child: Card(
-                          color: Colors.grey[800],
                           shape: RoundedRectangleBorder(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(10))),
@@ -161,24 +161,19 @@ class SchoolPage extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               SizedBox(
-                                height: 5,
+                                height: 10,
                               ),
                               Text(
                                 'Actions',
-                                style: TextStyle(
-                                    fontSize: 20, color: Colors.white70),
+                                style: TextStyle(fontSize: 20),
                               ),
                               Container(
                                   width:
                                       MediaQuery.of(context).size.width / 1.2,
                                   decoration: BoxDecoration(
-                                      color: Colors.grey[900],
                                       borderRadius: BorderRadius.circular(10)),
                                   margin: EdgeInsets.all(10),
                                   child: Column(children: [
-                                    SizedBox(
-                                      height: 5,
-                                    ),
                                     Container(
                                         width:
                                             MediaQuery.of(context).size.width /
@@ -188,7 +183,7 @@ class SchoolPage extends StatelessWidget {
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                      NewAnnounce(user: user))),
+                                                      NewAnnounce())),
                                           child: Text('Publier une annonce'),
                                           style: ButtonStyle(),
                                         )),
@@ -199,119 +194,45 @@ class SchoolPage extends StatelessWidget {
                             ],
                           ))),
                   SizedBox(height: MediaQuery.of(context).size.height / 40),
-                  /*Container(
-                  width: MediaQuery.of(context).size.width / 1.1,
-                  child: Card(
-                      color: Colors.grey[800],
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10))),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Text(
-                            'Informations',
-                            style:
-                                TextStyle(fontSize: 20, color: Colors.white70),
-                          ),
-                          Container(
-                            width: MediaQuery.of(context).size.width / 1.2,
-                            decoration: BoxDecoration(
-                                color: Colors.grey[900],
-                                borderRadius: BorderRadius.circular(10)),
-                            margin: EdgeInsets.all(10),
-                            child: Column(
-                              children: [
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(Icons.group),
-                                      SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width /
-                                                40,
-                                      ),
-                                      CacheManagerMemory.groupData[
-                                                      widget.groupUid]
-                                                  [GroupAttribute.students] !=
-                                              null
-                                          ? Text(
-                                              'Membres : ' +
-                                                  CacheManagerMemory
-                                                      .groupData[widget.groupUid]
-                                                          [GroupAttribute
-                                                              .students]
-                                                      .length
-                                                      .toString(),
-                                              style: TextStyle(fontSize: 15))
-                                          : FutureBuilder(
-                                              future: FirebaseFirestore.instance
-                                                  .collection('users')
-                                                  .where('school',
-                                                      isEqualTo: FirebaseFirestore
-                                                          .instance
-                                                          .collection('schools')
-                                                          .doc(widget.schoolUid)
-                                                          .collection('groups')
-                                                          .doc(widget.groupUid))
-                                                  .get(),
-                                              builder: (context, snapshot) {
-                                                if (snapshot.hasData) {
-                                                  CacheManagerMemory.groupData[
-                                                          widget.groupUid][
-                                                      GroupAttribute
-                                                          .students] = (snapshot
-                                                      .data.docs
-                                                      .map((doc) => DatabaseService
-                                                          .userDataFromSnapshot(
-                                                              doc))).toList();
-
-                                                  return Text(
-                                                    'Membres : ' +
-                                                        snapshot.data.size
-                                                            .toString(),
-                                                    style:
-                                                        TextStyle(fontSize: 15),
-                                                  );
-                                                } else {
-                                                  return CircularProgressIndicator
-                                                      .adaptive();
-                                                }
-                                              })
-                                    ]),
-                                Container(
-                                    width:
-                                        MediaQuery.of(context).size.width / 1.5,
-                                    child: ElevatedButton(
-                                      onPressed: () => Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => StudentList(
-                                                    students: CacheManagerMemory
-                                                                .groupData[
-                                                            widget.groupUid][
-                                                        GroupAttribute
-                                                            .students],
-                                                  ))),
-                                      child: Text('Liste des membres'),
-                                      style: ButtonStyle(),
-                                    )),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          )
-                        ],
-                      ))),*/
+                  Container(
+                      width: MediaQuery.of(context).size.width / 1.1,
+                      child: Card(
+                          shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10))),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                'Informations',
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              Container(
+                                  width:
+                                      MediaQuery.of(context).size.width / 1.2,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10)),
+                                  margin: EdgeInsets.all(10),
+                                  child: Column(children: [
+                                    /*StreamBuilder(
+                                        stream: CombineLatestStream.list([FirebaseFirestore.instance
+                                            .collection('users')
+                                            .where('school',
+                                                isEqualTo: FirebaseFirestore
+                                                    .instance
+                                                    .collection('schools')
+                                                    .doc(user.school.uid))
+                                            .snapshots(), ]) ,
+                                        builder: (context, snapshot) {}),*/
+                                    SizedBox(
+                                      height: 5,
+                                    )
+                                  ])),
+                            ],
+                          ))),
                 ],
               ));
             } else {

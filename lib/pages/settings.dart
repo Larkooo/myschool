@@ -3,15 +3,19 @@ import 'dart:math';
 
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:alert/alert.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:http/http.dart';
 import 'package:image_crop_new/image_crop_new.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:myschool/components/mozaik_login.dart';
 import 'package:myschool/components/reset_password.dart';
+import 'package:myschool/components/select_groups.dart';
 import 'package:myschool/models/mozaik.dart';
 import 'package:myschool/models/school.dart';
 import 'package:myschool/models/user.dart';
@@ -217,10 +221,6 @@ class _SettingsState extends State<Settings> {
               ],
             ),
             CustomSection(
-                child: SizedBox(
-              height: 10,
-            )),
-            CustomSection(
                 child: StreamBuilder(
                     stream: DatabaseService(uid: widget.user.school.uid).school,
                     builder: (context, schoolSnapshot) {
@@ -230,10 +230,60 @@ class _SettingsState extends State<Settings> {
                           title: 'École',
                           tiles: [
                             SettingsTile(
-                              leading: Icon(Icons.school),
-                              title: school.name,
-                              // Easter Egg start
-                            ),
+                                leading: Icon(Icons.school),
+                                title: school.name,
+                                onPressed: (context) => showSlideDialog(
+                                      context: context,
+                                      child: Column(
+                                        children: [
+                                          SizedBox(
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height /
+                                                20,
+                                          ),
+                                          Container(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .height /
+                                                7,
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height /
+                                                7,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Colors.grey[800],
+                                            ),
+                                            child: school.avatarUrl != null
+                                                ? ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                50)),
+                                                    child: CachedNetworkImage(
+                                                        imageUrl:
+                                                            school.avatarUrl))
+                                                : Center(
+                                                    child: Text(
+                                                    school.name,
+                                                    style:
+                                                        TextStyle(fontSize: 10),
+                                                  )),
+                                          ),
+                                          SizedBox(
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height /
+                                                30,
+                                          ),
+                                          Text(
+                                            school.name,
+                                            style: TextStyle(fontSize: 35),
+                                          )
+                                        ],
+                                      ),
+                                    )),
                             widget.user.type == UserType.student
                                 ?
                                 // If student, display his group
@@ -246,7 +296,15 @@ class _SettingsState extends State<Settings> {
                                 SettingsTile(
                                     leading: Icon(Icons.group),
                                     title: widget.user.groups.join(', '),
-                                  ),
+                                    onPressed: (context) => showSlideDialog(
+                                        context: context,
+                                        child: Container(
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height /
+                                                2,
+                                            child: SelectGroups(
+                                                user: widget.user)))),
                           ],
                         );
                       } else {
@@ -261,10 +319,6 @@ class _SettingsState extends State<Settings> {
                         );
                       }
                     })),
-            CustomSection(
-                child: SizedBox(
-              height: 10,
-            )),
             SettingsSection(title: "Sécurité", tiles: [
               SettingsTile(
                   leading: Icon(Icons.security),
@@ -324,71 +378,6 @@ class _SettingsState extends State<Settings> {
                   //subtitle: user.email,
                   )
             ]),
-            CustomSection(
-                child: SizedBox(
-              height: 10,
-            )),
-            SettingsSection(title: "Application", tiles: [
-              SettingsTile.switchTile(
-                  leading: Icon(Icons.nightlight_round),
-                  title: 'Mode sombre',
-                  onToggle: (v) async {
-                    themeNotifier.value == ThemeMode.dark
-                        ? themeNotifier.value = ThemeMode.light
-                        : themeNotifier.value = ThemeMode.dark;
-
-                    SharedPreferences prefs =
-                        await SharedPreferences.getInstance();
-                    prefs.setBool('darkMode', v);
-                  },
-                  switchValue: themeNotifier.value == ThemeMode.dark),
-              SettingsTile.switchTile(
-                  leading: Icon(Icons.notification_important),
-                  title: "Notifications de l\'école",
-                  onToggle: (v) async {
-                    if (!v) {
-                      bool unsubscribed =
-                          !(await MessagingService.unsubscribeFromSchool(
-                              widget.user.school.uid));
-                      setState(() {
-                        schoolNotifications = unsubscribed;
-                      });
-                    } else {
-                      bool subscribed =
-                          await MessagingService.subscribeToSchool(
-                              widget.user.school.uid);
-                      setState(() {
-                        schoolNotifications = subscribed;
-                      });
-                    }
-                  },
-                  switchValue: schoolNotifications),
-              if (widget.user.type == UserType.student)
-                SettingsTile.switchTile(
-                    leading: Icon(Icons.notifications),
-                    title: "Notifications de groupe (" +
-                        widget.user.school.group.uid +
-                        ")",
-                    onToggle: (v) async {
-                      List<String> r = v
-                          ? await MessagingService.subscribeToGroup(
-                              widget.user.school.uid,
-                              widget.user.school.group.uid)
-                          : await MessagingService.unsubscribeFromGroup(
-                              widget.user.school.uid,
-                              widget.user.school.group.uid);
-                      print(r);
-                      setState(() {
-                        disabledGroupsNotifications = r;
-                      });
-                    },
-                    switchValue: !(disabledGroupsNotifications
-                        .contains(widget.user.school.group.uid)))
-            ]),
-            CustomSection(
-                child: SizedBox(
-              height: 10,
-            )),
             SettingsSection(
               title: "Compte",
               tiles: [
@@ -451,6 +440,131 @@ class _SettingsState extends State<Settings> {
                     })
               ],
             ),
+            SettingsSection(title: "Application", tiles: [
+              SettingsTile.switchTile(
+                  leading: Icon(Icons.nightlight_round),
+                  title: 'Mode sombre',
+                  onToggle: (v) async {
+                    themeNotifier.value == ThemeMode.dark
+                        ? themeNotifier.value = ThemeMode.light
+                        : themeNotifier.value = ThemeMode.dark;
+
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    prefs.setBool('darkMode', v);
+                  },
+                  switchValue: themeNotifier.value == ThemeMode.dark),
+              SettingsTile.switchTile(
+                  leading: Icon(Icons.notification_important),
+                  title: "Notifications de l\'école",
+                  onToggle: (v) async {
+                    if (!v) {
+                      bool unsubscribed =
+                          !(await MessagingService.unsubscribeFromSchool(
+                              widget.user.school.uid));
+                      setState(() {
+                        schoolNotifications = unsubscribed;
+                      });
+                    } else {
+                      bool subscribed =
+                          await MessagingService.subscribeToSchool(
+                              widget.user.school.uid);
+                      setState(() {
+                        schoolNotifications = subscribed;
+                      });
+                    }
+                  },
+                  switchValue: schoolNotifications),
+              if (widget.user.type == UserType.student)
+                SettingsTile.switchTile(
+                    leading: Icon(Icons.notifications),
+                    title: "Notifications de groupe (" +
+                        widget.user.school.group.uid +
+                        ")",
+                    onToggle: (v) async {
+                      List<String> r = v
+                          ? await MessagingService.subscribeToGroup(
+                              widget.user.school.uid,
+                              widget.user.school.group.uid)
+                          : await MessagingService.unsubscribeFromGroup(
+                              widget.user.school.uid,
+                              widget.user.school.group.uid);
+                      print(r);
+                      setState(() {
+                        disabledGroupsNotifications = r;
+                      });
+                    },
+                    switchValue: !(disabledGroupsNotifications
+                        .contains(widget.user.school.group.uid))),
+              SettingsTile(
+                leading: Icon(Icons.copyright),
+                title: 'À propos',
+                onPressed: (context) => showPlatformDialog(
+                    barrierDismissible: true,
+                    context: context,
+                    builder: (context) => PlatformAlertDialog(
+                          title: Text('MonÉcole'),
+                          content: Column(
+                            children: [
+                              Text('Développement par Nasr AA Djeghmoum'),
+                              SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height / 200,
+                              ),
+                              Text(
+                                  'Illustrations par Samy Benachour & Maxime Vincent'),
+                              SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height / 100,
+                              ),
+                              Text('Besoin de support?'),
+                              RichText(
+                                  text: TextSpan(
+                                      style: TextStyle(fontSize: 10),
+                                      children: [
+                                    TextSpan(text: 'Contactez nous sur '),
+                                    TextSpan(
+                                        text: 'support@monecole.app',
+                                        style:
+                                            TextStyle(color: Colors.lightBlue),
+                                        recognizer: TapGestureRecognizer()
+                                          ..onTap = () => null),
+                                  ])),
+                              SizedBox(
+                                height: MediaQuery.of(context).size.height / 50,
+                              ),
+                              RichText(
+                                  text: TextSpan(children: [
+                                TextSpan(text: 'MonÉcole est '),
+                                TextSpan(
+                                    text: 'open-source',
+                                    style: TextStyle(color: Colors.lightBlue),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () => launchURL(
+                                          'https://github.com/Larkooo/myschool'))
+                              ])),
+                              PlatformButton(
+                                  child: Text('Voir les licences'),
+                                  onPressed: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => LicensePage(
+                                                applicationName: 'MonÉcole',
+                                                applicationIcon: Image.asset(
+                                                  'assets/logo.png',
+                                                  scale: 5,
+                                                ),
+                                              ))))
+                            ],
+                          ),
+                          /* actions: [
+                            PlatformDialogAction(
+                                child: Text('Voir les licenses')),
+                            PlatformDialogAction(child: Text('Ok')),
+                          ],*/
+                        )),
+              )
+            ]),
           ],
         ));
   }
