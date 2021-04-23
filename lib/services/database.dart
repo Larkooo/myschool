@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:myschool/models/Code.dart';
@@ -11,6 +12,7 @@ import 'package:myschool/models/homework.dart';
 import 'package:myschool/models/message.dart';
 import 'package:myschool/models/school.dart';
 import 'package:myschool/models/user.dart';
+import 'package:myschool/services/firebase_storage.dart';
 import 'package:myschool/services/messaging.dart';
 import 'package:myschool/shared/constants.dart';
 import 'package:http/http.dart' as http;
@@ -108,10 +110,6 @@ class DatabaseService {
   Future<bool> sendMessage(
       String content, UserData author, String group) async {
     try {
-      String topic = author.school.uid + '-' + group;
-      // unsubscribing to avoid receiving the notification even if its us who sent it
-      FirebaseMessaging.instance.unsubscribeFromTopic(topic);
-
       await _schoolsCollection
           .doc(uid)
           .collection('groups')
@@ -121,7 +119,7 @@ class DatabaseService {
         'author': _usersCollection.doc(author.uid),
         'content': content,
         'createdAt': FieldValue.serverTimestamp(),
-      }).then((_) => FirebaseMessaging.instance.subscribeToTopic(topic));
+      });
 
       return true;
     } catch (err) {
@@ -130,24 +128,30 @@ class DatabaseService {
   }
 
   Future<bool> createAnnounce(
-      String title, String content, dynamic scope, UserData user) async {
+      String title, String content, dynamic scope, UserData user,
+      {List<PlatformFile> attachments}) async {
     try {
       if (scope == Scope.school) {
-        String topic = user.school.uid;
-        // unsubscribing to avoid receiving the notification even if its us who sent it
-        FirebaseMessaging.instance.unsubscribeFromTopic(topic);
-
-        await _schoolsCollection.doc(uid).collection('announcements').add({
+        DocumentReference ref =
+            await _schoolsCollection.doc(uid).collection('announcements').add({
           'title': title,
           'content': content,
           'author': _usersCollection.doc(user.uid),
           'createdAt': FieldValue.serverTimestamp()
-        }).then((_) => FirebaseMessaging.instance.subscribeToTopic(topic));
+        });
+        if (attachments != null && attachments.isNotEmpty) {
+          List<String> downloadUrls = [];
+          for (PlatformFile file in attachments) {
+            downloadUrls.add(await StorageService(
+                    ref:
+                        '/users/${user.uid}/attachments/announcements/${ref.id}' +
+                            '/${attachments.indexOf(file)}.${file.extension}')
+                .uploadFile(File(file.path)));
+          }
+          await ref.update({'attachments': downloadUrls});
+        }
       } else {
-        String topic = user.school.uid + '-' + scope.toString();
-        // unsubscribing to avoid receiving the notification even if its us who sent it
-        FirebaseMessaging.instance.unsubscribeFromTopic(topic);
-        await _schoolsCollection
+        DocumentReference ref = await _schoolsCollection
             .doc(uid)
             .collection('groups')
             // make sure its a string
@@ -158,7 +162,19 @@ class DatabaseService {
           'content': content,
           'author': _usersCollection.doc(user.uid),
           'createdAt': FieldValue.serverTimestamp()
-        }).then((_) => FirebaseMessaging.instance.subscribeToTopic(topic));
+        });
+
+        if (attachments != null && attachments.isNotEmpty) {
+          List<String> downloadUrls = [];
+          for (PlatformFile file in attachments) {
+            downloadUrls.add(await StorageService(
+                    ref:
+                        '/users/${user.uid}/attachments/announcements/${ref.id}' +
+                            '/${attachments.indexOf(file)}.${file.extension}')
+                .uploadFile(File(file.path)));
+          }
+          await ref.update({'attachments': downloadUrls});
+        }
       }
       return true;
     } catch (_) {
@@ -168,13 +184,10 @@ class DatabaseService {
   }
 
   Future<bool> createHomework(String title, String description, String subject,
-      UserData user, DateTime due, String group) async {
+      UserData user, DateTime due, String group,
+      {List<PlatformFile> attachments}) async {
     try {
-      String topic = user.school.uid + '-' + group;
-      // unsubscribing to avoid receiving the notification even if its us who sent it
-      FirebaseMessaging.instance.unsubscribeFromTopic(topic);
-
-      await _schoolsCollection
+      DocumentReference ref = await _schoolsCollection
           .doc(uid)
           .collection('groups')
           .doc(group)
@@ -186,9 +199,18 @@ class DatabaseService {
         'author': _usersCollection.doc(user.uid),
         'due': due,
         'createdAt': FieldValue.serverTimestamp()
-      }).then((_) => // subscribing again
-              FirebaseMessaging.instance.subscribeToTopic(topic));
-      ;
+      });
+
+      if (attachments != null && attachments.isNotEmpty) {
+        List<String> downloadUrls = [];
+        for (PlatformFile file in attachments) {
+          downloadUrls.add(await StorageService(
+                  ref: '/users/${user.uid}/attachments/homeworks/${ref.id}' +
+                      '/${attachments.indexOf(file)}.${file.extension}')
+              .uploadFile(File(file.path)));
+        }
+        await ref.update({'attachments': downloadUrls});
+      }
 
       return true;
     } catch (_) {
@@ -216,6 +238,9 @@ class DatabaseService {
                 Timestamp.fromMillisecondsSinceEpoch(0))
             .toDate(),
         author: data['author'].id,
+        attachments:
+            // stupid workaround for list<dynamic> error
+            data['attachments'] != null ? <String>[...data['attachments']] : [],
         reference: snapshot.reference);
   }
 
@@ -233,6 +258,9 @@ class DatabaseService {
         createdAt: (data['createdAt'] as Timestamp ??
                 Timestamp.fromMillisecondsSinceEpoch(0))
             .toDate(),
+        attachments:
+            // stupid workaround for list<dynamic> error
+            data['attachments'] != null ? <String>[...data['attachments']] : [],
         reference: snapshot.reference);
   }
 

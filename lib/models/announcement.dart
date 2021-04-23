@@ -8,6 +8,8 @@ class Announcement {
   final String content;
   final DateTime createdAt;
   final dynamic author;
+  // url list of attachments
+  final List<String> attachments;
   final Scope scope;
   final DocumentReference reference;
 
@@ -17,6 +19,7 @@ class Announcement {
     this.content,
     this.createdAt,
     this.author,
+    this.attachments,
     this.scope,
     this.reference,
   });

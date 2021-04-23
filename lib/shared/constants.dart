@@ -5,6 +5,7 @@ import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:alert/alert.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -62,6 +63,80 @@ const Map<UserType, int> userTypeId = {
   UserType.direction: 2,
   UserType.staff: 3
 };
+
+Widget filesListWidget(BuildContext context, List<PlatformFile> attachmentFiles,
+        {double scale}) =>
+    Container(
+        constraints:
+            BoxConstraints(maxWidth: MediaQuery.of(context).size.width),
+        child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Wrap(
+              spacing: 5,
+              children: attachmentFiles
+                  .map((file) => Stack(children: [
+                        Container(
+                          constraints: BoxConstraints(
+                              minHeight: MediaQuery.of(context).size.height / 5,
+                              minWidth: MediaQuery.of(context).size.width / 3),
+                          child: Material(
+                            color: Theme.of(context).cardColor,
+                            borderRadius: BorderRadius.circular(8),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.file_present),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Text(
+                                  file.name.length > 10
+                                      ? file.name.substring(0, 10) + '...'
+                                      : file.name,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ]))
+                  .toList(),
+            )));
+
+Widget largeButton(
+        BuildContext context, Widget child, void Function() onPressed) =>
+    Container(
+        width: MediaQuery.of(context).size.width / 1.2,
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+        margin: EdgeInsets.all(10),
+        child: Column(children: [
+          Container(
+              width: MediaQuery.of(context).size.width / 1.5,
+              child: ElevatedButton(
+                onPressed: onPressed,
+                child: child,
+                style: ButtonStyle(),
+              )),
+          SizedBox(
+            height: 5,
+          )
+        ]));
+
+Widget themeIconButton(BuildContext context, Widget text, Widget icon,
+        void Function() onPressed,
+        {double size = 1}) =>
+    Container(
+        width: (MediaQuery.of(context).size.width / 2) * size,
+        height: (MediaQuery.of(context).size.height / 20) * size,
+        child: Material(
+            borderRadius: BorderRadius.circular(10),
+            color: Theme.of(context).cardColor,
+            child: InkWell(
+                borderRadius: BorderRadius.circular(10),
+                onTap: onPressed,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [text, icon],
+                ))));
 
 const Map<UserType, String> userTypeLocale = {
   UserType.student: 'Étudiant',

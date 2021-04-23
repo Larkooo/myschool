@@ -7,6 +7,7 @@ class Homework {
   final String subject;
   final dynamic author;
   final DateTime due;
+  final List<String> attachments;
   final DateTime createdAt;
   final DocumentReference reference;
 
@@ -17,6 +18,7 @@ class Homework {
     this.subject,
     this.author,
     this.due,
+    this.attachments,
     this.createdAt,
     this.reference,
   });

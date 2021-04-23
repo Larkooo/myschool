@@ -10,10 +10,7 @@ class StorageService {
 
   Future<String> uploadFile(File file) async {
     try {
-      return await FirebaseStorage.instance
-          .ref(ref)
-          .putFile(file)
-          .snapshot
+      return (await FirebaseStorage.instance.ref(ref).putFile(file))
           .ref
           .getDownloadURL();
     } on FirebaseException catch (e) {

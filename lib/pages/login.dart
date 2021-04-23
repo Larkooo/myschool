@@ -134,7 +134,7 @@ class _LoginState extends State<Login> {
                           _emailController.text.trim(),
                           _passwordController.text);
                       if (loginStatus is User) {
-                        _btnController.success();
+                        // _btnController.success();
                       } else if (loginStatus == AuthCode.accountNotFound) {
                         Alert(message: "Compte non existant").show();
                         _btnController.stop();

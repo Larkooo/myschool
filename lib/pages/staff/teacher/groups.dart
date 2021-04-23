@@ -83,7 +83,7 @@ class Groups extends StatelessWidget {
                                         borderRadius: BorderRadius.circular(5),
                                         shape: BoxShape.rectangle,
                                         image: DecorationImage(
-                                            fit: BoxFit.fill,
+                                            fit: BoxFit.cover,
                                             image: FileImage(groupImage)))
                                     : null,
                                 child: groupAlias != null
@@ -151,7 +151,7 @@ class Groups extends StatelessWidget {
                                                   BorderRadius.circular(5),
                                               shape: BoxShape.rectangle,
                                               image: DecorationImage(
-                                                  fit: BoxFit.fill,
+                                                  fit: BoxFit.cover,
                                                   image: FileImage(groupImage)))
                                           : null,
                                       child: groupAlias != null

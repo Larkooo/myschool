@@ -21,7 +21,6 @@ import 'package:device_info/device_info.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:package_info/package_info.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'shared/constants.dart';
 
@@ -30,13 +29,8 @@ void main() async {
   Intl.defaultLocale = 'fr';
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-    alert: true, // Required to display a heads up notification
-    badge: true,
-    sound: true,
-  );
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  String hwid = await FirebaseMessaging.instance.getToken();
+  /* String hwid = await FirebaseMessaging.instance.getToken();
   if (await DatabaseService(uid: hwid).HWIDBanned()) {
     Alert(
             message:
@@ -44,10 +38,11 @@ void main() async {
         .show();
     await Future.delayed(Duration(seconds: 2));
     exit(-1);
-  }
+  }*/
   if (prefs.getBool('darkMode') != null)
     themeNotifier.value =
         prefs.getBool('darkMode') ? ThemeMode.dark : ThemeMode.light;
+
   //RemoteConfig remoteConfig = RemoteConfig.instance;
   //PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
@@ -72,11 +67,15 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    //SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    //  systemNavigationBarColor: Colors.grey[850], // navigation bar color
-    //  // statusBarColor: Colors.grey[850], // status bar color
-    //));
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        systemNavigationBarColor: themeNotifier.value == ThemeMode.dark
+            ? Colors.grey[850]
+            : Colors.white, // navigation bar color
+        systemNavigationBarIconBrightness: Brightness.dark
+        // statusBarColor: Colors.grey[850], // status bar color
+        ));
     //
+    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
 
     return ValueListenableBuilder<ThemeMode>(
         valueListenable: themeNotifier,
@@ -135,6 +134,7 @@ class MyApp extends StatelessWidget {
                     cupertinoOverrideTheme: const CupertinoThemeData(
                       textTheme: CupertinoTextThemeData(), // This is required
                     ),
+                    //splashColor: Colors.grey[800],
                     colorScheme: ColorScheme(
                         brightness: Brightness.dark,
                         primary: Colors.blue,
@@ -150,7 +150,7 @@ class MyApp extends StatelessWidget {
                         onSecondary: Colors.white,
                         error: Colors.red.shade400)),
                 themeMode: mode,
-                home: Welcome(),
+                home: SafeArea(child: Welcome()),
               ),
             ));
   }

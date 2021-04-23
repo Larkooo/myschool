@@ -29,7 +29,6 @@ import 'package:settings_ui/settings_ui.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:slide_popup_dialog/slide_popup_dialog.dart';
-import 'package:get/get.dart';
 
 class Settings extends StatefulWidget {
   final UserData user;
@@ -302,7 +301,7 @@ class _SettingsState extends State<Settings> {
                                             height: MediaQuery.of(context)
                                                     .size
                                                     .height /
-                                                2,
+                                                1.8,
                                             child: SelectGroups(
                                                 user: widget.user)))),
                           ],
@@ -502,67 +501,80 @@ class _SettingsState extends State<Settings> {
                 onPressed: (context) => showPlatformDialog(
                     barrierDismissible: true,
                     context: context,
-                    builder: (context) => PlatformAlertDialog(
-                          title: Text('MonÉcole'),
-                          content: Column(
-                            children: [
-                              Text('Développement par Nasr AA Djeghmoum'),
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height / 200,
-                              ),
-                              Text(
-                                  'Illustrations par Samy Benachour & Maxime Vincent'),
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height / 100,
-                              ),
-                              Text('Besoin de support?'),
-                              RichText(
-                                  text: TextSpan(
-                                      style: TextStyle(fontSize: 10),
-                                      children: [
-                                    TextSpan(text: 'Contactez nous sur '),
+                    builder: (context) => Container(
+                        child: PlatformAlertDialog(
+                            title: Text('MonÉcole'),
+                            content: Container(
+                              constraints: BoxConstraints(
+                                  maxHeight:
+                                      MediaQuery.of(context).size.height / 3.8),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    'Développement par Nasr AA Djeghmoum',
+                                    style: TextStyle(fontSize: 15),
+                                  ),
+                                  SizedBox(
+                                    height: MediaQuery.of(context).size.height /
+                                        100,
+                                  ),
+                                  Text(
+                                    'Illustrations par Samy Benachour & Maxime Vincent',
+                                    style: TextStyle(fontSize: 12),
+                                  ),
+                                  SizedBox(
+                                    height:
+                                        MediaQuery.of(context).size.height / 30,
+                                  ),
+                                  Text('Besoin de support?'),
+                                  RichText(
+                                      text: TextSpan(
+                                          style: TextStyle(fontSize: 10),
+                                          children: [
+                                        TextSpan(text: 'Contactez nous sur '),
+                                        TextSpan(
+                                            text: 'support@monecole.app',
+                                            style: TextStyle(
+                                                color: Colors.lightBlue),
+                                            recognizer: TapGestureRecognizer()
+                                              ..onTap = () => null),
+                                      ])),
+                                  SizedBox(
+                                    height:
+                                        MediaQuery.of(context).size.height / 30,
+                                  ),
+                                  RichText(
+                                      text: TextSpan(children: [
+                                    TextSpan(text: 'MonÉcole est '),
                                     TextSpan(
-                                        text: 'support@monecole.app',
+                                        text: 'open-source',
                                         style:
                                             TextStyle(color: Colors.lightBlue),
                                         recognizer: TapGestureRecognizer()
-                                          ..onTap = () => null),
+                                          ..onTap = () => launchURL(
+                                              'https://github.com/Larkooo/myschool'))
                                   ])),
-                              SizedBox(
-                                height: MediaQuery.of(context).size.height / 50,
+                                  PlatformButton(
+                                      child: Text('Voir les licences'),
+                                      onPressed: () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => LicensePage(
+                                                    applicationName: 'MonÉcole',
+                                                    applicationIcon:
+                                                        Image.asset(
+                                                      'assets/logo.png',
+                                                      scale: 5,
+                                                    ),
+                                                  ))))
+                                ],
                               ),
-                              RichText(
-                                  text: TextSpan(children: [
-                                TextSpan(text: 'MonÉcole est '),
-                                TextSpan(
-                                    text: 'open-source',
-                                    style: TextStyle(color: Colors.lightBlue),
-                                    recognizer: TapGestureRecognizer()
-                                      ..onTap = () => launchURL(
-                                          'https://github.com/Larkooo/myschool'))
-                              ])),
-                              PlatformButton(
-                                  child: Text('Voir les licences'),
-                                  onPressed: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => LicensePage(
-                                                applicationName: 'MonÉcole',
-                                                applicationIcon: Image.asset(
-                                                  'assets/logo.png',
-                                                  scale: 5,
-                                                ),
-                                              ))))
-                            ],
-                          ),
-                          /* actions: [
+                              /* actions: [
                             PlatformDialogAction(
                                 child: Text('Voir les licenses')),
                             PlatformDialogAction(child: Text('Ok')),
                           ],*/
-                        )),
+                            )))),
               )
             ]),
           ],

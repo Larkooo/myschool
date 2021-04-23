@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_crop_new/image_crop_new.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:myschool/components/group_list.dart';
 import 'package:myschool/components/new_announce.dart';
 import 'package:myschool/models/school.dart';
 import 'package:myschool/models/user.dart';
@@ -217,16 +218,14 @@ class SchoolPage extends StatelessWidget {
                                       borderRadius: BorderRadius.circular(10)),
                                   margin: EdgeInsets.all(10),
                                   child: Column(children: [
-                                    /*StreamBuilder(
-                                        stream: CombineLatestStream.list([FirebaseFirestore.instance
-                                            .collection('users')
-                                            .where('school',
-                                                isEqualTo: FirebaseFirestore
-                                                    .instance
-                                                    .collection('schools')
-                                                    .doc(user.school.uid))
-                                            .snapshots(), ]) ,
-                                        builder: (context, snapshot) {}),*/
+                                    largeButton(
+                                        context,
+                                        Text('Voir tous les groupes'),
+                                        () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => GroupList(
+                                                    schoolUid: school.uid)))),
                                     SizedBox(
                                       height: 5,
                                     )
