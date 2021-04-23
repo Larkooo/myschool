@@ -6,8 +6,10 @@ import 'package:alert/alert.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:myschool/models/user.dart';
@@ -15,6 +17,7 @@ import 'package:myschool/pages/announcements.dart';
 import 'package:myschool/pages/homeworks.dart';
 import 'package:myschool/services/database.dart';
 import 'package:myschool/shared/cachemanager.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -64,43 +67,117 @@ const Map<UserType, int> userTypeId = {
   UserType.staff: 3
 };
 
-Widget filesListWidget(BuildContext context, List<PlatformFile> attachmentFiles,
-        {double scale}) =>
-    Container(
-        constraints:
-            BoxConstraints(maxWidth: MediaQuery.of(context).size.width),
-        child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Wrap(
-              spacing: 5,
-              children: attachmentFiles
-                  .map((file) => Stack(children: [
-                        Container(
-                          constraints: BoxConstraints(
-                              minHeight: MediaQuery.of(context).size.height / 5,
-                              minWidth: MediaQuery.of(context).size.width / 3),
-                          child: Material(
-                            color: Theme.of(context).cardColor,
-                            borderRadius: BorderRadius.circular(8),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.file_present),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                Text(
-                                  file.name.length > 10
-                                      ? file.name.substring(0, 10) + '...'
-                                      : file.name,
-                                ),
-                              ],
+Widget filesListWidget(BuildContext context, List<String> attachments,
+        {double scale = 1}) =>
+    SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Wrap(
+          spacing: 5,
+          children: attachments.map((attachmentURL) {
+            Reference ref = FirebaseStorage.instance.refFromURL(attachmentURL);
+            bool isMedia =
+                ['jpg', 'png', 'jpeg'].contains(ref.name.split('.')[1]);
+            CachedNetworkImage preview;
+            if (isMedia)
+              preview = CachedNetworkImage(
+                fit: BoxFit.cover,
+                imageUrl: attachmentURL,
+              );
+
+            return Container(
+                clipBehavior: Clip.antiAlias,
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.circular(10)),
+                width: (MediaQuery.of(context).size.width / 5) * scale,
+                height: (MediaQuery.of(context).size.height / 10) * scale,
+                child: preview != null
+                    ? Stack(
+                        children: [
+                          Positioned.fill(child: preview),
+                          Material(
+                            type: MaterialType.transparency,
+                            child: InkWell(
+                              onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => SafeArea(
+                                              child: Stack(children: [
+                                            PhotoView(
+                                                imageProvider:
+                                                    CachedNetworkImageProvider(
+                                                        attachmentURL)),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Material(
+                                                    clipBehavior:
+                                                        Clip.antiAlias,
+                                                    type: MaterialType
+                                                        .transparency,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            45),
+                                                    child: IconButton(
+                                                        icon: Icon(
+                                                            Icons.arrow_back),
+                                                        onPressed: () =>
+                                                            Navigator.pop(
+                                                                context))),
+                                                Material(
+                                                    clipBehavior:
+                                                        Clip.antiAlias,
+                                                    type: MaterialType
+                                                        .transparency,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            45),
+                                                    child: IconButton(
+                                                        icon: Icon(Icons
+                                                            .file_download),
+                                                        onPressed: () {
+                                                          launchURL(
+                                                              attachmentURL);
+                                                          Navigator.pop(
+                                                              context);
+                                                        })),
+                                              ],
+                                            )
+                                          ])))),
                             ),
-                          ),
-                        ),
-                      ]))
-                  .toList(),
-            )));
+                          )
+                        ],
+                      )
+                    : Material(
+                        child: InkWell(
+                            onTap: () => showPlatformDialog(
+                                context: context,
+                                builder: (context) => PlatformAlertDialog(
+                                      title: Text('Fichier'),
+                                      content: Text(
+                                          'Voulez-vous télécharger ce fichier?'),
+                                      actions: [
+                                        PlatformDialogAction(
+                                          child: Text('Annuler'),
+                                          onPressed: () =>
+                                              Navigator.pop(context),
+                                        ),
+                                        PlatformDialogAction(
+                                            child: Text('Télécharger'),
+                                            onPressed: () {
+                                              launchURL(attachmentURL);
+                                              Navigator.pop(context);
+                                            })
+                                      ],
+                                    )),
+                            child: Container(
+                              child: Center(
+                                child: Text(ref.name),
+                              ),
+                            ))));
+          }).toList(),
+        ));
 
 Widget largeButton(
         BuildContext context, Widget child, void Function() onPressed) =>

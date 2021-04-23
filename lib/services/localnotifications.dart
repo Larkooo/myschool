@@ -6,7 +6,6 @@ import 'package:myschool/shared/navbarprovider.dart';
 class LocalNotificationsService {
   static Future<dynamic> onDidReceiveLocalNotification(
       int id, String title, String body, String payload) async {
-    print('esdfes');
     return true;
   }
 

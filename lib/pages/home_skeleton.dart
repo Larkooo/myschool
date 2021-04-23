@@ -40,6 +40,14 @@ class HomeSkeleton extends StatefulWidget {
 class HomeState extends State<HomeSkeleton> {
   static UserData userData;
 
+  int _selectedIndex = 0;
+
+  void _selectIndex(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   // will be altered later depending on user type and data to push data to it
   static List<Widget> _widgetOptions = [];
 
@@ -74,294 +82,241 @@ class HomeState extends State<HomeSkeleton> {
   @override
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User>();
-    return ChangeNotifierProvider<NavigationBarProvider>(
-        create: (context) => NavigationBarProvider(),
-        child: Consumer<NavigationBarProvider>(
-          builder: (context, navigationProvider, _) => StreamBuilder(
-              stream: DatabaseService(uid: firebaseUser.uid).user,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  userData = snapshot.data;
+    return StreamBuilder(
+        stream: DatabaseService(uid: firebaseUser.uid).user,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            userData = snapshot.data;
 
-                  // subscribe to school topic
-                  if (!subscribed && schoolNotifications)
-                    _messaging.subscribeToTopic(userData.school.uid);
+            // subscribe to school topic
+            if (!subscribed && schoolNotifications)
+              _messaging.subscribeToTopic(userData.school.uid);
 
-                  switch (userData.type) {
-                    case UserType.direction:
-                      {
-                        // Direction / principal
-                        _messaging.subscribeToTopic(
-                            userData.school.uid + '-' + 'test');
+            _messaging.subscribeToTopic(userData.school.uid + '-' + 'test');
 
-                        _widgetOptions = [
-                          HomeTeacher(user: userData),
-                          SchoolPage(
-                            user: userData,
-                          ),
-                          Announcements(user: userData),
-                          Groups(user: userData),
-                          if (userData.groups.contains('staff'))
-                            ChatPage(
-                              user: userData,
-                              groupUid: 'staff',
-                            )
-                        ];
-                        // subscribe to all group topics
+            Widget bottomAppBar;
 
-                        if (!subscribed) {
-                          // userData.groups.forEach((group) =>
-                          //     disabledGroupsNotifications.contains(group) == false
-                          //         ? _messaging.subscribeToTopic(
-                          //             userData.school.uid + '-' + group)
-                          //         : null);
-                          subscribed = true;
-                        }
+            switch (userData.type) {
+              case UserType.direction:
+                {
+                  subscribed = true;
 
-                        return Scaffold(
-                            appBar: AppBar(),
-                            drawer: DrawerComp(
-                              user: userData,
-                            ),
-                            body: _widgetOptions
-                                .elementAt(navigationProvider.currentIndex),
-                            bottomNavigationBar: adaptiveBottomNavBar(
-                              items: <BottomNavigationBarItem>[
-                                BottomNavigationBarItem(
-                                    icon: Icon(Platform.isIOS
-                                        ? CupertinoIcons.home
-                                        : Icons.home),
-                                    label: "Accueil"),
-                                BottomNavigationBarItem(
-                                    icon: Icon(Platform.isIOS
-                                        ? CupertinoIcons.book_solid
-                                        : Icons.school),
-                                    label: "École"),
-                                BottomNavigationBarItem(
-                                    icon: Icon(Platform.isIOS
-                                        ? CupertinoIcons.news
-                                        : Icons.announcement),
-                                    label: "Annonces"),
-                                BottomNavigationBarItem(
-                                    icon: Icon(Platform.isIOS
-                                        ? CupertinoIcons.group
-                                        : Icons.group),
-                                    label: "Groupes"),
-                                if (userData.groups.contains('staff'))
-                                  BottomNavigationBarItem(
-                                      icon: Icon(Platform.isIOS
-                                          ? CupertinoIcons.chat_bubble
-                                          : Icons.chat),
-                                      label: "Chat")
-                              ],
-                              currentIndex: navigationProvider.currentIndex,
-                              onTap: (index) =>
-                                  navigationProvider.currentIndex = index,
-                            ));
-                      }
+                  _widgetOptions = [
+                    HomeTeacher(user: userData),
+                    SchoolPage(
+                      user: userData,
+                    ),
+                    Announcements(user: userData),
+                    Groups(user: userData),
+                    if (userData.groups.contains('staff'))
+                      ChatPage(
+                        user: userData,
+                        groupUid: 'staff',
+                      )
+                  ];
 
-                    case UserType.teacher:
-                      {
-                        // Teacher
-
-                        _widgetOptions = [
-                          HomeTeacher(user: userData),
-                          Announcements(user: userData),
-                          Homeworks(user: userData),
-                          Groups(user: userData),
-                          Calendar(user: userData),
-                          if (userData.type != UserType.student &&
-                              userData.groups.contains('staff'))
-                            ChatPage(
-                              user: userData,
-                              groupUid: 'staff',
-                            )
-                        ];
-
-                        // subscribe to all group topics
-                        if (!subscribed) {
-                          // userData.groups.forEach((group) =>
-                          //     disabledGroupsNotifications.contains(group) == false
-                          //         ? _messaging.subscribeToTopic(
-                          //             userData.school.uid + '-' + group)
-                          //         : null);
-                          subscribed = true;
-                        }
-
-                        return Scaffold(
-                            appBar: AppBar(),
-                            drawer: DrawerComp(
-                              user: userData,
-                            ),
-                            body: _widgetOptions
-                                .elementAt(navigationProvider.currentIndex),
-                            bottomNavigationBar: adaptiveBottomNavBar(
-                              items: <BottomNavigationBarItem>[
-                                BottomNavigationBarItem(
-                                    icon: Icon(Platform.isIOS
-                                        ? CupertinoIcons.home
-                                        : Icons.home),
-                                    label: "Accueil"),
-                                BottomNavigationBarItem(
-                                    icon: Icon(Platform.isIOS
-                                        ? CupertinoIcons.news
-                                        : Icons.announcement),
-                                    label: "Annonces"),
-                                BottomNavigationBarItem(
-                                    icon: Icon(Platform.isIOS
-                                        ? CupertinoIcons.plus_slash_minus
-                                        : Icons.work),
-                                    label: "Devoirs"),
-                                BottomNavigationBarItem(
-                                    icon: Icon(Platform.isIOS
-                                        ? CupertinoIcons.group
-                                        : Icons.group),
-                                    label: "Groupes"),
-                                BottomNavigationBarItem(
-                                    icon: Icon(Platform.isIOS
-                                        ? CupertinoIcons.calendar
-                                        : Icons.calendar_today),
-                                    label: "Calendrier"),
-                                if (userData.groups.contains('staff'))
-                                  BottomNavigationBarItem(
-                                      icon: Icon(Platform.isIOS
-                                          ? CupertinoIcons.chat_bubble
-                                          : Icons.chat),
-                                      label: "Chat")
-                              ],
-                              currentIndex: navigationProvider.currentIndex,
-                              onTap: (index) =>
-                                  navigationProvider.currentIndex = index,
-                            ));
-                      }
-
-                    case UserType.staff:
-                      {
-                        _widgetOptions = [
-                          HomeTeacher(user: userData),
-                          Announcements(user: userData),
-                          Groups(user: userData),
-                          if (userData.type != UserType.student &&
-                              userData.groups.contains('staff'))
-                            ChatPage(
-                              user: userData,
-                              groupUid: 'staff',
-                            )
-                        ];
-
-                        // subscribe to all group topics
-
-                        if (!subscribed) {
-                          // userData.groups.forEach((group) =>
-                          //     disabledGroupsNotifications.contains(group) == false
-                          //         ? _messaging.subscribeToTopic(
-                          //             userData.school.uid + '-' + group)
-                          //         : null);
-                          subscribed = true;
-                        }
-
-                        return Scaffold(
-                            appBar: AppBar(),
-                            drawer: DrawerComp(
-                              user: userData,
-                            ),
-                            body: _widgetOptions
-                                .elementAt(navigationProvider.currentIndex),
-                            bottomNavigationBar: adaptiveBottomNavBar(
-                              items: <BottomNavigationBarItem>[
-                                BottomNavigationBarItem(
-                                    icon: Icon(Platform.isIOS
-                                        ? CupertinoIcons.home
-                                        : Icons.home),
-                                    label: "Accueil"),
-                                BottomNavigationBarItem(
-                                    icon: Icon(Platform.isIOS
-                                        ? CupertinoIcons.news
-                                        : Icons.announcement),
-                                    label: "Annonces"),
-                                BottomNavigationBarItem(
-                                    icon: Icon(Platform.isIOS
-                                        ? CupertinoIcons.group
-                                        : Icons.group),
-                                    label: "Groupes"),
-                                BottomNavigationBarItem(
-                                    icon: Icon(Platform.isIOS
-                                        ? CupertinoIcons.calendar
-                                        : Icons.calendar_today),
-                                    label: "Calendrier"),
-                                if (userData.groups.contains('staff'))
-                                  BottomNavigationBarItem(
-                                      icon: Icon(Platform.isIOS
-                                          ? CupertinoIcons.chat_bubble
-                                          : Icons.chat),
-                                      label: "Chat")
-                              ],
-                              currentIndex: navigationProvider.currentIndex,
-                              onTap: (index) =>
-                                  navigationProvider.currentIndex = index,
-                            ));
-                      }
-
-                    default:
-                      {
-                        // Student
-                        _widgetOptions = [
-                          Home(user: userData),
-                          Announcements(user: userData),
-                          Homeworks(user: userData),
-                          Calendar(user: userData),
-                        ];
-                        // subscribe to group topic
-                        if (!subscribed &&
-                            !(disabledGroupsNotifications
-                                .contains(userData.school.group.uid))) {
-                          _messaging.subscribeToTopic(userData.school.uid +
-                              '-' +
-                              userData.school.group.uid);
-                          subscribed = true;
-                        }
-
-                        return Scaffold(
-                          appBar: AppBar(),
-                          drawer: DrawerComp(
-                            user: userData,
-                          ),
-                          body: _widgetOptions
-                              .elementAt(navigationProvider.currentIndex),
-                          bottomNavigationBar: adaptiveBottomNavBar(
-                            items: <BottomNavigationBarItem>[
-                              BottomNavigationBarItem(
-                                  icon: Icon(Platform.isIOS
-                                      ? CupertinoIcons.home
-                                      : Icons.home),
-                                  label: "Accueil"),
-                              BottomNavigationBarItem(
-                                  icon: Icon(Platform.isIOS
-                                      ? CupertinoIcons.news
-                                      : Icons.announcement),
-                                  label: "Annonces"),
-                              BottomNavigationBarItem(
-                                  icon: Icon(Platform.isIOS
-                                      ? CupertinoIcons.plus_slash_minus
-                                      : Icons.calculate),
-                                  label: "Devoirs"),
-                              BottomNavigationBarItem(
-                                  icon: Icon(Platform.isIOS
-                                      ? CupertinoIcons.calendar
-                                      : Icons.calendar_today),
-                                  label: "Calendrier"),
-                            ],
-                            currentIndex: navigationProvider.currentIndex,
-                            onTap: (index) =>
-                                navigationProvider.currentIndex = index,
-                          ),
-                        );
-                      }
-                  }
-                } else {
-                  return Center(child: CircularProgressIndicator.adaptive());
+                  bottomAppBar = adaptiveBottomNavBar(
+                    items: <BottomNavigationBarItem>[
+                      BottomNavigationBarItem(
+                          icon: Icon(Platform.isIOS
+                              ? CupertinoIcons.home
+                              : Icons.home),
+                          label: "Accueil"),
+                      BottomNavigationBarItem(
+                          icon: Icon(Platform.isIOS
+                              ? CupertinoIcons.book_solid
+                              : Icons.school),
+                          label: "École"),
+                      BottomNavigationBarItem(
+                          icon: Icon(Platform.isIOS
+                              ? CupertinoIcons.news
+                              : Icons.announcement),
+                          label: "Annonces"),
+                      BottomNavigationBarItem(
+                          icon: Icon(Platform.isIOS
+                              ? CupertinoIcons.group
+                              : Icons.group),
+                          label: "Groupes"),
+                      if (userData.groups.contains('staff'))
+                        BottomNavigationBarItem(
+                            icon: Icon(Platform.isIOS
+                                ? CupertinoIcons.chat_bubble
+                                : Icons.chat),
+                            label: "Chat")
+                    ],
+                    currentIndex: _selectedIndex,
+                    onTap: _selectIndex,
+                  );
+                  break;
                 }
-              }),
-        ));
+
+              case UserType.teacher:
+                {
+                  subscribed = true;
+
+                  _widgetOptions = [
+                    HomeTeacher(user: userData),
+                    Announcements(user: userData),
+                    Homeworks(user: userData),
+                    Groups(user: userData),
+                    Calendar(user: userData),
+                    if (userData.type != UserType.student &&
+                        userData.groups.contains('staff'))
+                      ChatPage(
+                        user: userData,
+                        groupUid: 'staff',
+                      )
+                  ];
+
+                  bottomAppBar = adaptiveBottomNavBar(
+                    items: <BottomNavigationBarItem>[
+                      BottomNavigationBarItem(
+                          icon: Icon(Platform.isIOS
+                              ? CupertinoIcons.home
+                              : Icons.home),
+                          label: "Accueil"),
+                      BottomNavigationBarItem(
+                          icon: Icon(Platform.isIOS
+                              ? CupertinoIcons.news
+                              : Icons.announcement),
+                          label: "Annonces"),
+                      BottomNavigationBarItem(
+                          icon: Icon(Platform.isIOS
+                              ? CupertinoIcons.plus_slash_minus
+                              : Icons.work),
+                          label: "Devoirs"),
+                      BottomNavigationBarItem(
+                          icon: Icon(Platform.isIOS
+                              ? CupertinoIcons.group
+                              : Icons.group),
+                          label: "Groupes"),
+                      BottomNavigationBarItem(
+                          icon: Icon(Platform.isIOS
+                              ? CupertinoIcons.calendar
+                              : Icons.calendar_today),
+                          label: "Calendrier"),
+                      if (userData.groups.contains('staff'))
+                        BottomNavigationBarItem(
+                            icon: Icon(Platform.isIOS
+                                ? CupertinoIcons.chat_bubble
+                                : Icons.chat),
+                            label: "Chat")
+                    ],
+                    currentIndex: _selectedIndex,
+                    onTap: _selectIndex,
+                  );
+                  break;
+                }
+
+              case UserType.staff:
+                {
+                  subscribed = true;
+
+                  _widgetOptions = [
+                    HomeTeacher(user: userData),
+                    Announcements(user: userData),
+                    Groups(user: userData),
+                    if (userData.type != UserType.student &&
+                        userData.groups.contains('staff'))
+                      ChatPage(
+                        user: userData,
+                        groupUid: 'staff',
+                      )
+                  ];
+
+                  bottomAppBar = adaptiveBottomNavBar(
+                    items: <BottomNavigationBarItem>[
+                      BottomNavigationBarItem(
+                          icon: Icon(Platform.isIOS
+                              ? CupertinoIcons.home
+                              : Icons.home),
+                          label: "Accueil"),
+                      BottomNavigationBarItem(
+                          icon: Icon(Platform.isIOS
+                              ? CupertinoIcons.news
+                              : Icons.announcement),
+                          label: "Annonces"),
+                      BottomNavigationBarItem(
+                          icon: Icon(Platform.isIOS
+                              ? CupertinoIcons.group
+                              : Icons.group),
+                          label: "Groupes"),
+                      BottomNavigationBarItem(
+                          icon: Icon(Platform.isIOS
+                              ? CupertinoIcons.calendar
+                              : Icons.calendar_today),
+                          label: "Calendrier"),
+                      if (userData.groups.contains('staff'))
+                        BottomNavigationBarItem(
+                            icon: Icon(Platform.isIOS
+                                ? CupertinoIcons.chat_bubble
+                                : Icons.chat),
+                            label: "Chat")
+                    ],
+                    currentIndex: _selectedIndex,
+                    onTap: _selectIndex,
+                  );
+                  break;
+                }
+
+              default:
+                {
+                  // Student
+                  _widgetOptions = [
+                    Home(user: userData),
+                    Announcements(user: userData),
+                    Homeworks(user: userData),
+                    Calendar(user: userData),
+                  ];
+                  // subscribe to group topic
+                  if (!subscribed &&
+                      !(disabledGroupsNotifications
+                          .contains(userData.school.group.uid))) {
+                    _messaging.subscribeToTopic(
+                        userData.school.uid + '-' + userData.school.group.uid);
+                    subscribed = true;
+                  }
+
+                  bottomAppBar = adaptiveBottomNavBar(
+                    items: <BottomNavigationBarItem>[
+                      BottomNavigationBarItem(
+                          icon: Icon(Platform.isIOS
+                              ? CupertinoIcons.home
+                              : Icons.home),
+                          label: "Accueil"),
+                      BottomNavigationBarItem(
+                          icon: Icon(Platform.isIOS
+                              ? CupertinoIcons.news
+                              : Icons.announcement),
+                          label: "Annonces"),
+                      BottomNavigationBarItem(
+                          icon: Icon(Platform.isIOS
+                              ? CupertinoIcons.plus_slash_minus
+                              : Icons.calculate),
+                          label: "Devoirs"),
+                      BottomNavigationBarItem(
+                          icon: Icon(Platform.isIOS
+                              ? CupertinoIcons.calendar
+                              : Icons.calendar_today),
+                          label: "Calendrier"),
+                    ],
+                    currentIndex: _selectedIndex,
+                    onTap: _selectIndex,
+                  );
+                  break;
+                }
+            }
+
+            return Scaffold(
+                appBar: AppBar(),
+                drawer: DrawerComp(
+                  user: userData,
+                ),
+                body: _widgetOptions.elementAt(_selectedIndex),
+                bottomNavigationBar: bottomAppBar);
+          } else {
+            return Center(child: CircularProgressIndicator.adaptive());
+          }
+        });
   }
 }

@@ -507,7 +507,7 @@ class _SettingsState extends State<Settings> {
                             content: Container(
                               constraints: BoxConstraints(
                                   maxHeight:
-                                      MediaQuery.of(context).size.height / 3.8),
+                                      MediaQuery.of(context).size.height / 3.7),
                               child: Column(
                                 children: [
                                   Text(

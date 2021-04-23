@@ -52,7 +52,7 @@ dependencies:
   badges: ^1.2.0
   device_info: ^2.0.0
   adaptive_dialog:
-  flutter_local_notifications: ^5.0.0
+  flutter_local_notifications: ^5.0.0+1
   url_launcher: ^6.0.3
   connectivity: ^3.0.3
   jwt_decode: ^0.3.1

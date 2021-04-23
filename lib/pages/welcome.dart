@@ -74,19 +74,9 @@ class _MessageHandlerState extends State<MessageHandler> {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('logo');
     final IOSInitializationSettings initializationSettingsIOS =
-        IOSInitializationSettings(
-      requestSoundPermission: true,
-      requestBadgePermission: true,
-      requestAlertPermission: true,
-      onDidReceiveLocalNotification: (id, title, body, payload) =>
-          LocalNotificationsService.onDidReceiveLocalNotification(
-              id, title, body, payload),
-    );
+        IOSInitializationSettings();
     final MacOSInitializationSettings initializationSettingsMacOS =
-        MacOSInitializationSettings(
-            requestAlertPermission: true,
-            requestBadgePermission: true,
-            requestSoundPermission: true);
+        MacOSInitializationSettings();
     final InitializationSettings initializationSettings =
         InitializationSettings(
             android: initializationSettingsAndroid,
@@ -106,12 +96,14 @@ class _MessageHandlerState extends State<MessageHandler> {
                 'notification', 'notification', 'notification',
                 importance: Importance.max,
                 priority: Priority.high,
-                showWhen: false);
+                showWhen: true);
         flutterLocalNotificationsPlugin.show(
             1,
             message.notification.title,
             message.notification.body,
-            NotificationDetails(android: androidPlatformChannelSpecifics),
+            NotificationDetails(
+              android: androidPlatformChannelSpecifics,
+            ),
             payload: jsonEncode(message.data));
       }
     });

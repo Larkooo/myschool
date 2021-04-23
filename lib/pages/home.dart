@@ -152,7 +152,7 @@ class _HomeState extends State<Home> {
                     style: TextStyle(fontSize: 18),
                   ),
                   Container(
-                      width: MediaQuery.of(context).size.width / 1.3,
+                      width: MediaQuery.of(context).size.width / 1.2,
                       child: Card(
                         child: ListTile(
                             onTap: () => showSlideDialog(
@@ -210,7 +210,7 @@ class _HomeState extends State<Home> {
                       style: TextStyle(fontSize: 18),
                     ),
                     Container(
-                        width: MediaQuery.of(context).size.width / 1.3,
+                        width: MediaQuery.of(context).size.width / 1.2,
                         child: Announce(announcement: announcements.last)),
                   ],
                 );

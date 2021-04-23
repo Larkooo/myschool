@@ -67,7 +67,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    /*SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
         systemNavigationBarColor: themeNotifier.value == ThemeMode.dark
             ? Colors.grey[850]
             : Colors.white, // navigation bar color
@@ -75,7 +75,7 @@ class MyApp extends StatelessWidget {
         // statusBarColor: Colors.grey[850], // status bar color
         ));
     //
-    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);*/
 
     return ValueListenableBuilder<ThemeMode>(
         valueListenable: themeNotifier,
@@ -150,7 +150,7 @@ class MyApp extends StatelessWidget {
                         onSecondary: Colors.white,
                         error: Colors.red.shade400)),
                 themeMode: mode,
-                home: SafeArea(child: Welcome()),
+                home: Welcome(),
               ),
             ));
   }

@@ -41,7 +41,7 @@ class _HomeTeacherState extends State<HomeTeacher> {
                       style: TextStyle(fontSize: 18, color: Colors.grey[400]),
                     ),
                     Container(
-                        width: MediaQuery.of(context).size.width / 1.3,
+                        width: MediaQuery.of(context).size.width / 1.2,
                         child: Announce(announcement: announcements.last)),
                   ],
                 );
