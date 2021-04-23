@@ -92,8 +92,6 @@ class HomeState extends State<HomeSkeleton> {
             if (!subscribed && schoolNotifications)
               _messaging.subscribeToTopic(userData.school.uid);
 
-            _messaging.subscribeToTopic(userData.school.uid + '-' + 'test');
-
             Widget bottomAppBar;
 
             switch (userData.type) {
