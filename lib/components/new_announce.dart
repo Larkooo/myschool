@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:alert/alert.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
@@ -166,11 +167,20 @@ class _NewAnnounceState extends State<NewAnnounce> {
               themeIconButton(
                   context, Text('Attacher des fichiers'), Icon(Icons.add),
                   () async {
+                final fileType = await showModalActionSheet<FileType>(
+                    context: context,
+                    title: 'Attacher des fichiers',
+                    message: 'Voulez-vous attacher des images ou des fichiers',
+                    actions: [
+                      SheetAction(label: 'Fichier', key: FileType.any),
+                      SheetAction(label: 'Média', key: FileType.media)
+                    ]);
+                if (fileType == null) return;
                 FilePickerResult result = await FilePicker.platform.pickFiles(
                   allowMultiple: true,
                   type: FileType.any,
                 );
-                if (result.count == 0) return;
+                if (result == null || result.count == 0) return;
                 if (result.count > 8)
                   return Alert(
                           message:

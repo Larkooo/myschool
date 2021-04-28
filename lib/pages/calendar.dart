@@ -8,8 +8,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:jwt_decode/jwt_decode.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:myschool/models/mozaik.dart';
 import 'package:myschool/models/user.dart';
 import 'package:myschool/services/database.dart';
@@ -212,83 +214,72 @@ class _CalendarState extends State<Calendar> {
                   lazy to describe everything here, this is just the frontend part of the courses list
                   */
           Expanded(
-              child: ListView(
-                  children: CacheManagerMemory.dayCourses.entries
-                      .map((e) => Platform.isAndroid
-                          ? Card(
-                              child: ListTile(
-                                onTap: () => showSlideDialog(
-                                    context: context,
-                                    child: coursePage(
-                                        context,
-                                        widget.user,
-                                        e.value['codeActivite'],
-                                        e.value['description'],
-                                        e.key,
-                                        e.value['intervenants'],
-                                        e.value['heureFin'],
-                                        e.value['locaux'])),
-                                title: Text(e.value['description'] +
-                                    " (${e.value['locaux'][0]})"),
-                                subtitle: Text(e.value['intervenants'][0]
-                                        ['nom'] +
-                                    " " +
-                                    e.value['intervenants'][0]['prenom'] +
-                                    " - " +
-                                    DateFormat.Hm().format(e.key)),
-                              ),
-                            )
-                          : CupertinoContextMenu(
-                              actions: [
-                                  CupertinoContextMenuAction(
-                                    trailingIcon: Icons.calendar_today,
-                                    isDefaultAction: true,
-                                    child: Text('Ajouter un rappel',
-                                        style: TextStyle(fontSize: 12)),
-                                    onPressed: () {
-                                      List<int> endHourSplit =
-                                          (e.value['heureFin'] as String)
-                                              .split(':')
-                                              .map((e) => int.tryParse(e))
-                                              .toList();
-                                      DateTime endTime = DateTime(
-                                          e.key.year,
-                                          e.key.month,
-                                          e.key.day,
-                                          endHourSplit[0],
-                                          endHourSplit[1]);
-                                      final Event event = Event(
-                                          title: e.value['description'],
-                                          startDate: e.key,
-                                          endDate: endTime);
-                                      Add2Calendar.addEvent2Cal(event);
-                                    },
-                                  )
-                                ],
-                              child: Card(
-                                child: ListTile(
-                                  onTap: () => showSlideDialog(
-                                      context: context,
-                                      child: coursePage(
-                                          context,
-                                          widget.user,
-                                          e.value['codeActivite'],
-                                          e.value['description'],
-                                          e.key,
-                                          e.value['intervenants'],
-                                          e.value['heureFin'],
-                                          e.value['locaux'])),
-                                  title: Text(e.value['description'] +
-                                      " (${e.value['locaux'][0]})"),
-                                  subtitle: Text(e.value['intervenants'][0]
-                                          ['nom'] +
-                                      " " +
-                                      e.value['intervenants'][0]['prenom'] +
-                                      " - " +
-                                      DateFormat.Hm().format(e.key)),
-                                ),
-                              )))
-                      .toList()))
+              child: ListView(children: [
+            Card(
+                clipBehavior: Clip.antiAlias,
+                child: ListTile(
+                    leading: Icon(Icons.add_comment),
+                    title: Text('Ajouter une note'),
+                    onTap: () async {
+                      List<String> inputs = await showTextInputDialog(
+                          context: context,
+                          title: 'Ajouter une note',
+                          textFields: [DialogTextField(hintText: 'Note')]);
+                      if (inputs == null || inputs.length < 1) return;
+                      String noteContent = inputs[0];
+                    })),
+            ...CacheManagerMemory.dayCourses.entries.map((e) {
+              Card card = Card(
+                child: ListTile(
+                  onTap: () => showBarModalBottomSheet(
+                      context: context,
+                      builder: (context) => Container(
+                          height: MediaQuery.of(context).size.height / 1.8,
+                          child: Material(
+                              child: coursePage(
+                                  context,
+                                  widget.user,
+                                  e.value['codeActivite'],
+                                  e.value['description'],
+                                  e.key,
+                                  e.value['intervenants'],
+                                  e.value['heureFin'],
+                                  e.value['locaux'])))),
+                  title: Text(
+                      e.value['description'] + " (${e.value['locaux'][0]})"),
+                  subtitle: Text(e.value['intervenants'][0]['nom'] +
+                      " " +
+                      e.value['intervenants'][0]['prenom'] +
+                      " - " +
+                      DateFormat.Hm().format(e.key)),
+                ),
+              );
+              return Platform.isAndroid
+                  ? card
+                  : CupertinoContextMenu(actions: [
+                      CupertinoContextMenuAction(
+                        trailingIcon: Icons.calendar_today,
+                        isDefaultAction: true,
+                        child: Text('Ajouter un rappel',
+                            style: TextStyle(fontSize: 12)),
+                        onPressed: () {
+                          List<int> endHourSplit =
+                              (e.value['heureFin'] as String)
+                                  .split(':')
+                                  .map((e) => int.tryParse(e))
+                                  .toList();
+                          DateTime endTime = DateTime(e.key.year, e.key.month,
+                              e.key.day, endHourSplit[0], endHourSplit[1]);
+                          final Event event = Event(
+                              title: e.value['description'],
+                              startDate: e.key,
+                              endDate: endTime);
+                          Add2Calendar.addEvent2Cal(event);
+                        },
+                      )
+                    ], child: card);
+            }).toList()
+          ]))
         ],
       ),
       inAsyncCall: loading,

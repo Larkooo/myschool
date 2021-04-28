@@ -81,6 +81,9 @@ Widget filesListWidget(BuildContext context, List<String> attachments,
             if (isMedia)
               preview = CachedNetworkImage(
                 fit: BoxFit.cover,
+                placeholder: (context, progress) =>
+                    CircularProgressIndicator.adaptive(
+                        value: double.tryParse(progress)),
                 imageUrl: attachmentURL,
               );
 
@@ -416,7 +419,7 @@ Row userLeadingHorizontal(UserData user, double size) => Row(
             child: user.avatarUrl != null
                 ? CachedNetworkImage(
                     imageUrl: user.avatarUrl,
-                    //progressIndicatorBuilder:
+                    // progressIndicatorBuilder:
                     //    (context, url, downloadProgress) =>
                     //        CircularProgressIndicator.adaptive(
                     //            value: downloadProgress.progress),
