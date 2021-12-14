@@ -10,5 +10,3 @@ Note : Made as a school project
 | Receive homeworks     | Send homeworks     | Chat               | Manage school      |   |
 | Receive announcements | Send announcements |                    | Send announcements |   |
 |                       | Chat               |                    | Chat               |   |
-### Todo
-todo lol
